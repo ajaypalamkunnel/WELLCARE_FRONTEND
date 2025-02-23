@@ -2,6 +2,11 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-hot-toast";
+import { useAuthStore } from "@/store/user/authStore";
+import { registerBasicDetails } from "@/services/user/auth/authService";
+import { useRouter } from "next/navigation";
+
 interface signupFormData {
   fullName: string;
   email: string;
@@ -9,13 +14,16 @@ interface signupFormData {
   confirmPassword: string;
 }
 
-interface signupFormProps{
-    role: 'patient'|'doctor'
+interface signupFormProps {
+  role: "patient" | "doctor";
 }
 
-const SignupComponent:React.FC<signupFormProps> = ({role}) => {
+const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { setEmail } = useAuthStore();
+  const router = useRouter();
 
   const {
     register,
@@ -24,8 +32,23 @@ const SignupComponent:React.FC<signupFormProps> = ({role}) => {
     watch,
   } = useForm<signupFormData>();
 
-  const onSubmit = (data: signupFormData) => {
+  const onSubmit = async (data: signupFormData) => {
     console.log(data);
+    setIsLoading(true);
+
+    try {
+      if (role === "patient") {
+        const response = await registerBasicDetails({ ...data });
+        toast.success("OTP sent! Redirecting...");
+        setEmail(response.email);
+        router.push("/otppage");
+      } else {
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -45,7 +68,7 @@ const SignupComponent:React.FC<signupFormProps> = ({role}) => {
                   className="h-24 mx-auto mb-4"
                 />
                 <h2 className="text-2xl font-bold text-gray-900">
-                  Create Account for {role==='patient'?'Patient':'Doctor'}
+                  Create Account for {role === "patient" ? "Patient" : "Doctor"}
                 </h2>
               </div>
               <form
@@ -177,9 +200,15 @@ const SignupComponent:React.FC<signupFormProps> = ({role}) => {
 
                 <button
                   type="submit"
-                  className="w-full bg-medical-green text-white py-2 rounded-lg hover:bg-opacity-90 transition-colors duration-200"
+                  disabled={isLoading} // 🔹 NEW: Disable button when loading
+                  className={`w-full py-2 rounded-lg transition-all ${
+                    isLoading
+                      ? "bg-gray-400 cursor-not-allowed" // 🔹 NEW: Disabled state
+                      : "bg-medical-green text-white hover:bg-opacity-90"
+                  }`}
                 >
-                  Sign up
+                  {isLoading ? "Signing up..." : "Sign up"}{" "}
+                  {/* 🔹 NEW: Show loading text */}
                 </button>
 
                 <p className="text-center text-sm text-gray-600 mt-4">

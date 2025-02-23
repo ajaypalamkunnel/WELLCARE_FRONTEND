@@ -1,9 +1,8 @@
+import SignupComponent from '@/components/Signup'
 import React from 'react'
 
 const DoctorLogin = () => {
-  return (
-    <div>DoctorLogin</div>
-  )
+  return <SignupComponent role='doctor'/>
 }
 
 export default DoctorLogin
