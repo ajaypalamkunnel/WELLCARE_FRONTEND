@@ -10,6 +10,7 @@
     isVerified: boolean;
     otp?: string | null;
     otpExpires?: Date | null;
+    accessToken:string|null
     updatedAt?: Date;
     createdAt?: Date;
 

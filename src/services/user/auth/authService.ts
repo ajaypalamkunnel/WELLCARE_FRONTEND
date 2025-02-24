@@ -1,6 +1,7 @@
 import axiosInstance from "@/utils/axiosInstance"
-import IUser from "../../../types/user"
+import {IUser} from "../../../types/userTypes"
 import OTPInput from "@/components/otpPage/OTPInput";
+import axios from "axios";
 
 
 
@@ -36,5 +37,25 @@ export const resentOTP = async(email:string)=>{
         return response.data
     } catch (error:any) {
         throw new Error(error.response?.data?.error || "Resend OTP failed");
+    }
+}
+
+
+export const login = async(email:string,password:string): Promise<{accessToken:string,user:IUser}>=>{
+    console.log("===>",email,password);
+    
+    try {
+        const response = await axiosInstance.post("/login",{email,password},{withCredentials:true})
+
+        const {accessToken,user} = response.data
+
+        return {accessToken,user}
+    } catch (error:unknown) {
+        if(axios.isAxiosError(error)){
+
+            throw new Error(error.response?.data?.error || "Login failed")
+        }else{
+            throw new Error("An unexpected error occurred");
+        }
     }
 }

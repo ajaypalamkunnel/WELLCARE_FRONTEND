@@ -71,6 +71,7 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
                   Create Account for {role === "patient" ? "Patient" : "Doctor"}
                 </h2>
               </div>
+              
               <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="space-y-3 max-w-[448px]"

@@ -1,9 +1,8 @@
+import LoginComponent from '@/components/LoginComponent'
 import React from 'react'
 
 const page = () => {
-  return (
-    <div>This is pateint login</div>
-  )
+  return <LoginComponent/>
 }
 
 export default page
