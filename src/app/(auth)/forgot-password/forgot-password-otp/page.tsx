@@ -1,42 +1,55 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import OTPInput from "../components/otpPage/OTPInput";
-import role from "@/types/role";
+import { useRouter   } from "next/navigation";
+
+import OTPInput from "../../../../components/otpPage/OTPInput";
+
 import { resentOTP, verifyOTP } from "@/services/user/auth/authService";
 import {
   resend_otp_doctor,
   verify_otp_doctor,
-} from "../services/doctor/authService";
-import { useAuthStore } from "@/store/user/authStore";
-import { useAuthStoreDoctor } from "../store/doctor/authStore";
+} from "../../../../services/doctor/authService";
+
 import toast from "react-hot-toast";
 import { Timer } from "lucide-react";
 import { AxiosError } from "axios";
 import { error } from "console";
 
-const OTPVerificationComponent: React.FC<role> = ({ role }) => {
+const OTPVerificationComponent: React.FC = () => {
   const [otp, setOtp] = useState("");
   const [timer, setTimer] = useState(30);
   const [isDisabled, setIsDisabled] = useState(true);
-  const { email } = useAuthStore();
-  const { emailDoctor } = useAuthStoreDoctor();
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
   const router = useRouter();
- 
+
+  useEffect(()=>{
+    const storedEmail = sessionStorage.getItem("otpEmail")||""
+    const storedRole = sessionStorage.getItem("otpRole")||""
+
+    if (!storedEmail) {
+        router.push("/forgot-password"); // Redirect if no email found
+    }
+    setEmail(storedEmail);
+    setRole(storedRole);
+  },[])
+  
+
+  
 
   useEffect(() => {
     const timeOut = setTimeout(() => {
       if (role === "patient" && !email) {
         toast.error("No email found, redirecting...");
         router.push("/signup");
-      } else if (role === "doctor" && !emailDoctor) {
+      } else if (role === "doctor" && !email) {
         toast.error("No email found, redirecting...");
         router.push("/signup");
       }
 
     }, 500);
     return () => clearTimeout(timeOut);
-  }, [email, emailDoctor, role, router]);
+  }, [email, role, router]);
 
   useEffect(() => {
     if (timer > 0) {
@@ -62,10 +75,10 @@ const OTPVerificationComponent: React.FC<role> = ({ role }) => {
         }else{
           toast.error(response.error || "Failed to resend OTP");
         }
-      }else if(role === "doctor" && emailDoctor){
-        console.log("I am inside : ",emailDoctor);
+      }else if(role === "doctor" && email){
+        console.log("I am inside : ",email);
         
-        const response = await resend_otp_doctor(emailDoctor)
+        const response = await resend_otp_doctor(email)
 
         if(response.success){
           toast.success(response.message)
@@ -95,11 +108,11 @@ const OTPVerificationComponent: React.FC<role> = ({ role }) => {
       if (role === "patient" && email) {
         await verifyOTP(email, otp);
         toast.success("OTP verification success");
-        router.push("/login");
-      } else if (role === "doctor" && emailDoctor) {
-        await verify_otp_doctor(emailDoctor, otp);
+        router.push("/forgot-password/newpassword");
+      } else if (role === "doctor" && email) {
+        await verify_otp_doctor(email, otp);
         toast.success("OTP verification success");
-        router.push("/login");
+        router.push("/forgot-password/newpassword");
       }
     } catch (error: unknown) {
      if(error instanceof AxiosError){

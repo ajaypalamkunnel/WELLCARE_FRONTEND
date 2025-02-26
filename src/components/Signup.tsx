@@ -4,7 +4,9 @@ import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "@/store/user/authStore";
+import {useAuthStoreDoctor} from "../store/doctor/authStore"
 import { registerBasicDetails } from "@/services/user/auth/authService";
+import { registerBasicDetailsDoctor } from "@/services/doctor/authService";
 import { useRouter } from "next/navigation";
 
 interface signupFormData {
@@ -23,6 +25,7 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { setEmail } = useAuthStore();
+  const {setEmailDoctor} = useAuthStoreDoctor()
   const router = useRouter();
 
   const {
@@ -39,10 +42,16 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
     try {
       if (role === "patient") {
         const response = await registerBasicDetails({ ...data });
+        console.log(response);
+        
         toast.success("OTP sent! Redirecting...");
         setEmail(response.email);
         router.push("/otppage");
       } else {
+        const response = await registerBasicDetailsDoctor(({...data}))
+        toast.success("OTP sent! Redirecting...")
+        setEmailDoctor(response.email)
+        router.push("/doctor/otppage");
       }
     } catch (error: any) {
       toast.error(error.message);

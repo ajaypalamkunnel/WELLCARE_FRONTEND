@@ -7,14 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FcGoogle } from "react-icons/fc";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/store/user/authStore";
+import { useAuthStoreDoctor } from "../store/doctor/authStore";
 import { useRouter } from "next/navigation";
 import { IUser } from "../types/userTypes";
 import { login } from "@/services/user/auth/authService";
 import { getErrorMessage } from "@/utils/handleError";
+import { login_doctor } from "@/services/doctor/authService";
 interface loginFormProps {
   role: "patient" | "doctor";
 }
@@ -28,8 +30,15 @@ const LoginComponent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [role, setRole] = useState<"patient" | "doctor">("patient");
   const router = useRouter();
-  const { setAuth } = useAuthStore();
+  const { setAuth, accessToken } = useAuthStore();
+  const { setAuthDoctor, accessTokenDoctor } = useAuthStoreDoctor();
   console.log(role);
+
+  useEffect(() => {
+    if (accessToken || accessTokenDoctor) {
+      router.replace("/");
+    }
+  }, [accessToken, accessTokenDoctor, router]);
 
   const {
     register,
@@ -46,15 +55,29 @@ const LoginComponent: React.FC = () => {
         const { accessToken, user }: { accessToken: string; user: IUser } =
           await login(data.email, data.password);
         console.log(accessToken);
-        
+
         setAuth(user.email, accessToken, user);
 
         toast.success("Login successfull!");
-        router.push("/");
+        router.replace("/");
       } else {
+        console.log("hi I am doctor");
+        
+        const {
+          doctorAccessToken,
+          doctor,
+        }: { doctorAccessToken: string; doctor: IUser } = await login_doctor(
+          data.email,
+          data.password
+        );
+
+        setAuthDoctor(doctor.email, doctorAccessToken, doctor);
+        toast.success("Login successfull!");
+        router.replace("/");
       }
     } catch (error: unknown) {
-      throw new Error(getErrorMessage(error));
+      const errorMessage = getErrorMessage(error);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -158,7 +181,10 @@ const LoginComponent: React.FC = () => {
 
             <div className="text-right">
               <Link
-                href="/forgot-password"
+                href={{
+                  pathname:"/forgot-password",
+                  query:{ref:role}
+                }}
                 className="text-[#27c958] hover:text-[#246738] text-sm"
               >
                 Forgot password?
