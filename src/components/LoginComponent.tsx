@@ -72,8 +72,11 @@ const LoginComponent: React.FC = () => {
         );
 
         setAuthDoctor(doctor.email, doctorAccessToken, doctor);
-        toast.success("Login successfull!");
-        router.replace("/");
+        setTimeout(() => {
+          router.replace("/doctor/home");
+        }, 100);
+        
+        toast.success("Login successful!");
       }
     } catch (error: unknown) {
       const errorMessage = getErrorMessage(error);

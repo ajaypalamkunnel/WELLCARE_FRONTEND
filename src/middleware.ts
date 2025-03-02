@@ -14,7 +14,7 @@ export function middleware(req:NextRequest){
 
     const isAuthenticated = patientToken || doctorToken;
 
-    const protectedRoutes = ["/user/profile"]
+    const protectedRoutes = ["/user/profile","/forgot-password","/otppage","/doctor/otppage","/doctor/home"]
 
 
     if(protectedRoutes.includes(nextUrl.pathname) && !isAuthenticated){
@@ -26,5 +26,7 @@ export function middleware(req:NextRequest){
 }
 
 export const config = {
-    matcher:["/user/profile","/"]
+    matcher:["/user/profile","/forgot-password","/otppage","/doctor/otppage","/doctor/home"]
 }
+
+//, "/doctor/home"

@@ -1,5 +1,6 @@
 import { IUser } from "@/types/userTypes";
 import axiosInstance from "@/utils/axiosInstance";
+import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 import { getErrorMessage } from "@/utils/handleError";
 import axios from "axios";
 import { emitWarning } from "process";
@@ -107,5 +108,14 @@ export const updatePasswordDoctor = async(email:string,password:string)=>{
         const errorMessage = getErrorMessage(error)
         throw new Error(errorMessage)
         
+    }
+}
+
+export const logoutDoctor = async()=>{
+    try {
+        await axiosInstance.post("/api/doctor/logout",{},{withCredentials:true})
+    } catch (error) {
+        console.error("Error during logout:",error);
+        throw new Error("Logut failed")
     }
 }
