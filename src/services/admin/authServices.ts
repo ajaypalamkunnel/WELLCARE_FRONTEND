@@ -1,0 +1,22 @@
+import axiosInstance from "@/utils/axiosInstance"
+import axios from "axios"
+
+
+
+export const login = async (email:string,password:string)=>{
+
+    try {
+        const response = await axiosInstance.post("/api/admin/login",{email,password},{withCredentials:true})
+
+        const {accessTokenAdmin,admin} = response.data
+
+        return {accessTokenAdmin,admin}
+    } catch (error) {
+        if(axios.isAxiosError(error)){
+            throw new Error(error.response?.data?.error || "Login failed")
+        }else{
+            throw new Error("An unexpected error occured")
+        }
+    }
+
+}

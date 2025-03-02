@@ -3,3 +3,9 @@ export interface IUser {
     email: string;
     fullName: string;
   }
+
+
+export interface IAdmin{
+  id:string
+  email:string
+}

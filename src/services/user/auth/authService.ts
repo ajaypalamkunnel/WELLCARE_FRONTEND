@@ -89,3 +89,31 @@ export const updatePassword = async(email:string,password:string)=>{
         throw new Error(errorMessage)
     }
 }
+
+export const googleAuth = async (role: "patient" | "doctor") => {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URI}/auth/google?role=${role}`;
+};
+
+
+export const fetchTokens = async () => {
+    try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/auth/tokens`, {
+            withCredentials: true, // ✅ Ensures cookies are sent
+        });
+
+        return response.data; // { accessToken, role }
+    } catch (error) {
+        console.error("Error fetching tokens:", error);
+        throw new Error("Failed to fetch authentication tokens.");
+    }
+};
+
+export const logout = async ()=>{
+    try {
+        await axiosInstance.post("/logout",{},{withCredentials:true})
+
+    } catch (error) {
+        console.error("Error during logout:",error);
+        throw new Error("Logut failed")
+    }
+}

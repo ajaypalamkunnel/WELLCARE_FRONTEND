@@ -1,7 +1,7 @@
 
 
  interface IUser {
-    _id: string;
+    _id?: string;
     fullName: string;
     email: string;
     mobile: string;
