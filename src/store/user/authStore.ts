@@ -12,17 +12,6 @@ interface AuthState{
 }
 
 
-// export const useAuthStore = create<AuthState>((set)=>({
-//     email:null,
-//     accessToken:null,
-//     user:null,
-//     setAuth:(email,accessToken,user)=>set({email,accessToken,user}),
-//     setEmail:(email) => set({email}),
-//     logout:()=> set({email:null,accessToken:null,user:null})
-
-// }))
-
-
 export const useAuthStore = create<AuthState>()(
     devtools(
       persist(
@@ -40,3 +29,19 @@ export const useAuthStore = create<AuthState>()(
       { name: "AuthStore wellcare" }
     )
   );
+
+
+
+
+
+  
+// export const useAuthStore = create<AuthState>((set)=>({
+//     email:null,
+//     accessToken:null,
+//     user:null,
+//     setAuth:(email,accessToken,user)=>set({email,accessToken,user}),
+//     setEmail:(email) => set({email}),
+//     logout:()=> set({email:null,accessToken:null,user:null})
+
+// }))
+

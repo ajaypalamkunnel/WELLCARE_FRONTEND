@@ -4,13 +4,9 @@
     _id?: string;
     fullName: string;
     email: string;
-    mobile: string;
-    password: string;
-    status: number;
-    isVerified: boolean;
-    otp?: string | null;
-    otpExpires?: Date | null;
-    accessToken:string|null
+    mobile?: string;
+    status?: number;
+    isVerified?: boolean;
     updatedAt?: Date;
     createdAt?: Date;
 

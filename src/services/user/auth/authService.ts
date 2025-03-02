@@ -5,7 +5,7 @@ import axios from "axios";
 import { getErrorMessage } from "@/utils/handleError";
 import { NewPasswordFormValues } from "@/components/NewPassword";
 
-
+import IUserFullData from "@/types/user";
 
 export const registerBasicDetails = async (data:Partial<IUser>)=>{
 
@@ -115,5 +115,16 @@ export const logout = async ()=>{
     } catch (error) {
         console.error("Error during logout:",error);
         throw new Error("Logut failed")
+    }
+}
+
+
+export const fetchPatientProfile = async ():Promise<IUserFullData|null>=>{
+    try {
+        const response = await axiosInstance.get("/profile");
+        return response.data.user
+    } catch (error) {
+        console.error("Error fetching patient profile:", error);
+        return null;
     }
 }
