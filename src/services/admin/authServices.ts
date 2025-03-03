@@ -20,3 +20,19 @@ export const login = async (email:string,password:string)=>{
     }
 
 }
+
+
+export const logoutAdmin = async()=>{
+    try {
+        console.log("logout admin");
+        
+        const response = await axiosInstance.post("/api/admin/logout",{},{withCredentials:true})
+        console.log(response);
+        
+         return response
+    } catch (error) {
+        console.error("Error during logout: ",error);
+        throw new Error("Logout failed")
+        
+    }
+}
