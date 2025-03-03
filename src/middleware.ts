@@ -2,23 +2,23 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 
-export function middleware(req:NextRequest){
+export function middleware(req: NextRequest) {
 
     console.log("hoiiiii middleware");
-    
+
 
     const { cookies, nextUrl } = req;
 
     const patientToken = cookies.get("auth_token")?.value || null
-    const doctorToken = cookies.get("doctorAccessToken")?.value||null
+    const doctorToken = cookies.get("doctorAccessToken")?.value || null
+    const accessTokenAdmin = cookies.get("accessTokenAdmin")?.value || null
+    const isAuthenticated = patientToken || doctorToken || accessTokenAdmin;
 
-    const isAuthenticated = patientToken || doctorToken;
-
-    const protectedRoutes = ["/user/profile","/forgot-password","/otppage","/doctor/otppage","/doctor/home"]
+    const protectedRoutes = ["/user/profile", "/admin/dashboard", "/doctordashboard/home"]
 
 
-    if(protectedRoutes.includes(nextUrl.pathname) && !isAuthenticated){
-        return NextResponse.redirect(new URL("/login",req.url))
+    if (protectedRoutes.some((route) => nextUrl.pathname.startsWith(route)) && !isAuthenticated) {
+        return NextResponse.redirect(new URL("/login", req.url));
     }
 
     return NextResponse.next()
@@ -26,7 +26,7 @@ export function middleware(req:NextRequest){
 }
 
 export const config = {
-    matcher:["/user/profile","/forgot-password","/otppage","/doctor/otppage","/doctor/home"]
+    matcher: ["/user/profile", "/admin/dashboard", "/doctordashboard/home"]
 }
 
 //, "/doctor/home"

@@ -19,6 +19,8 @@ useEffect(()=>{
         try {
             setLoading(true)
             const profileData = await fetchPatientProfile()
+            console.log(profileData);
+            
 
             if(profileData){
                 setUser(profileData)

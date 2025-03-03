@@ -1,3 +1,4 @@
+import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import { IUser } from "@/types/userTypes";
 import axiosInstance from "@/utils/axiosInstance";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
@@ -119,3 +120,13 @@ export const logoutDoctor = async()=>{
         throw new Error("Logut failed")
     }
 }
+
+export const fetchDoctorProfile = async ():Promise<IDoctorProfileDataType|null>=>{
+    try {
+        const response = await axiosInstanceDoctor.get("/api/doctor/profile");
+        return response.data.user
+    } catch (error) {
+        console.error("Error fetching patient profile:", error);
+        return null;
+    }
+} 

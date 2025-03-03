@@ -139,7 +139,7 @@ const OTPVerificationComponent: React.FC<role> = ({ role }) => {
               : "bg-green-300 cursor-not-allowed"
           }`}
           onClick={handleVerifyOTP}
-          disabled={otp.length !== 6}
+          disabled={otp.length !== 6 || (timer <= 0)}
         >
           Verify OTP
         </button>

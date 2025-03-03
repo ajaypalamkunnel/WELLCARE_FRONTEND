@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, LogOut, User } from 'lucide-react';
 import { useRouter } from 'next/navigation'; 
-
+import Link from 'next/link';
 import { useAuthStoreDoctor } from '@/store/doctor/authStore';
 import { logoutDoctor } from '@/services/doctor/authService';
 import toast from 'react-hot-toast';
@@ -109,13 +109,13 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
           {/* Dropdown Menu */}
           {isProfileOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-              <a
-                href="/profile"
-                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              <Link
+              href="/doctordashboard/profile"
+              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
-                <User className="w-4 h-4 mr-2" />
+              <User className="w-4 h-4 mr-2" />
                 Profile
-              </a>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

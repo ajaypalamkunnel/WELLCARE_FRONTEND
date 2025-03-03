@@ -73,7 +73,7 @@ const LoginComponent: React.FC = () => {
 
         setAuthDoctor(doctor.email, doctorAccessToken, doctor);
         setTimeout(() => {
-          router.replace("/doctor/home");
+          router.replace("/doctordashboard/home");
         }, 100);
         
         toast.success("Login successful!");
