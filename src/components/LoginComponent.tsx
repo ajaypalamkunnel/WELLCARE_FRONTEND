@@ -88,22 +88,6 @@ const LoginComponent: React.FC = () => {
 
 
   const handleGoogleAuth = async () => {
-    // setIsLoading(true);
-    // try {
-    //   const response = await googleAuth(role);
-    //   if (role === "patient") {
-    //     setAuth(response.user.email, response.accessToken, response.user);
-    //   } else {
-    //     setAuthDoctor(response.user.email, response.accessToken, response.user);
-    //   }
-    //   toast.success("Login successful!");
-    //   router.replace("/");
-    // } catch (error) {
-    //   toast.error(getErrorMessage(error));
-    // } finally {
-    //   setIsLoading(false);
-    // }
-
     setIsLoading(true);
     const response =googleAuth(role);
     console.log("=======>>>",response);
@@ -236,13 +220,14 @@ const LoginComponent: React.FC = () => {
           </form>
 
           {/* Google Sign In */}
-          <button className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md p-2 hover:bg-gray-50 transition"
+          {role === 'patient'
+            ?(<button className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md p-2 hover:bg-gray-50 transition"
           onClick={handleGoogleAuth}
           disabled={isLoading}
           >
             <FcGoogle className="h-5 w-5" />
             <span className="text-gray-700">{isLoading?"Processing...":"Sign in with Google"}</span>
-          </button>
+          </button>):<></>}
 
           {/* Create Account Link */}
           <p className="mt-8 text-gray-700">

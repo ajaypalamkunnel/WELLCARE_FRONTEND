@@ -91,6 +91,8 @@ export const updatePassword = async(email:string,password:string)=>{
 }
 
 export const googleAuth = async (role: "patient" | "doctor") => {
+    console.log("auth service :",role);
+    
     window.location.href = `${process.env.NEXT_PUBLIC_API_URI}/auth/google?role=${role}`;
 };
 
