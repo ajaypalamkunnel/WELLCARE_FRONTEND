@@ -238,7 +238,10 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
                 alt="Medical Illustration"
                 className="w-full object-contain"
               />
-              <div className="text-center mt-20">
+              
+              {
+              role === "patient"?
+              (<div className="text-center mt-20">
                 <p className="text-sm text-gray-600 ">Or continue with</p>
                 <button
                   type="button"
@@ -251,7 +254,7 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
                   />
                   <span>Sign in with Google</span>
                 </button>
-              </div>
+              </div>):<></>}
             </div>
           </div>
         </div>

@@ -100,7 +100,7 @@ export const googleAuth = async (role: "patient" | "doctor") => {
 export const fetchTokens = async () => {
     try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/auth/tokens`, {
-            withCredentials: true, // ✅ Ensures cookies are sent
+            withCredentials: true, //  Ensures cookies are sent
         });
 
         return response.data; // { accessToken, role }

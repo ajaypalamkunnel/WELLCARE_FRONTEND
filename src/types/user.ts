@@ -5,6 +5,7 @@
     fullName: string;
     email: string;
     mobile?: string;
+    specialization?:string;
     status?: number;
     isVerified?: boolean;
     updatedAt?: Date;

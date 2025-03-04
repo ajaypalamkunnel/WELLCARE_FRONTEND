@@ -1,4 +1,5 @@
 import axiosInstance from "@/utils/axiosInstance"
+import axiosInstanceAdmin from "@/utils/axiosInstanceAdmin"
 import axios from "axios"
 
 
@@ -33,6 +34,21 @@ export const logoutAdmin = async()=>{
     } catch (error) {
         console.error("Error during logout: ",error);
         throw new Error("Logout failed")
+        
+    }
+}
+
+export const fetchAllDoctors = async()=>{
+    try {
+        console.log("frontend service");
+
+        const response = await axiosInstanceAdmin.get("/api/admin/doctors")
+        console.log(response);
+        
+        return response
+    } catch (error) {
+        console.error("Error during featching doctors =",error);
+        throw new Error("fetch doctors failed")
         
     }
 }

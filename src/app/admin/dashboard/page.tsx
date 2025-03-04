@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useAdminStore } from "@/store/admin/adminStore";
 import { useRouter } from "next/navigation";
+import DoctorsList from "@/components/admin/adminContent/Doctors";
 import {
   LayoutDashboard,
   Users,
@@ -18,6 +19,12 @@ import {
 } from "lucide-react";
 import { logoutAdmin } from "@/services/admin/authServices";
 import toast from "react-hot-toast";
+import DashboardContent from "@/components/admin/adminContent/DashboardContent";
+import ApplicationsContent from "@/components/admin/adminContent/ApplicationsContent";
+import PatientsContent from "@/components/admin/adminContent/PatientsContent";
+import PlansContent from "@/components/admin/adminContent/PlansContent";
+import DepartmentsContent from "@/components/admin/adminContent/DepartmentsContent";
+import AppointmentsContent from "@/components/admin/adminContent/AppointmentsContent ";
 
 // Define the navigation item type
 interface NavItem {
@@ -80,19 +87,31 @@ const AdminDashboard: React.FC = () => {
 
   // Render dynamic content based on active navigation
   const renderContent = () => {
-    // In a real application, you would render different components based on activeNav
-    return (
-      <div className="p-6">
-        <h2 className="text-xl font-semibold mb-4">
-          {activeNav.charAt(0).toUpperCase() + activeNav.slice(1)}
-        </h2>
-        <p>
-          This is the {activeNav} content area. It will be replaced with actual
-          content.
-        </p>
-      </div>
-    );
-  };
+    switch (activeNav) {
+      case "dashboard":
+        return <DashboardContent />;
+      case "doctors":
+        return <DoctorsList />;
+      case "applications":
+        return <ApplicationsContent />;
+      case "patients":
+        return <PatientsContent />;
+      case "appointments":
+        return <AppointmentsContent />;
+      case "plans":
+        return <PlansContent />;
+      case "departments":
+        return <DepartmentsContent />;
+      default:return (
+        <div className="p-6">
+          <h2 className="text-xl font-semibold mb-4">
+            {activeNav.charAt(0).toUpperCase() + activeNav.slice(1)}
+          </h2>
+          <p>Content not found for this section.</p>
+        </div>
+      );
+  }
+};
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100">
