@@ -1,7 +1,45 @@
+"use client";
+import WelcomeDoctor from "@/components/doctorComponents/WelcomeDoctor";
+import Loader from "@/components/commonUIElements/Loader";
+import { capitalizeFirstLetter } from "@/helpers/Naming";
+import { fetchDoctorProfile } from "@/services/doctor/authService";
+import { useAuthStoreDoctor } from "@/store/doctor/authStore";
+import IDoctorProfileDataType from "@/types/doctorFullDataType";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 export default function DoctorHome() {
+  const user = useAuthStoreDoctor((state) => state.user);
+  const [doctorData, setDoctorData] = useState<IDoctorProfileDataType>();
+  const [loading, setLoading] = useState<boolean>(true);
+  useEffect(() => {
+    const getDoctorProfile = async () => {
+      setLoading(true);
+      try {
+        const doctorData = await fetchDoctorProfile();
+        setDoctorData(doctorData!);
+      } catch (error) {
+        toast.error("Error fetching profile");
+        console.error("Profile fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getDoctorProfile();
+  }, []);
+
+  const fullName: string = capitalizeFirstLetter(user?.fullName!);
+
   return (
     <div>
-      <h1>Doctor Home Page</h1>
+      {loading ? (
+        <Loader />
+        
+      ) : (
+        <WelcomeDoctor
+          doctorName={fullName}
+          isVerified={doctorData?.isVerified!}
+        />
+      )}
     </div>
   );
 }

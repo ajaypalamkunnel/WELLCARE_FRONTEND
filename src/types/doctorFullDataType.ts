@@ -2,6 +2,7 @@ interface IDoctorProfileDataType {
     fullName: string;
     department?: string;
     specialization?: string;
+    isVerified?:boolean
     experience?: string;
     licenseNumber?: string;
     email?: string;

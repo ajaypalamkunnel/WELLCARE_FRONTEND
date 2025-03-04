@@ -13,7 +13,8 @@ export default {
         foreground: "var(--foreground)",
         "medical-green": "#03C03C",
         "medical-green-light":"#09db4b",
-         "myblue":"#0a102e"
+         "myblue":"#0a102e",
+         "deep-blue": "hsl(240, 100%, 19%)",
       },
     },
   },

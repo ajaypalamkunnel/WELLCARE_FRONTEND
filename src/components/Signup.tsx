@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "@/store/user/authStore";
-import {useAuthStoreDoctor} from "../store/doctor/authStore"
-import { registerBasicDetails } from "@/services/user/auth/authService";
+import { useAuthStoreDoctor } from "../store/doctor/authStore";
+import { googleAuth, registerBasicDetails } from "@/services/user/auth/authService";
 import { registerBasicDetailsDoctor } from "@/services/doctor/authService";
 import { useRouter } from "next/navigation";
 
@@ -25,7 +25,7 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { setEmail } = useAuthStore();
-  const {setEmailDoctor} = useAuthStoreDoctor()
+  const { setEmailDoctor } = useAuthStoreDoctor();
   const router = useRouter();
 
   const {
@@ -43,14 +43,14 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
       if (role === "patient") {
         const response = await registerBasicDetails({ ...data });
         console.log(response);
-        
+
         toast.success("OTP sent! Redirecting...");
         setEmail(response.email);
         router.push("/otppage");
       } else {
-        const response = await registerBasicDetailsDoctor(({...data}))
-        toast.success("OTP sent! Redirecting...")
-        setEmailDoctor(response.email)
+        const response = await registerBasicDetailsDoctor({ ...data });
+        toast.success("OTP sent! Redirecting...");
+        setEmailDoctor(response.email);
         router.push("/doctor/otppage");
       }
     } catch (error: any) {
@@ -59,6 +59,14 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
       setIsLoading(false);
     }
   };
+
+const handleGoogleAuth = async () => {
+    setIsLoading(true);
+    const response =googleAuth(role);
+    console.log("=======>>>",response);
+    
+  };
+
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const toggleConfirmPasswordVisibility = () =>
@@ -80,7 +88,7 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
                   Create Account for {role === "patient" ? "Patient" : "Doctor"}
                 </h2>
               </div>
-              
+
               <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="space-y-3 max-w-[448px]"
@@ -150,10 +158,25 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
                           value: 8,
                           message: "Password must be at least 8 characters",
                         },
+                        validate: {
+                          hasUpperCase: (value) =>
+                            /[A-Z]/.test(value) ||
+                            "Must contain at least one uppercase letter",
+                          hasLowerCase: (value) =>
+                            /[a-z]/.test(value) ||
+                            "Must contain at least one lowercase letter",
+                          hasNumber: (value) =>
+                            /[0-9]/.test(value) ||
+                            "Must contain at least one number",
+                          hasSpecialChar: (value) =>
+                            /[!@#$%^&*(),.?":{}|<>]/.test(value) ||
+                            "Must contain at least one special character",
+                        },
                       })}
                       type={showPassword ? "text" : "password"}
                       id="password"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-green focus:border-transparent pr-10"
+                      placeholder="Enter a strong password"
                     />
                     <button
                       type="button"
@@ -187,6 +210,7 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
                       })}
                       type={showConfirmPassword ? "text" : "password"}
                       id="confirmPassword"
+                      placeholder="Enter a strong password"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-green focus:border-transparent pr-10"
                     />
                     <button
@@ -238,23 +262,26 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
                 alt="Medical Illustration"
                 className="w-full object-contain"
               />
-              
-              {
-              role === "patient"?
-              (<div className="text-center mt-20">
-                <p className="text-sm text-gray-600 ">Or continue with</p>
-                <button
-                  type="button"
-                  className="w-full border border-gray-300 py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <img
-                    src="https://www.google.com/favicon.ico"
-                    alt="Google"
-                    className="w-5 h-5"
-                  />
-                  <span>Sign in with Google</span>
-                </button>
-              </div>):<></>}
+
+              {role === "patient" ? (
+                <div className="text-center mt-20">
+                  <p className="text-sm text-gray-600 ">Or continue with</p>
+                  <button
+                    type="button"
+                    onClick={handleGoogleAuth}
+                    className="w-full border border-gray-300 py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    <img
+                      src="https://www.google.com/favicon.ico"
+                      alt="Google"
+                      className="w-5 h-5"
+                    />
+                    <span>Sign in with Google</span>
+                  </button>
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
         </div>
