@@ -9,9 +9,11 @@ interface DoctorCardProps {
   specialty?: string;
   phone?: string;
   email: string;
+  mode?: "view" | "verify";
   avatarUrl?: string;
+  
   onViewDetails: () => void;
-  onBlock: () => void;
+  onBlock?: () => void;
 }
 
 const DoctorCard: React.FC<DoctorCardProps> = ({
@@ -19,6 +21,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
   specialty,
   phone,
   email,
+  mode="view",
   avatarUrl,
   onViewDetails,
   onBlock,
@@ -76,13 +79,13 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
           View Details
         </button>
 
-        <button
+        {mode==="view" && onBlock &&(<button
           onClick={onBlock}
           className="flex items-center justify-center px-4 py-2 bg-red-900 hover:bg-red-800 text-white rounded-md transition-colors"
         >
           <Ban size={16} className="mr-2" />
           Block
-        </button>
+        </button>)}
       </div>
     </div>
   );

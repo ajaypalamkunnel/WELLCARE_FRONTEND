@@ -87,6 +87,7 @@ const DoctorsList: React.FC = () => {
             key={doctor._id}
             fullName={doctor?.fullName || "NA"}
             specialty={doctor?.specialization || "NA"}
+            avatarUrl={doctor?.profileImage}
             phone={doctor?.mobile || "NA"}
             email={doctor?.email || "NA"}
             onViewDetails={() => handleViewDetails(doctor?._id!)}

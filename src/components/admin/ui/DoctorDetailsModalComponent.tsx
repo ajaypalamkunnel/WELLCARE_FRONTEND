@@ -13,7 +13,11 @@ import {
   Clock, 
   Briefcase,
   Globe,
-  Building
+  Building,
+  XCircle,
+  CheckCircle,
+  SectionIcon,
+  Group
 } from "lucide-react";
 
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
@@ -22,12 +26,18 @@ interface DoctorDetailsModalProps {
   doctor: IDoctorProfileDataType;
   isOpen: boolean;
   onClose: () => void;
+  mode?: "view" | "verify"; // New prop to determine modal mode
+  onAccept?: () => void; // New prop for accept action
+  onReject?: () => void; // New prop for reject action
 }
 
 const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
   doctor,
   isOpen,
   onClose,
+  mode = "view", // Default to view mode
+  onAccept,
+  onReject,
 }) => {
   if (!isOpen) return null;
 
@@ -42,12 +52,14 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
   // Check if doctor has offline availability
   const hasOfflineAvailability = doctor.availability?.includes("Offline");
 
+  const modalTitle = mode === "verify" ? "Doctor Application" : "Doctor Details";
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
       <div className="bg-gray-800 rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-white">Doctor Details</h2>
+          <h2 className="text-xl font-bold text-white">{modalTitle}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
@@ -83,6 +95,7 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
               <p className="text-gray-300 text-lg mb-4">{doctor.specialization}</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+
                 <div className="flex items-center text-gray-300">
                   <User size={18} className="mr-2 text-gray-400" />
                   <span>{doctor.gender}</span>
@@ -92,6 +105,11 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
                   <Mail size={18} className="mr-2 text-gray-400" />
                   <span>{doctor.email}</span>
                 </div>
+                <div className="flex items-center text-gray-300">
+                  <Group size={18} className="mr-2 text-gray-400" />
+                  <span>{doctor.departmentId?.name}</span>
+                </div>
+               
                 
                 <div className="flex items-center text-gray-300">
                   <Phone size={18} className="mr-2 text-gray-400" />
@@ -229,13 +247,34 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
         </div>
 
         {/* Modal Footer */}
+        {/* Modal Footer */}
         <div className="p-6 border-t border-gray-700 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors"
-          >
-            Close
-          </button>
+          {/* Show Accept/Reject buttons only in verify mode */}
+          {mode === "verify" ? (
+            <>
+              <button
+                onClick={onReject}
+                className="flex items-center px-6 py-2 bg-red-800 hover:bg-red-700 text-white rounded-md transition-colors mr-4"
+              >
+                <XCircle size={18} className="mr-2" />
+                Reject
+              </button>
+              <button
+                onClick={onAccept}
+                className="flex items-center px-6 py-2 bg-green-700 hover:bg-green-600 text-white rounded-md transition-colors"
+              >
+                <CheckCircle size={18} className="mr-2" />
+                Accept
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onClose}
+              className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors"
+            >
+              Close
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -148,7 +148,7 @@ const DoctorProfileDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          {doctorData.departmentId && (
+          {doctorData.departmentId?._id && (
             <div className="flex items-start">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -166,7 +166,7 @@ const DoctorProfileDashboard: React.FC = () => {
               </svg>
               <div>
                 <p className="text-sm text-gray-500">Department</p>
-                <p className="font-medium">doctorData.department</p>
+                <p className="font-medium">{doctorData.departmentId.name}</p>
               </div>
             </div>
           )}
@@ -297,8 +297,8 @@ const DoctorProfileDashboard: React.FC = () => {
             <h2 className="text-base font-semibold text-gray-800">
               {doctorData.fullName}
             </h2>
-            {doctorData.departmentId && (
-              <p className="text-xs text-gray-500">{doctorData.specialization}</p>
+            {doctorData.departmentId?._id && (
+              <p className="text-xs text-gray-500">{doctorData.departmentId.name}</p>
             )}
           </div>
         )}
@@ -365,7 +365,7 @@ const DoctorProfileDashboard: React.FC = () => {
                 {doctorData.fullName}
               </h2>
               {doctorData.departmentId && (
-                <p className="text-xs text-gray-500">{doctorData.departmentId}</p>
+                <p className="text-xs text-gray-500">{doctorData.departmentId.name}</p>
               )}
             </div>
           </div>

@@ -19,14 +19,17 @@ export interface ICertificate{
     issuedBy:string;
     yearOfIssue:string
 }
-
+export interface IDepartment{
+    _id:string
+    name:string
+}
 interface IDoctorProfileDataType {
     _id?:string
     fullName?: string;
     email?: string;
     mobile?: string;
-    profileImage?: string;
-    departmentId?: string;
+    profileImage?: string
+    departmentId?: IDepartment;
     availability?:string[];
     gender?:string
     clinicAddress?:ClinicAddress
