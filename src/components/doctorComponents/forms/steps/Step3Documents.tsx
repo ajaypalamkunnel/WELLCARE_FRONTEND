@@ -42,7 +42,7 @@ const Step3Documents: React.FC<Step3DocumentsProps> = ({ register, errors, watch
         return;
       }
       
-      setValue('idProof', file);
+      setValue('IDProofDocument', file);
       setIdProofName(file.name);
     }
   };
@@ -128,7 +128,7 @@ const Step3Documents: React.FC<Step3DocumentsProps> = ({ register, errors, watch
                       ref={idProofRef}
                       accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg"
                       onChange={handleIdProofUpload}
-                      {...register('idProof', { required: 'ID proof is required' })}
+                      {...register('IDProofDocument', { required: 'ID proof is required' })}
                     />
                   </label>
                   <p className="pl-1">or drag and drop</p>

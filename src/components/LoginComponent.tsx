@@ -33,6 +33,8 @@ const LoginComponent: React.FC = () => {
   console.log(role);
 
   useEffect(() => {
+    console.log("------------->",accessToken,accessTokenDoctor);
+    
     if (accessToken || accessTokenDoctor) {
       router.replace("/");
     }

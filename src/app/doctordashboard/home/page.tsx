@@ -1,7 +1,7 @@
 "use client";
 import WelcomeDoctor from "@/components/doctorComponents/WelcomeDoctor";
 import Loader from "@/components/commonUIElements/Loader";
-import { capitalizeFirstLetter } from "@/helpers/Naming";
+import { capitalizeFirstLetter } from "@/utils/Naming";
 import { fetchDoctorProfile } from "@/services/doctor/authService";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";

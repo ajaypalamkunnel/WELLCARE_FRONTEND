@@ -3,7 +3,9 @@ import React from 'react'
 
 const page = () => {
   return (
-    <DoctorRegistrationForm/>
+    <div className='bg-white'>
+      <DoctorRegistrationForm/>
+    </div>
   )
 }
 

@@ -2,6 +2,7 @@
 import ProfileRenderNoDataMessage from "@/components/doctorComponents/ProfileNoData";
 import RenderProfileSkeleton from "@/components/doctorComponents/RenderProfileSkelton";
 import { fetchDoctorProfile } from "@/services/doctor/authService";
+import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -18,47 +19,38 @@ interface DoctorProfile {
 
 const DoctorProfileDashboard: React.FC = () => {
   // Sample data, in real app this would come from API/backend
-  const [doctorData, setDoctorData] = useState<DoctorProfile>({
-    fullName: "Dr. Bony Johnson",
-    department: "Cardiology",
-    specialization: "Interventional Cardiology",
-    experience: "15 Years Experience",
-    licenseNumber: "MD12345789",
-    email: "sarah.johnson@hospital.com",
-    mobile: "+1 ( 555 ) 123-4567",
-    avatar: "/doctor-avatar.png",
-  });
+  const [doctorData, setDoctorData] = useState<IDoctorProfileDataType>({});
 
   // State to track active navigation item
   const [activeNav, setActiveNav] = useState("Profile");
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [hasData,setHasData] = useState(true)
+  const [hasData, setHasData] = useState(true);
 
   //fetch doctor profile data
   useEffect(() => {
     const getDoctorProfile = async () => {
       try {
-        setLoading(true)
+        setLoading(true);
         const doctorProfileData = await fetchDoctorProfile();
 
         if (doctorProfileData) {
-            setDoctorData(doctorProfileData)
-            setHasData(true)
-        }else{
-            toast.error("Failed to load doctor profile")
-            setHasData(false)
+          setDoctorData(doctorProfileData);
+          setHasData(true);
+        } else {
+          toast.error("Failed to load doctor profile");
+          setHasData(false);
         }
       } catch (error) {
         toast.error("Error fetching profile");
         console.error("Profile fetch error:", error);
-      }finally{
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     };
 
-    getDoctorProfile()
-  },[]);
+    getDoctorProfile();
+  }, []);
 
   // Navigation items
   const navItems = [
@@ -103,7 +95,7 @@ const DoctorProfileDashboard: React.FC = () => {
         <div className="flex flex-col items-center mb-6">
           <div className="w-24 h-24 rounded-full bg-yellow-400 overflow-hidden mb-4">
             <img
-              src="/doctor-avatar.png"
+              src={doctorData.profileImage || "/images/profiledummy.jpg"}
               alt={doctorData.fullName}
               className="w-full h-full object-cover"
             />
@@ -156,7 +148,7 @@ const DoctorProfileDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          {doctorData.department && (
+          {doctorData.departmentId && (
             <div className="flex items-start">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -174,7 +166,7 @@ const DoctorProfileDashboard: React.FC = () => {
               </svg>
               <div>
                 <p className="text-sm text-gray-500">Department</p>
-                <p className="font-medium">{doctorData.department}</p>
+                <p className="font-medium">doctorData.department</p>
               </div>
             </div>
           )}
@@ -277,8 +269,6 @@ const DoctorProfileDashboard: React.FC = () => {
     );
   };
 
-
-
   const renderSidebarSkeleton = () => {
     return (
       <div className="p-4 border-b border-gray-200 flex flex-col items-center">
@@ -293,27 +283,25 @@ const DoctorProfileDashboard: React.FC = () => {
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       {/* Sidebar for larger screens */}
       <div className="hidden md:flex md:w-64 bg-white border-r border-gray-200 flex-col">
-
-
-        {
-            loading ? (
-                renderSidebarSkeleton()
-            ):
-           ( <div className="p-4 border-b border-gray-200 flex flex-col items-center">
-          <div className="w-16 h-16 rounded-full overflow-hidden mb-2">
-            <img
-              src="/doctor-avatar.png"
-              alt={doctorData.fullName}
-              className="w-full h-full object-cover"
-            />
+        {loading ? (
+          renderSidebarSkeleton()
+        ) : (
+          <div className="p-4 border-b border-gray-200 flex flex-col items-center">
+            <div className="w-16 h-16 rounded-full overflow-hidden mb-2">
+              <img
+                src={doctorData.profileImage || "/images/profiledummy.jpg"}
+                alt={doctorData.fullName}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h2 className="text-base font-semibold text-gray-800">
+              {doctorData.fullName}
+            </h2>
+            {doctorData.departmentId && (
+              <p className="text-xs text-gray-500">{doctorData.specialization}</p>
+            )}
           </div>
-          <h2 className="text-base font-semibold text-gray-800">
-            {doctorData.fullName}
-          </h2>
-          {doctorData.department && (
-            <p className="text-xs text-gray-500">{doctorData.department}</p>
-          )}
-        </div>)}
+        )}
 
         <nav className="flex-1 p-4">
           <ul>
@@ -355,34 +343,33 @@ const DoctorProfileDashboard: React.FC = () => {
 
       {/* Mobile navigation */}
       <div className="md:hidden bg-white p-4 border-b border-gray-200 flex items-center justify-between">
-        {
-            loading ? (
-                <div className="flex items-center">
+        {loading ? (
+          <div className="flex items-center">
             <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse mr-3"></div>
             <div>
               <div className="h-4 w-32 bg-gray-200 animate-pulse rounded mb-1"></div>
               <div className="h-3 w-24 bg-gray-200 animate-pulse rounded"></div>
             </div>
           </div>
-            ):
-           ( <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
-            <img
-              src="/doctor-avatar.png"
-              alt={doctorData.fullName}
-              className="w-full h-full object-cover"
-            />
+        ) : (
+          <div className="flex items-center">
+            <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
+              <img
+                src={doctorData.profileImage || "/images/profiledummy.jpg"}
+                alt={doctorData.fullName}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-800">
+                {doctorData.fullName}
+              </h2>
+              {doctorData.departmentId && (
+                <p className="text-xs text-gray-500">{doctorData.departmentId}</p>
+              )}
+            </div>
           </div>
-          <div>
-            <h2 className="text-sm font-semibold text-gray-800">
-              {doctorData.fullName}
-            </h2>
-            {doctorData.department && (
-              <p className="text-xs text-gray-500">{doctorData.department}</p>
-            )}
-          </div>
-        </div>)
-        }
+        )}
 
         <button className="text-gray-500">
           <svg
@@ -405,17 +392,15 @@ const DoctorProfileDashboard: React.FC = () => {
       {/* Content area with conditional rendering based on loading state and data availability */}
       <div className="flex-1 p-4 md:p-6">
         {activeNav === "Profile" && (
-            <>
-            {
-                loading ? (
-                    <RenderProfileSkeleton/>
-                ): !hasData ?(
-                    <ProfileRenderNoDataMessage/>
-                ):(
-                    renderProfileContent()
-                )
-            }
-            </>
+          <>
+            {loading ? (
+              <RenderProfileSkeleton />
+            ) : !hasData ? (
+              <ProfileRenderNoDataMessage />
+            ) : (
+              renderProfileContent()
+            )}
+          </>
         )}
         {/* Other content sections would be conditionally rendered here */}
       </div>

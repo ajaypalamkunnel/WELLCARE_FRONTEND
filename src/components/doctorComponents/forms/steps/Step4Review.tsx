@@ -66,7 +66,7 @@ const Step4Review: React.FC<Step4ReviewProps> = ({ formData, onEdit }) => {
               <Phone className="w-5 h-5 text-gray-500 mr-3 dark:text-gray-400" />
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Phone Number</p>
-                <p className="font-medium text-gray-900 dark:text-white">{formData.phoneNumber}</p>
+                <p className="font-medium text-gray-900 dark:text-white">{formData.mobile}</p>
               </div>
             </div>
             
@@ -74,7 +74,7 @@ const Step4Review: React.FC<Step4ReviewProps> = ({ formData, onEdit }) => {
               <Briefcase className="w-5 h-5 text-gray-500 mr-3 dark:text-gray-400" />
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Department</p>
-                <p className="font-medium text-gray-900 dark:text-white">{formData.department}</p>
+                <p className="font-medium text-gray-900 dark:text-white">{formData.departmentId}</p>
               </div>
             </div>
             
@@ -83,6 +83,13 @@ const Step4Review: React.FC<Step4ReviewProps> = ({ formData, onEdit }) => {
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Years of Experience</p>
                 <p className="font-medium text-gray-900 dark:text-white">{formData.experience} years</p>
+              </div>
+            </div>
+            <div className="flex items-center">
+            <Briefcase className="w-5 h-5 text-gray-500 mr-3 dark:text-gray-400" />
+              <div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Area of Specilization</p>
+                <p className="font-medium text-gray-900 dark:text-white">{formData.specialization} </p>
               </div>
             </div>
           </div>

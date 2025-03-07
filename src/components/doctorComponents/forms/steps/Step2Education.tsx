@@ -1,6 +1,7 @@
 "use client"
 import React from 'react';
 import { GraduationCap, Award, Calendar, Building, Plus, Trash2 } from 'lucide-react';
+import { ICertificate, IEducation } from '@/types/doctorFullDataType';
 
 interface Step2EducationProps {
   register: any;
@@ -28,7 +29,7 @@ const Step2Education: React.FC<Step2EducationProps> = ({
 
   const removeEducation = (index: number) => {
     const currentEducation = getValues('education') || [];
-    setValue('education', currentEducation.filter((_: any, i: number) => i !== index));
+    setValue('education', currentEducation.filter((_: IEducation, i: number) => i !== index));
   };
 
   const addCertification = () => {
@@ -41,7 +42,7 @@ const Step2Education: React.FC<Step2EducationProps> = ({
 
   const removeCertification = (index: number) => {
     const currentCertifications = getValues('certifications') || [];
-    setValue('certifications', currentCertifications.filter((_: any, i: number) => i !== index));
+    setValue('certifications', currentCertifications.filter((_: ICertificate, i: number) => i !== index));
   };
 
   // Initialize with empty arrays if not already set
@@ -74,7 +75,7 @@ const Step2Education: React.FC<Step2EducationProps> = ({
           </div>
           
           <div className="space-y-4">
-            {educationFields.map((field: any, index: number) => (
+            {educationFields.map((field: IEducation, index: number) => (
               <div key={index} className="p-4 bg-gray-50 rounded-lg dark:bg-gray-800">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Education #{index + 1}</h4>
@@ -171,7 +172,7 @@ const Step2Education: React.FC<Step2EducationProps> = ({
           </div>
           
           <div className="space-y-4">
-            {certificationFields.map((field: any, index: number) => (
+            {certificationFields.map((field: ICertificate, index: number) => (
               <div key={index} className="p-4 bg-gray-50 rounded-lg dark:bg-gray-800">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Certification #{index + 1}</h4>
