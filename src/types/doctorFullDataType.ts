@@ -21,12 +21,14 @@ export interface ICertificate{
 }
 
 interface IDoctorProfileDataType {
+    _id?:string
     fullName?: string;
     email?: string;
     mobile?: string;
     profileImage?: string;
     departmentId?: string;
-    availability?:string[]
+    availability?:string[];
+    gender?:string
     clinicAddress?:ClinicAddress
     specialization?: string;
     isVerified?:boolean
