@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import DoctorCard from "../ui/Card";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import DoctorDetailsModal from "../ui/DoctorDetailsModalComponent";
+import { verifyDoctorApplication } from "@/services/admin/adminServices";
+import toast from "react-hot-toast";
 
 const ApplicationsContent: React.FC = () => {
   const [doctors, setDoctors] = useState<IDoctorProfileDataType[]>([]);
@@ -25,7 +27,7 @@ const ApplicationsContent: React.FC = () => {
 
         const unverifiedDoctors = response.data.data.filter(
           (doctor: IDoctorProfileDataType) =>
-            !doctor.isVerified && doctor.licenseNumber
+            !doctor.isVerified && doctor.licenseNumber && doctor.status !== -2// -2 removing rejected doctors
         );
 
         setDoctors(unverifiedDoctors);
@@ -64,6 +66,38 @@ const ApplicationsContent: React.FC = () => {
       setIsModalOpen(true);
     }
   };
+
+
+  const handleDoctorVerification = async (doctorId:string,isVerified:boolean)=>{
+
+    try {
+
+      const response = await verifyDoctorApplication(doctorId,isVerified)
+
+      if(response.status === 200){
+
+        setDoctors((prevDoctors) =>
+          prevDoctors.filter((doc) => doc._id !== doctorId && doc.status !== -2)
+        );
+        console.log(">>>>>>>>>",doctors);
+        
+        toast.success(`Doctor application ${isVerified ? "Accepted" : "Rejected"} successfully!`);
+      }else{
+        throw new Error("Failed to update doctor verification status.")
+      }
+
+      
+    } catch (error) {
+      console.error("Failed to verify doctor:", error);
+      toast.error("Error verifying doctor. Please try again.");
+      
+    }finally{
+      setIsModalOpen(false)
+    }
+
+
+
+  }
   console.log("----------->", doctors);
 
   return (
@@ -73,7 +107,7 @@ const ApplicationsContent: React.FC = () => {
     >
       <h2 className="text-2xl font-bold text-white mb-6">Doctors</h2>
       <h4 className="mb-4 font-medium text-gray-400">
-        New Doctors Applications 
+        New Doctors Applications
       </h4>
       {loading && <p className="text-white">Loading doctors...</p>}
       {error && <p className="text-red-500">{error}</p>}
@@ -131,6 +165,8 @@ const ApplicationsContent: React.FC = () => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           mode="verify"
+          onAccept={()=>handleDoctorVerification(selectedDoctor._id!,true)}
+          onReject={()=>handleDoctorVerification(selectedDoctor._id!,false)}
         />
       )}
     </div>

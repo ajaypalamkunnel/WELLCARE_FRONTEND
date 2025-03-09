@@ -6,6 +6,8 @@ import IUser from "@/types/user";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import DoctorDetailsModal from "../ui/DoctorDetailsModalComponent";
+import toast from "react-hot-toast";
+import { updateDoctorStatus } from "@/services/admin/adminServices";
 
 const DoctorsList: React.FC = () => {
   const [doctors, setDoctors] = useState<IDoctorProfileDataType[]>([]);
@@ -27,7 +29,13 @@ const DoctorsList: React.FC = () => {
 
         const response = await fetchAllDoctors();
 
-        setDoctors(response.data.data);
+        const verifiedDoctors = response.data.data.filter(
+          (doctor: IDoctorProfileDataType) => {
+            return doctor.isVerified;
+          }
+        );
+
+        setDoctors(verifiedDoctors);
       } catch (error) {
         setError("Failed to fetch doctors");
       } finally {
@@ -43,6 +51,7 @@ const DoctorsList: React.FC = () => {
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
   const currentDoctors = doctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
 
+  //--------------------------------pagination  Handler functions----------------------------
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
@@ -64,11 +73,37 @@ const DoctorsList: React.FC = () => {
     }
   };
 
-  const handleBlock = (_id: string) => {
-    console.log(`Blocking doctor with ID: ${_id}`);
-    // Add your logic to block a doctor
+  //-------------------------------- Handler Block----------------------------
+
+  const handleBlock = async (_id: string, currentStatus: number) => {
+    try {
+      const newStatus = currentStatus === 1 ? -1 : 1;
+
+      const response = await updateDoctorStatus(_id, newStatus);
+
+      if (response.status === 200) {
+        setDoctors((prevDoctors: IDoctorProfileDataType[]) =>
+          prevDoctors.map((doc) =>
+            doc._id === _id ? { ...doc, status: newStatus } : doc
+          )
+        );
+      } else {
+        throw new Error("Failed to update status in API"); // Force error handling
+      }
+
+      toast.success(
+        `Doctor has been ${
+          newStatus === -1 ? "Blocked" : "Unblocked"
+        } successfully!`
+      );
+    } catch (error) {
+      console.error("Failed to update doctor status", error);
+      setError("Failed to update doctor status");
+      toast.error("Error updating doctor status. Please try again.");
+    }
   };
 
+  //-------------------------------- Handler modal close----------------------------
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -89,9 +124,10 @@ const DoctorsList: React.FC = () => {
             specialty={doctor?.specialization || "NA"}
             avatarUrl={doctor?.profileImage}
             phone={doctor?.mobile || "NA"}
+            status={doctor.status}
             email={doctor?.email || "NA"}
             onViewDetails={() => handleViewDetails(doctor?._id!)}
-            onBlock={() => handleBlock(doctor._id!)}
+            onBlock={() => handleBlock(doctor._id!, doctor.status!)}
           />
         ))}
       </div>

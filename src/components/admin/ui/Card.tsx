@@ -1,18 +1,19 @@
 "use client";
 
 import React from "react";
-import { Eye, Ban, Phone, Mail } from "lucide-react";
+import { Eye, Ban, Phone, Mail, Check } from "lucide-react";
 
 // Define props interface for the card component
 interface DoctorCardProps {
   fullName: string;
   specialty?: string;
+  status?:number
   phone?: string;
   email: string;
   mode?: "view" | "verify";
   avatarUrl?: string;
   
-  onViewDetails: () => void;
+  onViewDetails?: () => void;
   onBlock?: () => void;
 }
 
@@ -21,6 +22,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
   specialty,
   phone,
   email,
+  status,
   mode="view",
   avatarUrl,
   onViewDetails,
@@ -55,10 +57,10 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
 
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Phone number */}
-            <div className="flex items-center text-gray-300">
+            {phone&&(<div className="flex items-center text-gray-300">
               <Phone size={16} className="mr-1 text-gray-400" />
               <span className="text-sm">{phone}</span>
-            </div>
+            </div>)}
 
             {/* Email */}
             <div className="flex items-center text-gray-300">
@@ -79,13 +81,26 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
           View Details
         </button>
 
-        {mode==="view" && onBlock &&(<button
-          onClick={onBlock}
-          className="flex items-center justify-center px-4 py-2 bg-red-900 hover:bg-red-800 text-white rounded-md transition-colors"
-        >
-          <Ban size={16} className="mr-2" />
-          Block
-        </button>)}
+        {mode==="view" && onBlock &&( <button
+            onClick={onBlock}
+            className={`flex items-center justify-center px-4 py-2 ${
+              status === 1
+                ? "bg-red-900 hover:bg-red-800" // 🔴 Block Button (Active Doctor)
+                : "bg-green-600 hover:bg-green-500" // 🟢 Unblock Button (Blocked Doctor)
+            } text-white rounded-md transition-colors`}
+          >
+            {status === 1 ? (
+              <>
+                <Ban size={16} className="mr-2" />
+                Block
+              </>
+            ) : (
+              <>
+                <Check size={16} className="mr-2" />
+                Unblock
+              </>
+            )}
+          </button>)}
       </div>
     </div>
   );

@@ -148,7 +148,7 @@ const DoctorProfileDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          {doctorData.departmentId?._id && (
+          {doctorData.departmentId && (
             <div className="flex items-start">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

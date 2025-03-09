@@ -24,3 +24,53 @@ export const featchAllDepartments = async ()=>{
         throw error;
     }
 }
+
+
+
+export const updateDoctorStatus = async (_id: string, newStatus: number)=>{
+    try {
+        console.log("updated servicee");
+        
+        const response = await axiosInstanceAdmin.put("/api/doctor/updatestatus",{doctorId:_id,status:newStatus})
+
+        return response
+        
+    } catch (error) {
+        
+        console.error("Error doctor registration:", error);
+        throw error;
+    }
+}
+
+export const verifyDoctorApplication = async(_id:string,isVerified:boolean)=>{
+
+    try {
+
+
+        const response = await axiosInstanceAdmin.put("/api/doctor/verify-doctor",{doctorId:_id,isVerified})
+
+        return response
+
+    } catch (error) {
+
+        console.error("Error doctor registration:", error);
+        throw error
+    
+    }
+
+}
+
+export const fetchAllPatients = async(currentPage:number,limit:number)=>{
+    try {
+
+        const response = await axiosInstanceAdmin.get(`/api/admin/users?page=${currentPage}&limit=${limit}`)
+
+        return response.data
+        
+    } catch (error) {
+
+        console.error("Error fetching patients:", error);
+        throw error;
+        
+    }
+}

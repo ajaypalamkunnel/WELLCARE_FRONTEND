@@ -29,7 +29,7 @@ const LoginComponent: React.FC = () => {
   const [role, setRole] = useState<"patient" | "doctor">("patient");
   const router = useRouter();
   const { setAuth, accessToken } = useAuthStore();
-  const { setAuthDoctor, accessTokenDoctor } = useAuthStoreDoctor();
+  const { setAuthDoctor, accessTokenDoctor,setVerification } = useAuthStoreDoctor();
   console.log(role);
 
   useEffect(() => {
@@ -72,6 +72,9 @@ const LoginComponent: React.FC = () => {
         );
 
         setAuthDoctor(doctor.email, doctorAccessToken, doctor);
+        console.log("===>",doctor);
+        
+        setVerification(doctor?.isVerified)
         setTimeout(() => {
           router.replace("/doctordashboard/home");
         }, 100);

@@ -8,6 +8,8 @@ interface AuthStateDoctor{
   emailDoctor:string|null;
     accessTokenDoctor:string|null;
     user:IUser|null
+    isVerified?:boolean|null
+    setVerification:(isVerified?:boolean)=>void
     setEmailDoctor:(email:string)=>void
     setAuthDoctor:(email:string,accessToken:string,user:IUser)=>void
     logout:()=>void
@@ -21,6 +23,8 @@ export const useAuthStoreDoctor = create<AuthStateDoctor>()(
             emailDoctor: null,
             accessTokenDoctor: null,
             user: null,
+            isVerified:null,
+            setVerification:(isVerified)=>set({isVerified}),
             setEmailDoctor:(emailDoctor) => set({emailDoctor}),
             setAuthDoctor: (emailDoctor, accessTokenDoctor, user) =>
               set({ emailDoctor, accessTokenDoctor, user }, false, "setAuth"), 

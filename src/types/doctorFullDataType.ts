@@ -36,6 +36,7 @@ interface IDoctorProfileDataType {
     specialization?: string;
     isVerified?:boolean
     experience?: number;
+    status?:number
     licenseNumber?: string;
     education?:IEducation[]
     certifications?:ICertificate[];
