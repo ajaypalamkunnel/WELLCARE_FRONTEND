@@ -37,7 +37,7 @@ export const updateDoctorStatus = async (_id: string, newStatus: number)=>{
         
     } catch (error) {
         
-        console.error("Error doctor registration:", error);
+        console.error("Error doctor status update:", error);
         throw error;
     }
 }
@@ -72,5 +72,30 @@ export const fetchAllPatients = async(currentPage:number,limit:number)=>{
         console.error("Error fetching patients:", error);
         throw error;
         
+    }
+}
+
+
+export const updateUserStatus = async(userId:string,status:number)=>{
+    try {
+        console.log(">>>>",userId,">>>",status);
+        
+        const response = await axiosInstanceAdmin.put("/api/admin/updateStatus",{userId,status})
+        return response
+    } catch (error) {
+        console.error("Error user update:", error);
+        throw error;
+    }
+}
+
+
+export const updateDepartmentStatus = async(deptId:string,status:boolean)=>{
+    try {
+
+        const response = await axiosInstanceAdmin.put("/api/admin//update-department-status",{deptId,status})
+        return response
+    } catch (error) {
+        console.error("Error updating department status:", error);
+        throw error;
     }
 }

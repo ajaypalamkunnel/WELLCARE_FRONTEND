@@ -5,18 +5,19 @@ import { X, Plus, ImagePlus, Axis3D, icons } from "lucide-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { createDepartment, featchAllDepartments } from "@/services/admin/adminServices";
+import { createDepartment, featchAllDepartments, updateDepartmentStatus } from "@/services/admin/adminServices";
 import { capitalizeWords } from "@/utils/Capitalize";
+import { DepartmentTpe } from "@/types/departmentType";
 // Department interface to define the structure of a department
-interface Department {
-  _id: string;
-  name: string;
-  icon: string;
-}
+// interface Department {
+//   _id: string;
+//   name: string;
+//   icon: string;
+// }
 
 const DepartmentsContent: React.FC = () => {
   // State to manage departments and modal visibility
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [departments, setDepartments] = useState<DepartmentTpe[]>([]);
 
   // State to control modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,7 +43,7 @@ const DepartmentsContent: React.FC = () => {
       }
     }
     fetchDepartments()
-  },)
+  },[])
 
   const {
     register,
@@ -102,9 +103,28 @@ const DepartmentsContent: React.FC = () => {
 
  
   // Handler to block/unblock a department
-  const handleBlockDepartment = (id: string) => {
-    // Placeholder for block department logic
-    console.log(`Blocking/Unblocking department with id: ${id}`);
+  const handleBlockDepartment = async (id: string,currentStatus:boolean) => {
+    try {
+
+      const newStatus = !currentStatus;
+
+      const response = await updateDepartmentStatus(id,newStatus)
+
+      if(response.status===200){
+        setDepartments((prevDepartments)=>
+          prevDepartments.map((dept)=>
+          dept._id === id? {...dept,status:newStatus}:dept
+      )
+        )
+        toast.success(`Department ${newStatus ? "Unblocked" : "Blocked"} successfully!`)
+
+      }else{
+        throw new Error("Failed to update department status.");      }
+      
+    } catch (error) {
+      console.error("Failed to update department status", error);
+      toast.error("Error updating department status. Please try again.");
+    }
   };
 
   const onSubmit = async(data:{name:string;icon:File})=>{
@@ -152,10 +172,14 @@ const DepartmentsContent: React.FC = () => {
                 <span className="font-semibold">{capitalizeWords(dept.name)}</span>
               </div>
               <button
-                onClick={() => handleBlockDepartment(dept._id)}
-                className="text-red-500 hover:text-red-600 flex items-center"
+                onClick={() => handleBlockDepartment(dept._id, dept?.status)}
+                className={`flex items-center px-3 py-2 rounded-md text-sm transition-colors duration-200 
+                  ${dept.status
+                    ? "bg-red-600 text-white hover:bg-red-700" // Block Button
+                    : "bg-green-600 text-white hover:bg-green-700"}`} // Unblock Button
               >
-                <X className="mr-1" size={20} /> Block
+                <X className="mr-2" size={16} />
+                {dept.status ? "Block" : "Unblock"}
               </button>
             </div>
           ))}
