@@ -74,7 +74,7 @@ const LoginComponent: React.FC = () => {
         setAuthDoctor(doctor.email, doctorAccessToken, doctor);
         console.log("===>",doctor);
         
-        setVerification(doctor?.isVerified)
+        setVerification(doctor?.isverified)
         setTimeout(() => {
           router.replace("/doctordashboard/home");
         }, 100);

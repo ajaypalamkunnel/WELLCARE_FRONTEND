@@ -2,7 +2,8 @@ import { set } from "react-hook-form";
 import {IUser} from "../../types/userTypes"
 import {create} from 'zustand'
 import { persist, devtools } from "zustand/middleware";
-
+import { redirect } from "next/navigation"; 
+import toast from "react-hot-toast";
 
 interface AuthStateDoctor{
   emailDoctor:string|null;
@@ -13,6 +14,7 @@ interface AuthStateDoctor{
     setEmailDoctor:(email:string)=>void
     setAuthDoctor:(email:string,accessToken:string,user:IUser)=>void
     logout:()=>void
+    adminLogout:()=>void
 }
 
 
@@ -29,6 +31,16 @@ export const useAuthStoreDoctor = create<AuthStateDoctor>()(
             setAuthDoctor: (emailDoctor, accessTokenDoctor, user) =>
               set({ emailDoctor, accessTokenDoctor, user }, false, "setAuth"), 
             logout: () => set({ emailDoctor: null, accessTokenDoctor: null, user: null }, false, "logout"),
+            adminLogout: () => {
+              console.warn("Doctor logged out (blocked or manually)");
+              set({ emailDoctor: null, accessTokenDoctor: null, user: null }, false, "logout");
+              toast.error("Your access is restricted by admin",{
+                duration:3000
+              })
+              setTimeout(()=>{
+                window.location.href = "/login"; // ✅ Redirect after logout
+              },2000)
+          }
           }),
           { name: "doctorAuthStore" } 
         ),
