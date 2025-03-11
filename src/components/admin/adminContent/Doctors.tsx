@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import DoctorCard from "../ui/Card";
 import { fetchAllDoctors } from "@/services/admin/authServices";
 import IUser from "@/types/user";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import DoctorDetailsModal from "../ui/DoctorDetailsModalComponent";
 import toast from "react-hot-toast";
@@ -15,6 +15,7 @@ const DoctorsList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const doctorsPerPage = 6;
+  const [searchTerm, setSearchTerm] = useState(""); 
 
   //modal state
 
@@ -46,10 +47,21 @@ const DoctorsList: React.FC = () => {
     getDoctors();
   }, []);
 
-  const totalPages = Math.ceil(doctors.length / doctorsPerPage);
+
+  const filteredDoctors = doctors.filter((doctor)=>
+  doctor.fullName?.toLowerCase().includes(searchTerm.toLowerCase())
+)
+
+  const totalPages = Math.ceil(filteredDoctors.length / doctorsPerPage);
   const indexOfLastDoctor = currentPage * doctorsPerPage;
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
-  const currentDoctors = doctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
+  const currentDoctors = filteredDoctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
+
+
+  const handleSearch = (event:React.ChangeEvent<HTMLInputElement>)=>{
+    setSearchTerm(event.target.value)
+    setCurrentPage(1);
+  }
 
   //--------------------------------pagination  Handler functions----------------------------
   const handleNextPage = () => {
@@ -114,6 +126,19 @@ const DoctorsList: React.FC = () => {
       style={{ backgroundColor: "#1b1e27", minHeight: "100vh" }}
     >
       <h2 className="text-2xl font-bold text-white mb-6">Doctors</h2>
+
+     {/* 🆕 Search Input */}
+     <div className="relative mb-6">
+        <input
+          type="text"
+          placeholder="Search by doctor name..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="w-full px-4 py-2 pl-10 text-white bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+      </div>
+
       {loading && <p className="text-white">Loading doctors...</p>}
       {error && <p className="text-red-500">{error}</p>}
       <div className="space-y-4">

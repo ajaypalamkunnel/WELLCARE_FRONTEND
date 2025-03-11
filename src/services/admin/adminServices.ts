@@ -31,7 +31,7 @@ export const updateDoctorStatus = async (_id: string, newStatus: number)=>{
     try {
         console.log("updated servicee");
         
-        const response = await axiosInstanceAdmin.put("/api/doctor/updatestatus",{doctorId:_id,status:newStatus})
+        const response = await axiosInstanceAdmin.put("/api/admin/update-doctor-status",{doctorId:_id,status:newStatus})
 
         return response
         

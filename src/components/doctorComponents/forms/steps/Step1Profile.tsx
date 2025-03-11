@@ -75,7 +75,7 @@ const Step1Profile: React.FC<Step1ProfileProps> = ({ register, errors, watch, se
       }
     }
     fetchDepartments()
-  },)
+  },[])
 
   return (
     <div className="animate-fade-in">
