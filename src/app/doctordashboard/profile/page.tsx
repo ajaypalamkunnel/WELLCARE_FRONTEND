@@ -1,4 +1,5 @@
 "use client";
+import EditProfileModal, { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
 import ProfileRenderNoDataMessage from "@/components/doctorComponents/ProfileNoData";
 import RenderProfileSkeleton from "@/components/doctorComponents/RenderProfileSkelton";
 import { fetchDoctorProfile } from "@/services/doctor/authService";
@@ -21,9 +22,25 @@ const DoctorProfileDashboard: React.FC = () => {
   // Sample data, in real app this would come from API/backend
   const [doctorData, setDoctorData] = useState<IDoctorProfileDataType>({});
 
+
+  //modal handling for updata profile
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [doctorProfile, setDoctorProfile] = useState(doctorData);
+
+const handleProfileUpdate = (updatedData:IDoctorProfileDataType) => {
+  console.log("handleProfileUpdate called");
+  
+  setDoctorData((prevDoctorData) => ({
+    ...prevDoctorData,
+    ...updatedData,
+  }));
+};
+
+
   // State to track active navigation item
   const [activeNav, setActiveNav] = useState("Profile");
   const [loading, setLoading] = useState<boolean>(true);
+
 
   const [hasData, setHasData] = useState(true);
 
@@ -247,6 +264,7 @@ const DoctorProfileDashboard: React.FC = () => {
           <button
             className="px-4 py-2 bg-blue-900 text-white rounded-md flex items-center hover:bg-blue-800 transition duration-200"
             style={{ backgroundColor: "#03045e" }}
+            onClick={()=>setIsEditModalOpen(true)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -264,7 +282,15 @@ const DoctorProfileDashboard: React.FC = () => {
             </svg>
             Edit Profile
           </button>
+          
         </div>
+
+        {isEditModalOpen&&<EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={()=>setIsEditModalOpen(false)}
+        doctorData={doctorData}
+        onProfileUpdate={handleProfileUpdate}
+        />}
       </div>
     );
   };

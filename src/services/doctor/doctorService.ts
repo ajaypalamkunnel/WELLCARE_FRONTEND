@@ -1,3 +1,4 @@
+import { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 
@@ -22,6 +23,22 @@ export const doctorRegistration = async (doctorProfileData:IDoctorProfileDataTyp
         return response
     } catch (error) {
 
+        console.error("Error doctor registration:", error);
+        throw error;
+        
+    }
+
+}
+
+
+export const updateDoctorProfile = async (doctorId:string,data:DoctorProfileUpdateForm)=>{
+
+    try {
+
+        const response = await axiosInstanceDoctor.put("/api/doctor/doctor-profile-update",{doctorId,updateData:data})
+        return response
+        
+    } catch (error) {
         console.error("Error doctor registration:", error);
         throw error;
         
