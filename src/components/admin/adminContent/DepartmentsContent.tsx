@@ -5,15 +5,13 @@ import { X, Plus, ImagePlus, Axis3D, icons } from "lucide-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { createDepartment, featchAllDepartments, updateDepartmentStatus } from "@/services/admin/adminServices";
+import {
+  createDepartment,
+  featchAllDepartments,
+  updateDepartmentStatus,
+} from "@/services/admin/adminServices";
 import { capitalizeWords } from "@/utils/Capitalize";
 import { DepartmentTpe } from "@/types/departmentType";
-// Department interface to define the structure of a department
-// interface Department {
-//   _id: string;
-//   name: string;
-//   icon: string;
-// }
 
 const DepartmentsContent: React.FC = () => {
   // State to manage departments and modal visibility
@@ -27,23 +25,20 @@ const DepartmentsContent: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const respose = await featchAllDepartments()
+        const respose = await featchAllDepartments();
 
-        console.log("===>",respose.data);
-        
+        console.log("===>", respose.data);
 
-        setDepartments(respose.data)
-
+        setDepartments(respose.data);
       } catch (error) {
-        toast.error("Failed to fetch departments")
+        toast.error("Failed to fetch departments");
       }
-    }
-    fetchDepartments()
-  },[])
+    };
+    fetchDepartments();
+  }, []);
 
   const {
     register,
@@ -54,7 +49,7 @@ const DepartmentsContent: React.FC = () => {
   } = useForm<{ name: string; icon: File }>({
     defaultValues: {
       name: "",
-      icon: undefined
+      icon: undefined,
     },
   });
 
@@ -68,6 +63,7 @@ const DepartmentsContent: React.FC = () => {
     setIsModalOpen(false);
     // Reset new department state
     setIconPreview(null);
+    reset();
   };
 
   const uploadToCloudinary = async (file: File): Promise<string | null> => {
@@ -101,54 +97,58 @@ const DepartmentsContent: React.FC = () => {
     }
   };
 
- 
   // Handler to block/unblock a department
-  const handleBlockDepartment = async (id: string,currentStatus:boolean) => {
+  const handleBlockDepartment = async (id: string, currentStatus: boolean) => {
     try {
-
       const newStatus = !currentStatus;
 
-      const response = await updateDepartmentStatus(id,newStatus)
+      const response = await updateDepartmentStatus(id, newStatus);
 
-      if(response.status===200){
-        setDepartments((prevDepartments)=>
-          prevDepartments.map((dept)=>
-          dept._id === id? {...dept,status:newStatus}:dept
-      )
-        )
-        toast.success(`Department ${newStatus ? "Unblocked" : "Blocked"} successfully!`)
-
-      }else{
-        throw new Error("Failed to update department status.");      }
-      
+      if (response.status === 200) {
+        setDepartments((prevDepartments) =>
+          prevDepartments.map((dept) =>
+            dept._id === id ? { ...dept, status: newStatus } : dept
+          )
+        );
+        toast.success(
+          `Department ${newStatus ? "Unblocked" : "Blocked"} successfully!`
+        );
+      } else {
+        throw new Error("Failed to update department status.");
+      }
     } catch (error) {
       console.error("Failed to update department status", error);
       toast.error("Error updating department status. Please try again.");
     }
   };
 
-  const onSubmit = async(data:{name:string;icon:File})=>{
-    setLoading(true)
+  const onSubmit = async (data: { name: string; icon: File }) => {
+    setLoading(true);
     try {
-      const uploadedImageUrl = await uploadToCloudinary(data.icon)
+      const uploadedImageUrl = await uploadToCloudinary(data.icon);
       console.log("image url", uploadedImageUrl);
-      
 
-      if(!uploadedImageUrl){
-        toast.error("Image upload failed")
-        setLoading(false)
-        return
+      if (!uploadedImageUrl) {
+        toast.error("Image upload failed");
+        setLoading(false);
+        return;
       }
 
-      await createDepartment(data.name,uploadedImageUrl)
-      toast.success("Department created successfully")
+      const newDepartment = await createDepartment(data.name, uploadedImageUrl);
+      toast.success("Department created successfully");
+
+      setDepartments((prevDepartments) => [
+        ...prevDepartments,
+        newDepartment.data,
+      ]);
+
       handleCloseModal();
     } catch (error) {
-      toast.error("Failed to add department.")
-    }finally{
-      setLoading(false)
+      toast.error("Failed to add department.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-[#0e0e10] p-6 text-white">
@@ -157,33 +157,33 @@ const DepartmentsContent: React.FC = () => {
         <p className="text-gray-400 mb-4">Manage your hospital departments</p>
 
         {/* Departments Listing */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {departments.map((dept) => (
-            <div
-              key={dept._id}
-              className="bg-[#1f2937] rounded-lg p-4 flex items-center justify-between"
-            >
-              <div className="flex items-center space-x-4">
-                <img
-                  src={dept.icon}
-                  alt={`${dept.name} icon`}
-                  className="w-12 h-12 rounded-full"
-                />
-                <span className="font-semibold">{capitalizeWords(dept.name)}</span>
-              </div>
-              <button
-                onClick={() => handleBlockDepartment(dept._id, dept?.status)}
-                className={`flex items-center px-3 py-2 rounded-md text-sm transition-colors duration-200 
-                  ${dept.status
-                    ? "bg-red-600 text-white hover:bg-red-700" // Block Button
-                    : "bg-green-600 text-white hover:bg-green-700"}`} // Unblock Button
-              >
-                <X className="mr-2" size={16} />
-                {dept.status ? "Block" : "Unblock"}
-              </button>
-            </div>
-          ))}
-        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+  {departments.map((dept) => (
+    <div
+      key={dept._id}
+      className="bg-[#1f2937] rounded-lg p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0"
+    >
+      <div className="flex items-center space-x-3 w-full sm:w-auto overflow-hidden">
+        <img
+          src={dept.icon}
+          alt={`${dept.name} icon`}
+          className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex-shrink-0"
+        />
+        <span className="font-semibold text-sm lg:text-base truncate">{capitalizeWords(dept.name)}</span>
+      </div>
+      <button
+        onClick={() => handleBlockDepartment(dept._id, dept?.status)}
+        className={`flex items-center px-2 py-1 md:px-3 md:py-2 rounded-md text-xs md:text-sm whitespace-nowrap transition-colors duration-200 
+          ${dept.status
+            ? "bg-red-600 text-white hover:bg-red-700" // Block Button
+            : "bg-green-600 text-white hover:bg-green-700"}`} // Unblock Button
+      >
+        <X className="mr-1 md:mr-2" size={14} />
+        {dept.status ? "Block" : "Unblock"}
+      </button>
+    </div>
+  ))}
+</div>
 
         {/* Add New Department Button */}
         <div className="mt-6">
@@ -244,20 +244,22 @@ const DepartmentsContent: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    {...register("name",{required:"Required"})}
+                    {...register("name", { required: "Required" })}
                     placeholder="Department Name"
                     className="w-full bg-[#1f2937] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3b83f2]"
                   />
                 </div>
 
                 {/* Add Department Button */}
-                <button
-              
-                  className="w-full bg-[#3b83f2] text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center justify-center"
-                >
-                  {loading ? ("saving..."):<><Plus className="mr-2" />Add Department</>} 
-                  
-                  
+                <button className="w-full bg-[#3b83f2] text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center justify-center">
+                  {loading ? (
+                    "saving..."
+                  ) : (
+                    <>
+                      <Plus className="mr-2" />
+                      Add Department
+                    </>
+                  )}
                 </button>
               </form>
             </div>

@@ -6,7 +6,7 @@ export const createDepartment = async (name:string,icon:string)=>{
 
         const response = await axiosInstanceAdmin.post("/api/admin/adddepartment",{name,icon})
         console.log(response);
-        return response
+        return response.data
         
     } catch (error) {
         console.error("Error creating department", error);
