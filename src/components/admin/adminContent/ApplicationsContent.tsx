@@ -82,17 +82,7 @@ const ApplicationsContent: React.FC = () => {
     getDoctors();
   }, []);
 
-  // const handleNextPage = () => {
-  //   if (currentPage < totalPages) {
-  //     setCurrentPage((prev) => prev + 1);
-  //   }
-  // };
-
-  // const handlePrevPage = () => {
-  //   if (currentPage > 1) {
-  //     setCurrentPage((prev) => prev - 1);
-  //   }
-  // };
+ 
 
   const handleViewDetails = (_id: string) => {
   
@@ -131,10 +121,11 @@ const ApplicationsContent: React.FC = () => {
    // ---------------------- Accept/Reject Handling ------------------------
   const handleDoctorVerification = async (
     doctorId: string,
-    isVerified: boolean
+    isVerified: boolean,
+    rejectionReason?: string
   ) => {
     try {
-      const response = await verifyDoctorApplication(doctorId, isVerified);
+      const response = await verifyDoctorApplication(doctorId, isVerified,rejectionReason);
 
       if (response.status === 200) {
         setDoctors((prevDoctors) =>
@@ -335,7 +326,7 @@ const ApplicationsContent: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
           mode="verify"
           onAccept={() => handleDoctorVerification(selectedDoctor._id!, true)}
-          onReject={() => handleDoctorVerification(selectedDoctor._id!, false)}
+          onReject={(reason) => handleDoctorVerification(selectedDoctor._id!, false,reason)}
         />
       )}
 

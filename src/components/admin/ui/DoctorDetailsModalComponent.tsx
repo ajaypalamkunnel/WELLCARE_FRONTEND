@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { 
   X, 
   Award, 
@@ -28,7 +28,7 @@ interface DoctorDetailsModalProps {
   onClose: () => void;
   mode?: "view" | "verify"; // New prop to determine modal mode
   onAccept?: () => void; // New prop for accept action
-  onReject?: () => void; // New prop for reject action
+  onReject?: (reason:string) => void; // New prop for reject action
 }
 
 const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
@@ -40,6 +40,20 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
   onReject,
 }) => {
   if (!isOpen) return null;
+
+
+  //State to handle rejection reason
+  const [isRejectionModalOpen, setRejectionModalOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+
+  // 🆕 Function to handle rejection submission
+  const handleRejectSubmission = () => {
+    if (onReject && rejectionReason.trim() !== "") {
+      onReject(rejectionReason);
+      setRejectionModalOpen(false);
+      setRejectionReason("");
+    }
+  };
 
   // Handle document opening in new window
   const openDocument = (url: string | File) => {
@@ -253,7 +267,7 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
           {mode === "verify" ? (
             <>
               <button
-                onClick={onReject}
+                onClick={()=>setRejectionModalOpen(true)}
                 className="flex items-center px-6 py-2 bg-red-800 hover:bg-red-700 text-white rounded-md transition-colors mr-4"
               >
                 <XCircle size={18} className="mr-2" />
@@ -277,6 +291,33 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
           )}
         </div>
       </div>
+
+
+      {isRejectionModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg p-6 w-96">
+            <h2 className="text-xl font-bold text-white mb-4">Reason for Rejection</h2>
+            <textarea
+              className="w-full bg-gray-700 text-white p-3 rounded-md focus:outline-none"
+              rows={4}
+              placeholder="Enter rejection reason..."
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+            />
+             {rejectionReason.trim() === "" && (
+        <p className="text-red-500 text-sm mt-1">Rejection reason is required.</p>
+      )}
+            <div className="flex justify-end space-x-3 mt-4">
+              <button onClick={() => setRejectionModalOpen(false)} className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+                Cancel
+              </button>
+              <button onClick={handleRejectSubmission} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

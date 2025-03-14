@@ -42,12 +42,12 @@ export const updateDoctorStatus = async (_id: string, newStatus: number)=>{
     }
 }
 
-export const verifyDoctorApplication = async(_id:string,isVerified:boolean)=>{
+export const verifyDoctorApplication = async(_id:string,isVerified:boolean,reason?:string)=>{
 
     try {
 
 
-        const response = await axiosInstanceAdmin.put("/api/doctor/verify-doctor",{doctorId:_id,isVerified})
+        const response = await axiosInstanceAdmin.put("/api/doctor/verify-doctor",{doctorId:_id,isVerified,reason})
 
         return response
 

@@ -1,5 +1,6 @@
 "use client";
 import EditProfileModal, { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
+import QualificationManagement from "@/components/doctorComponents/forms/qualification/QualificationManagement";
 import ProfileRenderNoDataMessage from "@/components/doctorComponents/ProfileNoData";
 import RenderProfileSkeleton from "@/components/doctorComponents/RenderProfileSkelton";
 import { fetchDoctorProfile } from "@/services/doctor/authService";
@@ -414,10 +415,12 @@ const handleProfileUpdate = (updatedData:IDoctorProfileDataType) => {
           </svg>
         </button>
       </div>
+      
 
       {/* Content area with conditional rendering based on loading state and data availability */}
       <div className="flex-1 p-4 md:p-6">
         {activeNav === "Profile" && (
+          
           <>
             {loading ? (
               <RenderProfileSkeleton />
@@ -427,7 +430,19 @@ const handleProfileUpdate = (updatedData:IDoctorProfileDataType) => {
               renderProfileContent()
             )}
           </>
-        )}
+        )
+
+        }
+
+        {
+          activeNav === "Qualifications"&&(
+            
+            <>
+            {console.log("-------")}
+           <QualificationManagement education={doctorData.education!} certification={doctorData.certifications!}/>
+            </>
+          )
+        }
         {/* Other content sections would be conditionally rendered here */}
       </div>
     </div>

@@ -45,3 +45,4 @@ export const updateDoctorProfile = async (doctorId:string,data:DoctorProfileUpda
     }
 
 }
+

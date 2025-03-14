@@ -1,5 +1,6 @@
 
 export interface IEducation{
+    _id?:string
     degree:string;
     institution:string;
     yearOfCompletion:string
@@ -15,6 +16,7 @@ interface ClinicAddress {
   }
   
 export interface ICertificate{
+    _id?:string
     name:string;
     issuedBy:string;
     yearOfIssue:string
