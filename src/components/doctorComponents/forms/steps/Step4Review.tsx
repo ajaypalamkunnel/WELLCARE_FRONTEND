@@ -74,7 +74,7 @@ const Step4Review: React.FC<Step4ReviewProps> = ({ formData, onEdit }) => {
               <Briefcase className="w-5 h-5 text-gray-500 mr-3 dark:text-gray-400" />
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Department</p>
-                <p className="font-medium text-gray-900 dark:text-white">{formData.departmentId}</p>
+                <p className="font-medium text-gray-900 dark:text-white">{formData.department}</p>
               </div>
             </div>
             

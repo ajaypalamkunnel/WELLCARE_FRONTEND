@@ -1,4 +1,10 @@
 "use client";
+import LogoutConfirmationModal from "@/components/commonUIElements/LogoutConfirmationModal";
+import PasswordChangeComponent from "@/components/commonUIElements/PasswordChangeComponent";
+import EditProfileModal, {
+  DoctorProfileUpdateForm,
+} from "@/components/doctorComponents/forms/modals/EditProfileModal";
+import QualificationManagement from "@/components/doctorComponents/forms/qualification/QualificationManagement";
 import ProfileRenderNoDataMessage from "@/components/doctorComponents/ProfileNoData";
 import RenderProfileSkeleton from "@/components/doctorComponents/RenderProfileSkelton";
 import { fetchDoctorProfile } from "@/services/doctor/authService";
@@ -20,6 +26,20 @@ interface DoctorProfile {
 const DoctorProfileDashboard: React.FC = () => {
   // Sample data, in real app this would come from API/backend
   const [doctorData, setDoctorData] = useState<IDoctorProfileDataType>({});
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  //modal handling for updata profile
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [doctorProfile, setDoctorProfile] = useState(doctorData);
+
+  const handleProfileUpdate = (updatedData: IDoctorProfileDataType) => {
+    console.log("handleProfileUpdate called");
+
+    setDoctorData((prevDoctorData) => ({
+      ...prevDoctorData,
+      ...updatedData,
+    }));
+  };
 
   // State to track active navigation item
   const [activeNav, setActiveNav] = useState("Profile");
@@ -51,6 +71,17 @@ const DoctorProfileDashboard: React.FC = () => {
 
     getDoctorProfile();
   }, []);
+
+  const handleLogoutClick = () => {
+    console.log("Opening Logout Modal"); // Debugging log
+    setIsLogoutModalOpen(false); // Reset the state first
+    setTimeout(() => setIsLogoutModalOpen(true), 0); // Ensure re-evaluation
+  };
+
+  const handleLogoutClose = () => {
+    console.log("Closing Logout Modal"); // Debugging log
+    setIsLogoutModalOpen(false);
+  };
 
   // Navigation items
   const navItems = [
@@ -166,7 +197,7 @@ const DoctorProfileDashboard: React.FC = () => {
               </svg>
               <div>
                 <p className="text-sm text-gray-500">Department</p>
-                <p className="font-medium">doctorData.department</p>
+                <p className="font-medium">{doctorData.departmentId.name}</p>
               </div>
             </div>
           )}
@@ -247,6 +278,7 @@ const DoctorProfileDashboard: React.FC = () => {
           <button
             className="px-4 py-2 bg-blue-900 text-white rounded-md flex items-center hover:bg-blue-800 transition duration-200"
             style={{ backgroundColor: "#03045e" }}
+            onClick={() => setIsEditModalOpen(true)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -265,6 +297,15 @@ const DoctorProfileDashboard: React.FC = () => {
             Edit Profile
           </button>
         </div>
+
+        {isEditModalOpen && (
+          <EditProfileModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            doctorData={doctorData}
+            onProfileUpdate={handleProfileUpdate}
+          />
+        )}
       </div>
     );
   };
@@ -297,8 +338,10 @@ const DoctorProfileDashboard: React.FC = () => {
             <h2 className="text-base font-semibold text-gray-800">
               {doctorData.fullName}
             </h2>
-            {doctorData.departmentId && (
-              <p className="text-xs text-gray-500">{doctorData.specialization}</p>
+            {doctorData.departmentId?._id && (
+              <p className="text-xs text-gray-500">
+                {doctorData.departmentId.name}
+              </p>
             )}
           </div>
         )}
@@ -308,7 +351,13 @@ const DoctorProfileDashboard: React.FC = () => {
             {navItems.map((item) => (
               <li key={item.label} className="mb-2">
                 <button
-                  onClick={() => setActiveNav(item.label)}
+                  onClick={() => {
+                    if (item.label === "Logout") {
+                      handleLogoutClick(); // Call logout modal function
+                    } else {
+                      setActiveNav(item.label);
+                    }
+                  }}
                   className={`flex items-center w-full px-4 py-2 rounded-md text-left ${
                     activeNav === item.label
                       ? "text-white"
@@ -365,7 +414,9 @@ const DoctorProfileDashboard: React.FC = () => {
                 {doctorData.fullName}
               </h2>
               {doctorData.departmentId && (
-                <p className="text-xs text-gray-500">{doctorData.departmentId}</p>
+                <p className="text-xs text-gray-500">
+                  {doctorData.departmentId.name}
+                </p>
               )}
             </div>
           </div>
@@ -400,6 +451,32 @@ const DoctorProfileDashboard: React.FC = () => {
             ) : (
               renderProfileContent()
             )}
+          </>
+        )}
+
+        {activeNav === "Qualifications" && (
+          <>
+            {console.log("-------")}
+            <QualificationManagement
+              education={doctorData.education!}
+              certification={doctorData.certifications!}
+            />
+          </>
+        )}
+
+        {activeNav === "Password Change" && (
+          <>
+            <PasswordChangeComponent id={doctorData._id!} userType="doctor" />
+          </>
+        )}
+
+        {isLogoutModalOpen&& (
+          <>
+            <LogoutConfirmationModal
+              userType="doctor"
+              isOpen={isLogoutModalOpen}
+              onClose={handleLogoutClose}
+            />
           </>
         )}
         {/* Other content sections would be conditionally rendered here */}

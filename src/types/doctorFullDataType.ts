@@ -1,5 +1,6 @@
 
 export interface IEducation{
+    _id?:string
     degree:string;
     institution:string;
     yearOfCompletion:string
@@ -15,22 +16,29 @@ interface ClinicAddress {
   }
   
 export interface ICertificate{
+    _id?:string
     name:string;
     issuedBy:string;
     yearOfIssue:string
 }
-
+export interface IDepartment{
+    _id:string
+    name:string
+}
 interface IDoctorProfileDataType {
+    _id?:string
     fullName?: string;
     email?: string;
     mobile?: string;
-    profileImage?: string;
-    departmentId?: string;
-    availability?:string[]
+    profileImage?: string
+    departmentId?: IDepartment;
+    availability?:string[];
+    gender?:string
     clinicAddress?:ClinicAddress
     specialization?: string;
     isVerified?:boolean
     experience?: number;
+    status?:number
     licenseNumber?: string;
     education?:IEducation[]
     certifications?:ICertificate[];

@@ -13,9 +13,9 @@ export function middleware(req: NextRequest) {
     const doctorToken = cookies.get("doctorAccessToken")?.value || null
     const accessTokenAdmin = cookies.get("accessTokenAdmin")?.value || null
     const isAuthenticated = patientToken || doctorToken || accessTokenAdmin;
-    console.log("patientToken==>",patientToken,);
-    console.log("doctorToken==>",doctorToken,);
-    console.log("accessTokenAdmin==>",accessTokenAdmin,);
+    // console.log("patientToken==>",patientToken,);
+    // console.log("doctorToken==>",doctorToken,);
+    // console.log("accessTokenAdmin==>",accessTokenAdmin,);
     
     const protectedRoutes = ["/user/profile", "/admin/dashboard", "/doctordashboard/home", "/doctordashboard/registration", "/doctordashboard/profile"]
 
@@ -31,5 +31,3 @@ export function middleware(req: NextRequest) {
 export const config = {
     matcher: ["/user/profile", "/admin/dashboard", "/doctordashboard/home", "/doctordashboard/registration", "/doctordashboard/profile"]
 }
-
-//, "/doctor/home"

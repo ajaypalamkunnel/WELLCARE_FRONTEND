@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronDown, LogIn, LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -17,6 +17,12 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
   const router = useRouter();
   const logoutstoreDoctor = useAuthStoreDoctor((state) => state.logout);
   const accessToken = useAuthStoreDoctor((state) => state.accessTokenDoctor);
+  const isVerified = useAuthStoreDoctor((state) => state.isVerified);
+  const user = useAuthStoreDoctor((state) => state.user);
+
+  const profileRef = useRef<HTMLDivElement>(null)
+
+
   const isLoggedIn = !!accessToken;
   const toggleProfileDropdown = () => {
     setIsProfileOpen(!isProfileOpen);
@@ -25,6 +31,9 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  
+
 
   const handleLogout = async () => {
     try {
@@ -39,6 +48,18 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
       console.error("Logout failed:", error);
     }
   };
+
+  useEffect(()=>{
+    const handleClickOutSide = (event:MouseEvent)=>{
+      if(profileRef.current && !profileRef.current.contains(event.target as Node)){
+        setIsProfileOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown",handleClickOutSide)
+    return ()=> document.removeEventListener("mousedown",handleClickOutSide)
+
+  },[]);
 
   return (
     <header className="bg-[#03045e] text-white w-full py-4 px-6">
@@ -166,15 +187,20 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
 
             {/* Dropdown Menu */}
 
+          
+            
+
             {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                <Link
-                  href="/doctordashboard/profile"
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  Profile
-                </Link>
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10" ref={profileRef}>
+                {isVerified ? (
+                  <Link
+                    href="/doctordashboard/profile"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Profile
+                  </Link>
+                ):<></>}
                 <button
                   onClick={handleLogout}
                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

@@ -38,6 +38,7 @@ export default function DoctorHome() {
         <WelcomeDoctor
           doctorName={fullName}
           isVerified={doctorData?.isVerified!}
+          status={doctorData?.status!}
         />
       )}
     </div>

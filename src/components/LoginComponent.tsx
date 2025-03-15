@@ -29,12 +29,10 @@ const LoginComponent: React.FC = () => {
   const [role, setRole] = useState<"patient" | "doctor">("patient");
   const router = useRouter();
   const { setAuth, accessToken } = useAuthStore();
-  const { setAuthDoctor, accessTokenDoctor } = useAuthStoreDoctor();
-  console.log(role);
+  const { setAuthDoctor, accessTokenDoctor, setVerification } =
+    useAuthStoreDoctor();
 
   useEffect(() => {
-    console.log("------------->",accessToken,accessTokenDoctor);
-    
     if (accessToken || accessTokenDoctor) {
       router.replace("/");
     }
@@ -48,21 +46,17 @@ const LoginComponent: React.FC = () => {
 
   const onSubmit = async (data: loginFormData) => {
     setIsLoading(true);
-    console.log(data);
 
     try {
       if (role === "patient") {
         const { accessToken, user }: { accessToken: string; user: IUser } =
           await login(data.email, data.password);
-        console.log(accessToken);
 
         setAuth(user.email, accessToken, user);
 
         toast.success("Login successfull!");
         router.replace("/");
       } else {
-        console.log("hi I am doctor");
-        
         const {
           doctorAccessToken,
           doctor,
@@ -72,10 +66,12 @@ const LoginComponent: React.FC = () => {
         );
 
         setAuthDoctor(doctor.email, doctorAccessToken, doctor);
+
+        setVerification(doctor?.isverified);
         setTimeout(() => {
           router.replace("/doctordashboard/home");
         }, 100);
-        
+
         toast.success("Login successful!");
       }
     } catch (error: unknown) {
@@ -86,14 +82,10 @@ const LoginComponent: React.FC = () => {
     }
   };
 
-
   const handleGoogleAuth = async () => {
     setIsLoading(true);
-    const response =googleAuth(role);
-    console.log("=======>>>",response);
-    
+    const response = googleAuth(role);
   };
-  
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-[#27c958]/10 flex flex-col items-center px-4 py-6">
@@ -194,8 +186,8 @@ const LoginComponent: React.FC = () => {
             <div className="text-right">
               <Link
                 href={{
-                  pathname:"/forgot-password",
-                  query:{ref:role}
+                  pathname: "/forgot-password",
+                  query: { ref: role },
                 }}
                 className="text-[#27c958] hover:text-[#246738] text-sm"
               >
@@ -220,14 +212,20 @@ const LoginComponent: React.FC = () => {
           </form>
 
           {/* Google Sign In */}
-          {role === 'patient'
-            ?(<button className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md p-2 hover:bg-gray-50 transition"
-          onClick={handleGoogleAuth}
-          disabled={isLoading}
-          >
-            <FcGoogle className="h-5 w-5" />
-            <span className="text-gray-700">{isLoading?"Processing...":"Sign in with Google"}</span>
-          </button>):<></>}
+          {role === "patient" ? (
+            <button
+              className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md p-2 hover:bg-gray-50 transition"
+              onClick={handleGoogleAuth}
+              disabled={isLoading}
+            >
+              <FcGoogle className="h-5 w-5" />
+              <span className="text-gray-700">
+                {isLoading ? "Processing..." : "Sign in with Google"}
+              </span>
+            </button>
+          ) : (
+            <></>
+          )}
 
           {/* Create Account Link */}
           <p className="mt-8 text-gray-700">
