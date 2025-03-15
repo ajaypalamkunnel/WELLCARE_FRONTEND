@@ -20,7 +20,7 @@ export const doctorRegistration = async (doctorProfileData:IDoctorProfileDataTyp
         console.log("doctorRegistration service ===>",doctorProfileData);
         
         const response = await axiosInstanceDoctor.post("/api/doctor/doctorregistration",doctorProfileData)
-        return response
+        return response.data
     } catch (error) {
 
         console.error("Error doctor registration:", error);
@@ -46,3 +46,21 @@ export const updateDoctorProfile = async (doctorId:string,data:DoctorProfileUpda
 
 }
 
+
+
+export const changePassword = async (doctorId:string,oldPassword:string,newPassword:string)=>{
+
+    try {
+
+        const response = await axiosInstanceDoctor.put("/api/doctor/change-password",{doctorId,oldPassword,newPassword})
+
+        return response
+        
+    } catch (error) {
+        console.error("Error doctor change-password:", error);
+        throw error;
+    }
+
+
+
+}

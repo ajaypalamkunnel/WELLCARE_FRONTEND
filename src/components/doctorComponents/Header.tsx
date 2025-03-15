@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronDown, LogIn, LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -19,6 +19,10 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
   const accessToken = useAuthStoreDoctor((state) => state.accessTokenDoctor);
   const isVerified = useAuthStoreDoctor((state) => state.isVerified);
   const user = useAuthStoreDoctor((state) => state.user);
+
+  const profileRef = useRef<HTMLDivElement>(null)
+
+
   const isLoggedIn = !!accessToken;
   const toggleProfileDropdown = () => {
     setIsProfileOpen(!isProfileOpen);
@@ -29,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
   };
 
   
-// console.log(">>>>>>>>>>>",user?.isverified);
+
 
   const handleLogout = async () => {
     try {
@@ -44,6 +48,18 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
       console.error("Logout failed:", error);
     }
   };
+
+  useEffect(()=>{
+    const handleClickOutSide = (event:MouseEvent)=>{
+      if(profileRef.current && !profileRef.current.contains(event.target as Node)){
+        setIsProfileOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown",handleClickOutSide)
+    return ()=> document.removeEventListener("mousedown",handleClickOutSide)
+
+  },[]);
 
   return (
     <header className="bg-[#03045e] text-white w-full py-4 px-6">
@@ -175,7 +191,7 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
             
 
             {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10" ref={profileRef}>
                 {isVerified ? (
                   <Link
                     href="/doctordashboard/profile"
