@@ -1,3 +1,4 @@
+import { PlanFormData } from "@/components/admin/ui/NewPlanModalForm";
 import axiosInstanceAdmin from "@/utils/axiosInstanceAdmin"
 
 
@@ -96,6 +97,45 @@ export const updateDepartmentStatus = async(deptId:string,status:boolean)=>{
         return response
     } catch (error) {
         console.error("Error updating department status:", error);
+        throw error;
+    }
+}
+
+
+export const createNewPlan = async(data:PlanFormData)=>{
+    try {
+
+        const response = await axiosInstanceAdmin.post("/api/admin//create-subscription-plan",{subscriptionData:data})
+        return response
+        
+    } catch (error) {
+
+        console.error("Error while creating plan");
+        throw error
+        
+        
+    }
+}
+
+export const getAllSubscriptionPlans = async()=>{
+    try {
+
+        const response = await axiosInstanceAdmin.get("/api/admin/get-subscription-plans")
+        return response
+    } catch (error) {
+        console.error("Error fetching subscription plans:", error);
+        throw error;
+        
+    }
+}
+
+
+export const updateSubscriptionPlanStatus = async(planId:string)=>{
+    try {
+        const response = await axiosInstanceAdmin.put("/api/admin/toggle-subscription-status",{planId})
+        return response
+    } catch (error) {
+        console.error("Error updating subscription plan status:", error);
         throw error;
     }
 }
