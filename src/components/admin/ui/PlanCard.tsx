@@ -7,10 +7,11 @@ import toast from "react-hot-toast";
 
 interface PlanProps {
   plan: Plan;
+  onEdit: (plan: Plan) => void;
   onUpdate:(udatePlane:Plan)=>void
 }
 
-const PlanCard: React.FC<PlanProps> = ({ plan,onUpdate }) => {
+const PlanCard: React.FC<PlanProps> = ({ plan,onEdit,onUpdate }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,7 +44,7 @@ const PlanCard: React.FC<PlanProps> = ({ plan,onUpdate }) => {
       <div className="p-5 border-b border-gray-700 flex justify-between items-center">
         <h2 className="text-xl font-semibold text-white">{plan.planName}</h2>
         <div className="flex gap-2">
-          <button className="p-1 rounded hover:bg-gray-700 transition-all">
+        <button className="p-1 rounded hover:bg-gray-700 transition-all" onClick={() => onEdit(plan)}>
             <Edit size={18} className="text-gray-400" />
           </button>
           <button

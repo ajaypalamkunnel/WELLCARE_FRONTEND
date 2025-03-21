@@ -7,6 +7,7 @@ import EditProfileModal, {
 import QualificationManagement from "@/components/doctorComponents/forms/qualification/QualificationManagement";
 import ProfileRenderNoDataMessage from "@/components/doctorComponents/ProfileNoData";
 import RenderProfileSkeleton from "@/components/doctorComponents/RenderProfileSkelton";
+import Subscription from "@/components/doctorComponents/Subscription";
 import { fetchDoctorProfile } from "@/services/doctor/authService";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import React, { useEffect, useState } from "react";
@@ -104,6 +105,10 @@ const DoctorProfileDashboard: React.FC = () => {
     {
       icon: "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
       label: "Qualifications",
+    },
+    {
+      icon: "M13 10V3L4 14h7v7l9-11h-7z",
+      label: "My wallet",
     },
     {
       icon: "M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z",
@@ -469,6 +474,17 @@ const DoctorProfileDashboard: React.FC = () => {
             <PasswordChangeComponent id={doctorData._id!} userType="doctor" />
           </>
         )}
+
+
+        {activeNav === "Subscriptions" &&(
+          <>
+          <Subscription/>
+          </>
+        )}
+
+
+
+
 
         {isLogoutModalOpen&& (
           <>

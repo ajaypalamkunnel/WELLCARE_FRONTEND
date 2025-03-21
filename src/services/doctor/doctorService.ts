@@ -20,6 +20,11 @@ export const doctorRegistration = async (doctorProfileData:IDoctorProfileDataTyp
         console.log("doctorRegistration service ===>",doctorProfileData);
         
         const response = await axiosInstanceDoctor.post("/api/doctor/doctorregistration",doctorProfileData)
+        setTimeout(()=>{
+            console.log("API from service====>",response);
+
+        },1000)
+        
         return response.data
     } catch (error) {
 
@@ -64,3 +69,39 @@ export const changePassword = async (doctorId:string,oldPassword:string,newPassw
 
 
 }
+
+export const getAllSubscriptionPlans = async()=>{
+    try {
+
+        const response = await axiosInstanceDoctor.get("/api/doctor/subscription-plans")
+        return response.data
+    } catch (error) {
+        console.error("Error fetching subscription plans:", error);
+        throw error;
+        
+    }
+}
+
+export const createSubscriptionOrder = async (doctorId:string,planId:string)=>{
+
+    try {
+
+        const response = await axiosInstanceDoctor.post("/api/doctor/create-order",{doctorId,planId})
+        return response.data
+    } catch (error) {
+        console.error("Error creating order:", error);
+        throw error;
+    }
+
+}
+
+export const verifyPayment = async (paymentData: any) => {
+    try {
+      const response = await axiosInstanceDoctor.post("/api/doctor/verify-payment", paymentData);
+      return response.data;
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      throw error;
+    }
+  };
+  

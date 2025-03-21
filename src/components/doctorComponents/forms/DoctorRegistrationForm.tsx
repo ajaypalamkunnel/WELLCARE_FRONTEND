@@ -134,10 +134,10 @@ const DoctorRegistrationForm = () => {
     };
     console.log("Final Payload Sent to API:", doctorProfileData);
     try {
-      const response = await doctorRegistration({ ...doctorProfileData });
-      console.log("Form response : ",response);
+      const responseData = await doctorRegistration({ ...doctorProfileData });
+      console.log("Form response : ",responseData);
       
-      if(response.data.success){
+      if(responseData && responseData.success){
 
         toast.success("Registration Successfull it will verified by Administarative Team");
 

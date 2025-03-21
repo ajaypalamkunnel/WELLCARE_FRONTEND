@@ -17,7 +17,7 @@ export function middleware(req: NextRequest) {
     // console.log("doctorToken==>",doctorToken,);
     // console.log("accessTokenAdmin==>",accessTokenAdmin,);
     
-    const protectedRoutes = ["/user/profile", "/admin/dashboard", "/doctordashboard/home", "/doctordashboard/registration", "/doctordashboard/profile"]
+    const protectedRoutes = ["/user/profile", "/admin/dashboard", "/doctordashboard/home", "/doctordashboard/registration", "/doctordashboard/profile","/doctordashboard/subscriptionsuccess"]
 
 
     if (protectedRoutes.some((route) => nextUrl.pathname.startsWith(route)) && !isAuthenticated) {
@@ -29,5 +29,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/user/profile", "/admin/dashboard", "/doctordashboard/home", "/doctordashboard/registration", "/doctordashboard/profile"]
+    matcher: ["/user/profile", "/admin/dashboard", "/doctordashboard/home", "/doctordashboard/registration", "/doctordashboard/profile","/doctordashboard/subscriptionsuccess"]
 }

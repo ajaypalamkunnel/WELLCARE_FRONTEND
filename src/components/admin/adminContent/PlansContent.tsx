@@ -37,10 +37,20 @@ const PlansContent: React.FC = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
 
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = (plan?: Plan) => {
+    console.log("hi opene modal ");
+    
+    setSelectedPlan(plan || null); //  If editing, set the plan; else, set null
+    setIsModalOpen(true);
+  };
+  
+  const closeModal = () => {
+    setSelectedPlan(null); // Clear selected plan on close
+    setIsModalOpen(false);
+  };
   // Dummy data - will be replaced with actual data from API
 
   const fetchPlans = async ()=>{
@@ -61,7 +71,7 @@ const PlansContent: React.FC = () => {
       
     } catch (error) {
       console.error("Error fetching plans:", error);
-      toast.error("Failed to load subscription plans. Please try again."); // ✅ Show toast error message
+      toast.error("Failed to load subscription plans. Please try again."); //  Show toast error message
     
     }finally{
       setIsLoading(false);
@@ -95,7 +105,7 @@ const PlansContent: React.FC = () => {
           <p className="text-gray-400">Manage your subscription plans</p>
         </div>
         <button 
-        onClick={openModal}
+         onClick={() => openModal()}
           className="px-4 py-2 rounded-full bg-[#232429] hover:bg-gray-700 text-[#3ee6e9] border border-[#3ee6e9] flex items-center gap-2 transition-all"
         >
           <Plus size={18} />
@@ -110,16 +120,13 @@ const PlansContent: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => (
-            <PlanCard key={plan._id} plan={plan} onUpdate={handlePlanUpdate} />
+            <PlanCard key={plan._id} plan={plan} onEdit={openModal} onUpdate={handlePlanUpdate} />
           ))}
         </div>
       )}
 
-      <NewPlanModal
-      isOpen={isModalOpen} 
-      onClose={closeModal} 
-      
-    />
+<NewPlanModal isOpen={isModalOpen} onClose={closeModal} existingPlan={selectedPlan} onUpdate={handlePlanUpdate} onAdd={handleNewPlan} />
+    
     </div>
   );
 };

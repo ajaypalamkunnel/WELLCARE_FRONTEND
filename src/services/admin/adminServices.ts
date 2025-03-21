@@ -139,3 +139,15 @@ export const updateSubscriptionPlanStatus = async(planId:string)=>{
         throw error;
     }
 }
+
+
+export const updateSubscriptionPlan = async (planId: string, data: PlanFormData) => {
+    try {
+      const response = await axiosInstanceAdmin.put(`/api/admin/update-plan`,{planId,updatedData:data});
+      return response;
+    } catch (error) {
+      console.error("Error updating subscription plan:", error);
+      throw error;
+    }
+  };
+  
