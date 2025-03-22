@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Menu, Search, Video, Info, User, Home, X, LogIn } from "lucide-react";
+import { Menu, Search, Video, Info, User, Home, X, LogIn, Section, Hospital } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/user/authStore";
 import { logout } from "@/services/user/auth/authService";
@@ -48,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
           {/* Logo and Name */}
           <div className="flex items-center">
             <div className="h-10 w-10 mr-2 hover:">
-              <a href="/home">
+              <a href="/">
                 <img src="/images/cropedLogo.png" alt="willcarelogo" />
               </a>
             </div>
@@ -66,13 +66,17 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6 text-gray-600">
-            <a href="#" className="flex items-center hover:text-gray-900">
+            <a href="/" className="flex items-center hover:text-gray-900">
               <Home size={18} className="mr-1" />
               <span>Home</span>
             </a>
-            <a href="#" className="flex items-center hover:text-gray-900">
+            <a href="/user/doctors" className="flex items-center hover:text-gray-900">
               <Search size={18} className="mr-1" />
               <span>Find Doctor</span>
+            </a>
+            <a href="/user/departments" className="flex items-center hover:text-gray-900">
+              <Hospital size={18} className="mr-1" />
+              <span>Departments</span>
             </a>
             <a href="#" className="flex items-center hover:text-gray-900">
               <Video size={18} className="mr-1" />

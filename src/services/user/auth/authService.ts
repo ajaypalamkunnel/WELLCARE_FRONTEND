@@ -6,6 +6,8 @@ import { getErrorMessage } from "@/utils/handleError";
 import { NewPasswordFormValues } from "@/components/NewPassword";
 
 import IUserFullData from "@/types/user";
+import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
+import IDoctor from "@/types/IDoctor";
 
 export const registerBasicDetails = async (data:Partial<IUser>)=>{
 
@@ -130,3 +132,48 @@ export const fetchPatientProfile = async ():Promise<IUserFullData|null>=>{
         return null;
     }
 }
+
+export const getAllActiveDepartments = async ()=>{
+
+    try {
+
+        const response = await axiosInstanceDoctor.get("/get-all-active-departments")
+        return response.data
+        
+    } catch (error) {
+        console.error("Error fetching subscription plans:", error);
+        throw error;
+    }
+
+}
+
+
+export const getAllSubscribedDoctors = async (filters?: {
+    search?:string
+    departmentId?: string;
+    gender?: string;
+    experience?: string;
+    availability?: string;
+    searchQuery?: string;
+    sortBy?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ doctors: IDoctor[]; total: number; totalPages: number }> => {
+    try {
+       
+
+        const response = await axiosInstanceDoctor.get("/doctors", { params: filters });
+
+       
+
+        // Return the correctly structured response
+        return {
+            doctors: response.data.doctors,
+            total: response.data.total,
+            totalPages: response.data.totalPages
+        };
+    } catch (error) {
+      console.error("Error fetching subscribed doctors:", error);
+      throw error;
+    }
+  };

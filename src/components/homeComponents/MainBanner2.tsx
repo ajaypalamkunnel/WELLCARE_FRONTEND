@@ -1,57 +1,57 @@
 "use client"
-import React, { useState, useRef, MouseEvent } from 'react';
+import { getAllActiveDepartments } from '@/services/user/auth/authService';
+import { capitalizeFirstLetter } from '@/utils/Naming';
+import React, { useState, useRef, MouseEvent, useEffect } from 'react';
 
 // Define the Department type
-interface Department {
-  id: number;
-  name: string;
-  iconUrl: string;
+
+export interface IDepartment extends Document{
+  _id?:string
+  name:string;
+  icon:string;
+  status:boolean;
+  createdAt?:Date;
+  updatedAt?:Date;
 }
 
-// Sample department data
-const departmentData: Department[] = [
-  {
-    id: 1,
-    name: "Cardiology",
-    iconUrl: "/api/placeholder/200/200" // Replace with actual URL later
-  },
-  {
-    id: 2,
-    name: "Pediatrics",
-    iconUrl: "/api/placeholder/200/200"
-  },
-  {
-    id: 3,
-    name: "Gynecology",
-    iconUrl: "/api/placeholder/200/200"
-  },
-  {
-    id: 4,
-    name: "Dermatology",
-    iconUrl: "/api/placeholder/200/200"
-  },
-  {
-    id: 5,
-    name: "Neurology",
-    iconUrl: "/api/placeholder/200/200"
-  },
-  {
-    id: 6,
-    name: "Orthopedics",
-    iconUrl: "/api/placeholder/200/200"
-  },
-  {
-    id: 7,
-    name: "Oncology",
-    iconUrl: "/api/placeholder/200/200"
-  }
-];
+
 
 const DepartmentSection: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [departments, setDepartments] = useState<IDepartment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); 
+  const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+
+  useEffect(()=>{
+
+    const fetchDepartments = async ()=>{
+
+      try {
+
+        setLoading(true)
+        setError(null)
+
+        const response = await getAllActiveDepartments();
+        console.log("===>",response.data);
+        
+        setDepartments(response.data)
+        
+      } catch (error) {
+
+        setError("Failed to load departments.Please try again")
+        
+      }finally{
+        setLoading(false)
+      }
+
+    }
+
+    fetchDepartments()
+
+  },[])
 
   // Handle mouse down for drag scrolling
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
@@ -82,7 +82,7 @@ const DepartmentSection: React.FC = () => {
   };
 
   // Handle department card click
-  const handleDepartmentClick = (departmentId: number) => {
+  const handleDepartmentClick = (departmentId: string) => {
     console.log(`Navigating to department ${departmentId}`);
     // Navigation logic will be added later
   };
@@ -108,6 +108,17 @@ const DepartmentSection: React.FC = () => {
           Explore Our Specialties
         </h2>
 
+        {loading && (
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-900"></div>
+          </div>
+        )}
+
+        
+        {error && (
+          <div className="text-center text-red-600 font-medium">{error}</div>
+        )}
+        {!loading && !error && (
         <div className="relative">
           {/* Navigation Buttons */}
           <button
@@ -144,30 +155,31 @@ const DepartmentSection: React.FC = () => {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
           >
-            {departmentData.map((department) => (
+            {departments.map((department) => (
               <div
-                key={department.id}
+                key={department._id}
                 className={`flex-shrink-0 w-64 bg-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 ${
                   department.name === 'Pediatrics' ? 'bg-green-100' : ''
                 }`}
-                onClick={() => handleDepartmentClick(department.id)}
+                onClick={() => handleDepartmentClick(department._id!)}
               >
                 <div className="p-6 flex flex-col items-center">
                   <div className="w-40 h-40 rounded-full bg-gray-200 overflow-hidden mb-4">
                     <img
-                      src="/images/dpt.png"
+                      src={department.icon}
                       alt={`${department.name} icon`}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <h3 className="text-xl font-semibold text-center text-indigo-900 mt-2">
-                    {department.name}
+                    {capitalizeFirstLetter(department.name)}
                   </h3>
                 </div>
               </div>
             ))}
           </div>
         </div>
+        )}
       </div>
     </div>
   );
