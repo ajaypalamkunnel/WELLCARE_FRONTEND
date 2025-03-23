@@ -1,9 +1,11 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Calendar, Clock, FileText, CheckCircle, CreditCard, LogOut, User } from 'lucide-react';
+import { Calendar, Clock, FileText, CheckCircle, CreditCard, LogOut, User,KeyIcon } from 'lucide-react';
 import IUser from '@/types/user';
 import { fetchPatientProfile } from '@/services/user/auth/authService';
 import toast from 'react-hot-toast';
+import ForgotPasswordComponent from '@/components/Forgot-password';
+import PasswordChangeComponent from '@/components/commonUIElements/PasswordChangeComponent';
 
 // Define the main layout component
 const PatientPortal: React.FC = () => {
@@ -44,6 +46,7 @@ getUserProfile()
     { id: 'upcoming', label: 'Upcoming Appointments', icon: <Clock size={20} /> },
     { id: 'completed', label: 'Completed Appointments', icon: <CheckCircle size={20} /> },
     { id: 'payments', label: 'Payments', icon: <CreditCard size={20} /> },
+    { id: 'Change-Password', label: 'Change Password', icon: <KeyIcon size={20} /> },
     { id: 'logout', label: 'Logout', icon: <LogOut size={20} /> },
   ];
   
@@ -99,6 +102,7 @@ getUserProfile()
         {activeSection === 'records' && <SectionContent title="Medical Records" />}
         {activeSection === 'upcoming' && <SectionContent title="Upcoming Appointments" />}
         {activeSection === 'completed' && <SectionContent title="Completed Appointments" />}
+        {activeSection === 'Change-Password' && <PasswordChangeComponent id={user?._id!} userType='patient'/>}
         {activeSection === 'payments' && <SectionContent title="Payments" />}
 
         

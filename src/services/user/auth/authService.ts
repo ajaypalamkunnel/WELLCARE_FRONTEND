@@ -177,3 +177,36 @@ export const getAllSubscribedDoctors = async (filters?: {
       throw error;
     }
   };
+
+
+  export const getDoctorById = async (doctorId:string)=>{
+    try {
+
+        console.log("hiii--",doctorId);
+        
+
+        const response = await axiosInstance.get(`/doctor-profile/${doctorId}`)
+
+        console.log("------->",response);
+        
+        return response.data
+    } catch (error) {
+        console.error("Error fetching doctor profile:", error);
+        throw error;
+    }
+  }
+
+
+export const changeUserPassword = async (userId:string,oldPassword:string,newPassword:string)=>{
+    try {
+
+        const response = await axiosInstance.put("/change-password",{userId,oldPassword,newPassword})
+        return response
+    } catch (error) {
+
+        console.error("User password change Error",error);
+        throw error
+        
+        
+    }
+}
