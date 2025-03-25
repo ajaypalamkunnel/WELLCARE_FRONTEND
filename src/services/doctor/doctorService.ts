@@ -1,4 +1,5 @@
 import { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
+import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 
@@ -104,4 +105,56 @@ export const verifyPayment = async (paymentData: any) => {
       throw error;
     }
   };
+
+
+export const createService = async (data:ServiceData) =>{
+    try {
+
+        const response = await axiosInstanceDoctor.post("/api/doctor/create-service",data)
+        return response.data
+        
+    } catch (error) {
+        console.error("Error creating service:", error);
+      throw error;
+    }
+}
   
+
+export const getServices = async (doctorId:string) =>{
+    try {
+
+        console.log(".......",doctorId);
+        
+        const response = await axiosInstanceDoctor.get("/api/doctor/get-services", {
+            params: { doctorId } 
+        });
+       
+        console.log(response);
+        
+        return response.data
+
+        
+    } catch (error) {
+        console.error("Error while featching services")
+        throw error
+    }
+}
+
+
+
+export const updateService = async(updatedData:ServiceData) =>{
+
+    try {
+
+        console.log("--->",updatedData);
+        
+
+        const response = await axiosInstanceDoctor.put("/api/doctor/update-service",updatedData)
+        return response.data
+        
+    } catch (error) {
+        console.error("Error while Updating service");
+        throw error
+        
+    }
+}

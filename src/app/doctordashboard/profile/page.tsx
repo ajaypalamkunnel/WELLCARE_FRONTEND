@@ -12,7 +12,8 @@ import { fetchDoctorProfile } from "@/services/doctor/authService";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
+import { PocketKnife } from "lucide-react";
+import DoctorServiceListing from "@/components/doctorComponents/ServiceComponent";
 interface DoctorProfile {
   fullName: string;
   department?: string;
@@ -96,7 +97,11 @@ const DoctorProfileDashboard: React.FC = () => {
     },
     {
       icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
-      label: "Service & Slots",
+      label: "Service Management",
+    },
+    {
+      icon: "M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z",
+      label: "Slot Management",
     },
     {
       icon: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9",
@@ -481,6 +486,14 @@ const DoctorProfileDashboard: React.FC = () => {
           <Subscription/>
           </>
         )}
+
+        {
+          activeNav === "Service Management" &&(
+            <>
+            <DoctorServiceListing/>
+            </>
+          )
+        }
 
 
 

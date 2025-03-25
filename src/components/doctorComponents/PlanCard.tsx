@@ -39,6 +39,9 @@ const DoctorPlanCard: React.FC<PlanProps> = ({ plan, onSubscribe }) => {
     }
   };
 
+  console.log(">>>>",plan.features);
+  
+
   const isActive = plan.status === "active";
   const durationUnit = plan.durationUnit || 'days';
 
@@ -75,16 +78,18 @@ const DoctorPlanCard: React.FC<PlanProps> = ({ plan, onSubscribe }) => {
         </div>
         
         {/* Features */}
+        
+        
         <div className="space-y-3 mb-6">
           <h3 className="text-sm font-semibold text-blue-900 mb-2">Features Included:</h3>
-          {plan.features.filter(feature => feature.included).map((feature, index) => (
+          {plan.features.filter(feature => feature).map((feature, index) => (
             <div key={index} className="flex items-start">
               <div className="bg-blue-100 p-1 rounded-full mr-3 flex-shrink-0">
                 <Check size={16} className="text-blue-600" />
               </div>
-              <span className="text-sm text-gray-700">{feature.name}</span>
+              <span className="text-sm text-gray-700">{String(feature)}</span>
             </div>
-          ))}
+          ))} 
         </div>
       </div>
       
