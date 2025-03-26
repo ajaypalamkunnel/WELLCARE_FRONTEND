@@ -7,8 +7,9 @@ interface AuthState {
   email: string | null;
   accessToken: string | null;
   user: IUser | null
+  isVerified?:boolean|null
   setEmail: (email: string) => void
-  setAuth: (email: string, accessToken: string, user: IUser) => void
+  setAuth: (email: string, accessToken: string,isVerified:boolean, user: IUser) => void
   logout: () => void
   logoutByAdmin: () => void
 }
@@ -21,17 +22,18 @@ export const useAuthStore = create<AuthState>()(
         email: null,
         accessToken: null,
         user: null,
+        isverified:null,
         setEmail: (email) => set({ email }),
-        setAuth: (email, accessToken, user) =>
-          set({ email, accessToken, user }, false, "setAuth"),
-        logout: () => set({ email: null, accessToken: null, user: null }, false, "logout"),
+        setAuth: (email, accessToken, isVerified, user) =>
+          set({ email, accessToken,isVerified, user }, false, "setAuth"),
+        logout: () => set({ email: null, accessToken: null,isVerified:null, user: null }, false, "logout"),
         logoutByAdmin: () => {
-          set({ email: null, accessToken: null, user: null }, false, "logout")
+          set({ email: null, accessToken: null,isVerified:null, user: null }, false, "logout")
           toast.error("Your access is restricted by admin", {
             duration: 3000
           })
           setTimeout(() => {
-            window.location.href = "/login"; // ✅ Redirect after logout
+            window.location.href = "/login"; 
           }, 2000)
         }
       }),

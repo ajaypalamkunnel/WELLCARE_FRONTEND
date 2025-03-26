@@ -8,6 +8,9 @@ import { NewPasswordFormValues } from "@/components/NewPassword";
 import IUserFullData from "@/types/user";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 import IDoctor from "@/types/IDoctor";
+import { IUserDetails } from "@/components/admin/ui/UserRegistrationForm";
+import { threadId } from "worker_threads";
+import { UserProfileData, UserProfileFormData } from "@/types/userProfileData";
 
 export const registerBasicDetails = async (data:Partial<IUser>)=>{
 
@@ -209,4 +212,52 @@ export const changeUserPassword = async (userId:string,oldPassword:string,newPas
         
         
     }
+}
+
+
+export const userCompleteRegistration = async (data:IUserDetails) =>{
+    try {
+
+        console.log("--->",data);
+        
+
+        const response = await axiosInstance.put("/complete-registration",data)
+
+        return response
+        
+    } catch (error) {
+        console.error("User complete registration error");
+        throw error
+    }
+}
+
+export const userProfileEdit = async (data:Partial<UserProfileData>) =>{
+
+    console.log("=======>>>>",data.user);
+
+    
+
+    try {
+        const user = data.user
+       const updatedata = {
+            address:{...user?.address},
+            email:user?.email,
+            fullName:user?.fullName,
+            mobile:user?.mobile,
+            personalInfo:{...user?.personalInfo}
+       }
+
+       console.log(">>>>>>",updatedata)
+        
+
+        const response = await axiosInstance.put("/complete-registration",updatedata)
+       console.log("------------------>",response.data);
+       
+        return response
+        
+    } catch (error) {
+        console.error("user profile update error");
+        throw error
+    }
+    
 }

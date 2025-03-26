@@ -1,12 +1,22 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Calendar, Clock, FileText, CheckCircle, CreditCard, LogOut, User,KeyIcon } from 'lucide-react';
+import { Calendar, Clock, FileText, CheckCircle, CreditCard, LogOut, User,KeyIcon, Loader2 } from 'lucide-react';
 import IUser from '@/types/user';
-import { fetchPatientProfile } from '@/services/user/auth/authService';
+import { fetchPatientProfile, userCompleteRegistration, userProfileEdit } from '@/services/user/auth/authService';
 import toast from 'react-hot-toast';
 import ForgotPasswordComponent from '@/components/Forgot-password';
 import PasswordChangeComponent from '@/components/commonUIElements/PasswordChangeComponent';
-
+import { useForm } from "react-hook-form";
+import {  
+  MapPin, 
+  Mail, 
+  Phone, 
+  Edit, 
+  X, 
+  Heart, 
+  ArrowRight 
+} from 'lucide-react';
+import { UserProfileData, UserProfileFormData } from '@/types/userProfileData';
 // Define the main layout component
 const PatientPortal: React.FC = () => {
   // State to track the active section
@@ -54,8 +64,12 @@ getUserProfile()
   const handleNavClick = (id: string) => {
     setActiveSection(id);
   };
-  if(loading){
-    return <p className="text-center text-gray-600">Loading profile...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="animate-spin bg-medical-green h-12 w-12" />
+      </div>
+    );
   }
   
   
@@ -94,9 +108,9 @@ getUserProfile()
       
       
         
-        (<div className="flex-grow bg-white p-6 rounded-lg shadow-md">
+        <div className="flex-grow bg-white p-6 rounded-lg shadow-md">
         
-        {activeSection === 'profile' && <ProfileSection user={user} />}
+        {activeSection === 'profile' && <ProfileSection user={user!}  />}
 
         {activeSection === 'appointments' && <SectionContent title="My Appointments" />}
         {activeSection === 'records' && <SectionContent title="Medical Records" />}
@@ -106,49 +120,342 @@ getUserProfile()
         {activeSection === 'payments' && <SectionContent title="Payments" />}
 
         
-      </div>)
+      </div>
     
     </div>
   );
 };
 
-
-interface ProfileProps{
-    user:IUser|null
+interface ProfileSectionProps {
+  user: UserProfileData | IUser;
+  onEditProfile: (updatedUser: IUser) => void;
 }
-// Profile Section Component
-const ProfileSection: React.FC<ProfileProps> = ({user}) => {
-    if(!user){
-        return <p className="text-center text-red-500">No profile data available</p>;
+
+const ProfileSection: React.FC<UserProfileData> = ({ user, onEditProfile }) => {
+  const [showDetails, setShowDetails] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      fullName: user.fullName,
+      mobile: user.mobile || '',
+      age: user.personalInfo?.age ?? undefined,
+      gender: user.personalInfo?.gender || '',
+      blood_group: user.personalInfo?.blood_group || '',
+      allergies: user.personalInfo?.allergies || '',
+      chronic_disease: user.personalInfo?.chronic_disease || '',
+      city: user.address?.city || '',
+      country: user.address?.country || '',
+      houseName: user.address?.houseName || '',
+      postalCode: user.address?.postalCode || '',
+      state: user.address?.state || '',
+      street: user.address?.street || ''
     }
-  return (
-    <div className="flex flex-co items-center">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800 self-start">Profile</h2>
+  });
+  const handleEditProfile = async (data: UserProfileFormData) => {
+    try {
+      console.log("handleEdit");
+      console.log(onEditProfile);
       
-      <div className="w-full  max-w-2xl mx-auto">
-        <div className=" p-6  rounded-md shadow-sm flex flex-col items-center">
-          {/* Profile Image */}
-          <div className="relative mb-5">
-            <div className="w-28 h-28 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 overflow-hidden">
-              <User size={52} />
-              <img src="/images/logo.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+      
+        
+            // Convert flat form data to `UserProfileData` structure
+            const formattedData: Partial<UserProfileData> = {
+                user: {
+                    fullName: data.fullName,
+                    address: {
+                      city: data.city,
+                      country: data.country,
+                      houseName: data.houseName,
+                      postalCode: data.postalCode,
+                      state: data.state,
+                      street: data.street,
+                    },
+                    mobile: data.mobile,
+                    email:user.email,
+                    personalInfo: {
+                        age: data.age ? Number(data.age) : undefined,
+                        gender: data.gender,
+                        blood_group: data.blood_group,
+                        allergies: data.allergies,
+                        chronic_disease: data.chronic_disease,
+                    },
+                },
+            };
+
+           const response = await userProfileEdit(formattedData)
+            
+           if(response?.data){
+            onEditProfile?.(response.data)
+            setTimeout(()=>{
+              window.location.reload()
+
+            },200)
+            toast.success("Profile updated successfully!");
+           }else{
+              throw Error("data not recived")
+           }
+           
+            setIsEditModalOpen(false);
+            
+       
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        toast.error("Failed to update profile. Please try again.");
+    }
+};
+
+
+  if (!user) {
+    return (
+      <div className="text-center text-red-500 flex items-center justify-center h-full">
+        <User size={48} className="mr-2" />
+        No profile data available
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full max-w-2xl mx-auto p-4">
+      <div className="bg-white rounded-lg shadow-md p-6">
+        {/* Profile Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+            <User size={24} className="mr-2" /> Profile
+          </h2>
+          <button 
+            onClick={() => setIsEditModalOpen(true)}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <Edit size={20} />
+          </button>
+        </div>
+
+        {/* Profile Image */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="relative mb-4">
+            <div className="w-28 h-28 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+              <User size={52} className="text-gray-400" />
             </div>
-            <div className="absolute bottom-0 right-0 bg-[#09db4b] p-2 rounded-full">
+            <div className="absolute bottom-0 right-0 bg-green-500 p-2 rounded-full">
               <User size={16} className="text-white" />
             </div>
           </div>
           
-          {/* Profile Details */}
-          <h3 className="text-xl font-bold mb-2 text-gray-800">{user.fullName}</h3>
-          <p className="text-gray-600 mb-1 text-base">{user.email}</p>
-          <p className="text-gray-600 mb-5 text-base">{user.mobile||"N/A"}</p>
-          
-          <button className="bg-[#03C03C] hover:bg-[#09db4b] text-white py-3 px-5 rounded-md transition-colors w-full font-medium text-base">
-            View Details &gt;&gt;
-          </button>
+          <h3 className="text-xl font-bold text-gray-800">{user.fullName}</h3>
+          <p className="text-gray-600 flex items-center">
+            <Mail size={16} className="mr-2" /> {user.email}
+          </p>
         </div>
-        
-        
+
+        {/* Basic Contact Info */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="bg-gray-100 p-4 rounded-md flex items-center">
+            <Phone size={24} className="mr-3 text-gray-600" />
+            <div>
+              <h4 className="font-semibold text-gray-800">Mobile</h4>
+              <p className="text-gray-600">{user.mobile || 'N/A'}</p>
+            </div>
+          </div>
+          <div className="bg-gray-100 p-4 rounded-md flex items-center">
+            <MapPin size={24} className="mr-3 text-gray-600" />
+            <div>
+              <h4 className="font-semibold text-gray-800">Location</h4>
+              <p className="text-gray-600">
+                {user.address?.city ? `${user.address.city}, ${user.address.country}` : 'N/A'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* View Details Button */}
+        <button 
+          onClick={() => setShowDetails(!showDetails)} 
+          className="w-full bg-green-500 text-white py-2 rounded-md flex items-center justify-center hover:bg-green-600 transition-colors"
+        >
+          {showDetails ? 'Hide Details' : 'View Details'}
+          <ArrowRight size={20} className="ml-2" />
+        </button>
+
+        {/* Edit Profile Modal */}
+        {isEditModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">Edit Profile</h2>
+                <button 
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit(handleEditProfile)} className="space-y-4">
+                {/* Personal Information Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Full Name</label>
+                    <input 
+                      {...register('fullName', { required: 'Full Name is required' })}
+                      className="w-full p-2 border rounded-md"
+                    />
+                    {errors.fullName && <p className="text-red-500 text-sm">{errors.fullName.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Mobile</label>
+                    <input 
+                      {...register('mobile')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                </div>
+
+                {/* Additional Personal Details */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Age</label>
+                    <input 
+                      type="number" 
+                      {...register('age')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Gender</label>
+                    <input 
+                      {...register('gender')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Blood Group</label>
+                    <input 
+                      {...register('blood_group')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                </div>
+
+                {/* Medical Information */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Allergies</label>
+                    <textarea
+                      {...register('allergies')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Chronic Disease</label>
+                    <textarea 
+                      {...register('chronic_disease')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                </div>
+
+                {/* Address Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">House Name</label>
+                    <input 
+                      {...register('houseName')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Street</label>
+                    <input 
+                      {...register('street')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">City</label>
+                    <input 
+                      {...register('city')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">State</label>
+                    <input 
+                      {...register('state')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Postal Code</label>
+                    <input 
+                      {...register('postalCode')}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium">Country</label>
+                  <input 
+                    {...register('country')}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-2 mt-4">
+                  <button 
+                    type="button" 
+                    onClick={() => setIsEditModalOpen(false)}
+                    className="px-4 py-2 border rounded-md hover:bg-gray-100"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Detailed User Information */}
+        {showDetails && (
+          <div className="mt-6 space-y-4">
+            <div className="bg-gray-50 p-4 rounded-md">
+              <h4 className="font-bold mb-2 flex items-center">
+                <Heart size={20} className="mr-2 text-red-500" /> Personal Information
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                <p><strong>Age:</strong> {user.personalInfo?.age || 'N/A'}</p>
+                <p><strong>Gender:</strong> {user.personalInfo?.gender || 'N/A'}</p>
+                <p><strong>Blood Group:</strong> {user.personalInfo?.blood_group || 'N/A'}</p>
+                <p><strong>Allergies:</strong> {user.personalInfo?.allergies || 'N/A'}</p>
+                <p><strong>Chronic Disease:</strong> {user.personalInfo?.chronic_disease || 'N/A'}</p>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 p-4 rounded-md">
+              <h4 className="font-bold mb-2 flex items-center">
+                <MapPin size={20} className="mr-2 text-blue-500" /> Address Details
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                <p><strong>House Name:</strong> {user.address?.houseName || 'N/A'}</p>
+                <p><strong>Street:</strong> {user.address?.street || 'N/A'}</p>
+                <p><strong>City:</strong> {user.address?.city || 'N/A'}</p>
+                <p><strong>State:</strong> {user.address?.state || 'N/A'}</p>
+                <p><strong>Postal Code:</strong> {user.address?.postalCode || 'N/A'}</p>
+                <p><strong>Country:</strong> {user.address?.country || 'N/A'}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -168,22 +475,3 @@ const SectionContent: React.FC<{ title: string }> = ({ title }) => {
 
 export default PatientPortal;
 
-
-
-{/* <div className="mt-6 bg-gray-50 p-6 rounded-md shadow-sm">
-          <h3 className="text-lg font-semibold mb-4 text-gray-700">Personal Information</h3>
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm text-gray-500">Full Name</p>
-              <p className="text-base font-medium">Sarah Johnson</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Email Address</p>
-              <p className="text-base">sarah.johnson@example.com</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Phone Number</p>
-              <p className="text-base">+1 (555) 123-4567</p>
-            </div>
-          </div>
-        </div> */}

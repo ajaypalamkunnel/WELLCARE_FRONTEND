@@ -52,7 +52,7 @@ const LoginComponent: React.FC = () => {
         const { accessToken, user }: { accessToken: string; user: IUser } =
           await login(data.email, data.password);
 
-        setAuth(user.email, accessToken, user);
+        setAuth(user.email, accessToken,user?.isVerified!, user);
 
         toast.success("Login successfull!");
         router.replace("/");
@@ -65,9 +65,15 @@ const LoginComponent: React.FC = () => {
           data.password
         );
 
-        setAuthDoctor(doctor.email, doctorAccessToken, doctor);
+        console.log("=====>",doctor);
+        
 
-        setVerification(doctor?.isverified);
+        const isSubscribed = doctor.isSubscribed ?? false;
+        const subscriptionExpiryDate = doctor.subscriptionExpiryDate ?? "";
+
+        setAuthDoctor(doctor.email, doctorAccessToken,doctor,isSubscribed,subscriptionExpiryDate);
+
+        setVerification(doctor?.isVerified);
         setTimeout(() => {
           router.replace("/doctordashboard/home");
         }, 100);

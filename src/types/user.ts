@@ -7,7 +7,7 @@
     mobile?: string;
     specialization?:string;
     status?: number;
-    profileUrl?:string
+    profileUrl?:string;
     isVerified?: boolean;
     updatedAt?: Date;
     createdAt?: Date;

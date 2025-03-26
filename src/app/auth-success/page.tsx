@@ -31,11 +31,11 @@ const AuthSuccess = () => {
           console.log("data to store: ==>", userDataToStore);
 
           if (role === "doctor") {
-            setAuthDoctor(userData?.email, accessToken!, userDataToStore);
+            // setAuthDoctor(userData?.email, accessToken!, userDataToStore);
             toast.success("Login successfull!");
             router.replace("/doctordashboard/home");
           } else {
-            setAuth(userData?.email, accessToken!, userDataToStore);
+            setAuth(userData?.email, accessToken!,userData?.isVerified, userDataToStore);
             toast.success("Login successfull!");
             router.replace("/");
           }

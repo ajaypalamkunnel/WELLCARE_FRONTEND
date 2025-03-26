@@ -5,7 +5,8 @@ import { getDoctorById } from "@/services/user/auth/authService";
 import Image from "next/image";
 import { CalendarDays, MapPin, MessageCircle, Star, Award, ChevronRight, Clock, User } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
-
+import { useAuthStore } from "@/store/user/authStore";
+import { useRouter } from "next/navigation";
 // Import types
 import { IDoctor, IReview, IEducation, ICertification } from "@/types/IDoctor";
 import Header from "@/components/homeComponents/Header";
@@ -17,6 +18,9 @@ const DoctorProfile = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [visibleReviews, setVisibleReviews] = useState<number>(3);
+  const user = useAuthStore((state)=>state.user)
+  const router = useRouter()
+  
 
   useEffect(() => {
     if (!doctorId) return;
@@ -39,6 +43,22 @@ const DoctorProfile = () => {
   const loadMoreReviews = () => {
     setVisibleReviews((prev) => prev + 3);
   };
+
+  const handleBooking = (doctorId:string)=>{
+    console.log("handle booking");
+    
+    console.log(user?.isVerified);
+    
+    
+    if(user?.isVerified){
+      console.log("hi booking");
+      
+      router.push("/user/booking")
+    }else{
+      router.push("/user/completeregistration")
+    }
+
+  }
 
   if (loading) return (
     <div className="flex justify-center items-center min-h-screen">
@@ -147,7 +167,7 @@ const DoctorProfile = () => {
               <MessageCircle size={18} className="mr-2" />
               Message
             </button>
-            <button className="flex-1 border border-medical-green text-medical-green hover:bg-medical-green hover:text-white font-medium py-2 px-4 rounded-md transition flex items-center justify-center">
+            <button onClick={()=>handleBooking(doctor._id)} className="flex-1 border border-medical-green text-medical-green hover:bg-medical-green hover:text-white font-medium py-2 px-4 rounded-md transition flex items-center justify-center">
               <CalendarDays size={18} className="mr-2" />
               Book Appointment
             </button>

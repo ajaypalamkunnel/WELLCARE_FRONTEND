@@ -14,6 +14,8 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { PocketKnife } from "lucide-react";
 import DoctorServiceListing from "@/components/doctorComponents/ServiceComponent";
+import { useAuthStoreDoctor } from "@/store/doctor/authStore";
+import SubscriptionPrompt from "@/components/commonUIElements/NotAllowUnsubscibe";
 interface DoctorProfile {
   fullName: string;
   department?: string;
@@ -29,7 +31,7 @@ const DoctorProfileDashboard: React.FC = () => {
   // Sample data, in real app this would come from API/backend
   const [doctorData, setDoctorData] = useState<IDoctorProfileDataType>({});
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-
+  const {isSubscribed} = useAuthStoreDoctor()
   //modal handling for updata profile
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [doctorProfile, setDoctorProfile] = useState(doctorData);
@@ -489,8 +491,13 @@ const DoctorProfileDashboard: React.FC = () => {
 
         {
           activeNav === "Service Management" &&(
+            isSubscribed ?
             <>
             <DoctorServiceListing/>
+            </>
+            :
+            <>
+            <SubscriptionPrompt/>
             </>
           )
         }
