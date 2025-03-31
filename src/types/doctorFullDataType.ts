@@ -44,6 +44,7 @@ interface IDoctorProfileDataType {
     certifications?:ICertificate[];
     licenseDocument?:File|string;
     IDProofDocument?:File |string;
+    currentSubscriptionId?:string
 }
 
 export default IDoctorProfileDataType

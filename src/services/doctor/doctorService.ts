@@ -156,3 +156,17 @@ export const updateService = async (updatedData: ServiceData) => {
 
     }
 }
+
+
+export const getDoctorSubscription = async (subscriptionId:string) =>{
+    try {
+
+        const response = await axiosInstanceDoctor.get(`/api/doctor/get-my-subscription/${subscriptionId}`)
+
+        return response.data
+        
+    } catch (error) {
+        console.log("Error while get doctor subscription data");
+        throw error
+    }
+}

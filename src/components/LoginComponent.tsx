@@ -70,9 +70,11 @@ const LoginComponent: React.FC = () => {
 
         const isSubscribed = doctor.isSubscribed ?? false;
         const subscriptionExpiryDate = doctor.subscriptionExpiryDate ?? "";
+        const isVerified = doctor.isVerified
 
-        setAuthDoctor(doctor.email, doctorAccessToken,doctor,isSubscribed,subscriptionExpiryDate);
-
+        setAuthDoctor(doctor.email, doctorAccessToken,doctor,isSubscribed,isVerified!,subscriptionExpiryDate);
+        console.log("********>",doctor);
+        
         setVerification(doctor?.isVerified);
         setTimeout(() => {
           router.replace("/doctordashboard/home");

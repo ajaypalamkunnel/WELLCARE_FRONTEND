@@ -1,12 +1,12 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Calendar, Clock, FileText, CheckCircle, CreditCard, LogOut, User,KeyIcon, Loader2 } from 'lucide-react';
+import { Calendar, Clock, FileText, CheckCircle, CreditCard, LogOut, User,KeyIcon, Loader2, Droplet, ShowerHead, Expand, ExpandIcon, ShrinkIcon } from 'lucide-react';
 import IUser from '@/types/user';
 import { fetchPatientProfile, userCompleteRegistration, userProfileEdit } from '@/services/user/auth/authService';
 import toast from 'react-hot-toast';
 import ForgotPasswordComponent from '@/components/Forgot-password';
 import PasswordChangeComponent from '@/components/commonUIElements/PasswordChangeComponent';
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {  
   MapPin, 
   Mail, 
@@ -274,157 +274,250 @@ const ProfileSection: React.FC<UserProfileData> = ({ user, onEditProfile }) => {
           className="w-full bg-green-500 text-white py-2 rounded-md flex items-center justify-center hover:bg-green-600 transition-colors"
         >
           {showDetails ? 'Hide Details' : 'View Details'}
-          <ArrowRight size={20} className="ml-2" />
+          {
+            showDetails ? <ShrinkIcon size={20} className="ml-2" /> : <ExpandIcon size={20} className="ml-2" />
+          }
+          
         </button>
 
         {/* Edit Profile Modal */}
         {isEditModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Edit Profile</h2>
-                <button 
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-full"
-                >
-                  <X size={24} />
-                </button>
+  <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8 border border-gray-100 relative">
+      {/* Modal Header - Fixed at top */}
+      <div className="sticky top-0 bg-white p-5 border-b border-gray-100 rounded-t-2xl z-10">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl md:text-2xl font-bold text-medical-green flex items-center">
+            <User className="mr-2 w-5 h-5 md:w-6 md:h-6" /> Edit Profile
+          </h2>
+          <button 
+            onClick={() => setIsEditModalOpen(false)}
+            className="p-2 hover:bg-gray-100 rounded-full transition duration-200"
+            aria-label="Close modal"
+          >
+            <X size={22} />
+          </button>
+        </div>
+      </div>
+
+      {/* Modal Body - Scrollable */}
+      <div className="p-5 max-h-[70vh] overflow-y-auto">
+        <form onSubmit={handleSubmit(handleEditProfile)} className="space-y-5">
+          {/* Personal Information Section */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h3 className="text-md md:text-lg font-semibold text-medical-green mb-3">Personal Details</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name
+                </label>
+                <input 
+                  {...register('fullName', { required: 'Full Name is required' })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                  placeholder="Enter your full name"
+                />
+                {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName.message}</p>}
               </div>
-
-              <form onSubmit={handleSubmit(handleEditProfile)} className="space-y-4">
-                {/* Personal Information Fields */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Full Name</label>
-                    <input 
-                      {...register('fullName', { required: 'Full Name is required' })}
-                      className="w-full p-2 border rounded-md"
-                    />
-                    {errors.fullName && <p className="text-red-500 text-sm">{errors.fullName.message}</p>}
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Mobile</label>
-                    <input 
-                      {...register('mobile')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                </div>
-
-                {/* Additional Personal Details */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Age</label>
-                    <input 
-                      type="number" 
-                      {...register('age')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Gender</label>
-                    <input 
-                      {...register('gender')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Blood Group</label>
-                    <input 
-                      {...register('blood_group')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                </div>
-
-                {/* Medical Information */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Allergies</label>
-                    <textarea
-                      {...register('allergies')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Chronic Disease</label>
-                    <textarea 
-                      {...register('chronic_disease')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                </div>
-
-                {/* Address Fields */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">House Name</label>
-                    <input 
-                      {...register('houseName')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Street</label>
-                    <input 
-                      {...register('street')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">City</label>
-                    <input 
-                      {...register('city')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">State</label>
-                    <input 
-                      {...register('state')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium">Postal Code</label>
-                    <input 
-                      {...register('postalCode')}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block mb-2 text-sm font-medium">Country</label>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mobile Number
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-medicalring-medical-green-light" />
                   <input 
-                    {...register('country')}
-                    className="w-full p-2 border rounded-md"
+                    {...register('mobile')}
+                    className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                    placeholder="Enter your mobile number"
                   />
                 </div>
+              </div>
+            </div>
 
-                <div className="flex justify-end space-x-2 mt-4">
-                  <button 
-                    type="button" 
-                    onClick={() => setIsEditModalOpen(false)}
-                    className="px-4 py-2 border rounded-md hover:bg-gray-100"
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Age
+                </label>
+                <input 
+                  type="number"
+                  {...register('age')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                  placeholder="Your age"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Gender
+                </label>
+                <select
+                  {...register('gender')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Blood Group
+                </label>
+                <div className="relative">
+                  <Droplet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-medicalring-medical-green-light" />
+                  <select
+                    {...register('blood_group')}
+                    className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
                   >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit" 
-                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                  >
-                    Save Changes
-                  </button>
+                    <option value="">Select Blood Group</option>
+                    {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(group => (
+                      <option key={group} value={group}>{group}</option>
+                    ))}
+                  </select>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
-        )}
 
+          {/* Medical Information Section */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h3 className="text-md md:text-lg font-semibold text-medical-green mb-3">Medical Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Allergies
+                </label>
+                <textarea
+                  {...register('allergies')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                  placeholder="List any allergies (if applicable)"
+                  rows={2}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Chronic Disease
+                </label>
+                <textarea 
+                  {...register('chronic_disease')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                  placeholder="List any chronic diseases (if applicable)"
+                  rows={2}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Address Section */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h3 className="text-md md:text-lg font-semibold text-medical-green mb-3">
+              <MapPin className="inline mr-2" /> Address Details
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  House Name/Number
+                </label>
+                <input 
+                  {...register('houseName')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                  placeholder="House name or number"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Street
+                </label>
+                <input 
+                  {...register('street')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                  placeholder="Street name"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City
+                </label>
+                <input 
+                  {...register('city')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                  placeholder="City"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  State
+                </label>
+                <input 
+                  {...register('state')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                  placeholder="State/Province"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Postal Code
+                </label>
+                <input 
+                  {...register('postalCode')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+                  placeholder="Postal/ZIP code"
+                />
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Country
+              </label>
+              <select
+                {...register('country')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-medical-green-light transition duration-200"
+              >
+                <option value="">Select Country</option>
+                {['United States', 'Canada', 'United Kingdom', 'Australia', 'India', 
+                  'Germany', 'France', 'Japan', 'Brazil', 'Other'].map(country => (
+                  <option key={country} value={country}>{country}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      {/* Modal Footer - Fixed at bottom */}
+      <div className="sticky bottom-0 bg-white p-5 border-t border-gray-100 rounded-b-2xl">
+        <div className="flex justify-end space-x-3">
+          <button 
+            type="button" 
+            onClick={() => setIsEditModalOpen(false)}
+            className="px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 transition duration-200 font-medium text-sm"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={handleSubmit(handleEditProfile)}
+            className="px-4 py-2 bg-medical-green hover:bg-medical-green-light text-white rounded-full transition duration-300 font-medium text-sm flex items-center"
+          >
+            <span>Save Changes</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
         {/* Detailed User Information */}
         {showDetails && (
           <div className="mt-6 space-y-4">
@@ -443,7 +536,7 @@ const ProfileSection: React.FC<UserProfileData> = ({ user, onEditProfile }) => {
 
             <div className="bg-gray-50 p-4 rounded-md">
               <h4 className="font-bold mb-2 flex items-center">
-                <MapPin size={20} className="mr-2 text-blue-500" /> Address Details
+                <MapPin size={20} className="mr-2 text-medicalring-medical-green-light" /> Address Details
               </h4>
               <div className="grid grid-cols-2 gap-2">
                 <p><strong>House Name:</strong> {user.address?.houseName || 'N/A'}</p>

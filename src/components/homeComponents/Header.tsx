@@ -149,7 +149,7 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
         {isMenuOpen && (
           <div className="md:hidden mt-4 py-2 border-t border-gray-200">
             <a
-              href="#"
+              href="/"
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
             >
               <div className="flex items-center">
@@ -158,12 +158,21 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
               </div>
             </a>
             <a
-              href="#"
+              href="/user/doctors"
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
             >
               <div className="flex items-center">
                 <Search size={18} className="mr-2" />
                 <span>Find Doctor</span>
+              </div>
+            </a>
+            <a
+              href="/user/departments"
+              className="block py-2 px-1 text-gray-600 hover:text-gray-900"
+            >
+              <div className="flex items-center">
+              <Hospital size={18} className="mr-1" />
+                <span>Departments</span>
               </div>
             </a>
             <a

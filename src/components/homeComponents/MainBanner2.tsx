@@ -35,7 +35,7 @@ const DepartmentSection: React.FC = () => {
         setError(null)
 
         const response = await getAllActiveDepartments();
-        console.log("===>",response.data);
+        
         
         setDepartments(response.data)
         

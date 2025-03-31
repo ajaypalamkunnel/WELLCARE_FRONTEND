@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
   const accessToken = useAuthStoreDoctor((state) => state.accessTokenDoctor);
   const isVerified = useAuthStoreDoctor((state) => state.isVerified);
   const user = useAuthStoreDoctor((state) => state.user);
-console.log("====>",user?.isverified);
+console.log("====>",user?.isVerified);
 
   const profileRef = useRef<HTMLDivElement>(null)
 
@@ -193,7 +193,7 @@ console.log("====>",user?.isverified);
               
             {isProfileOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10" ref={profileRef}>
-                {user?.isverified ? (
+                {user?.isVerified ? (
                   <Link
                     href="/doctordashboard/profile"
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

@@ -12,10 +12,14 @@ import { fetchDoctorProfile } from "@/services/doctor/authService";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { PocketKnife } from "lucide-react";
+import { Calendar1Icon } from "lucide-react";
 import DoctorServiceListing from "@/components/doctorComponents/ServiceComponent";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import SubscriptionPrompt from "@/components/commonUIElements/NotAllowUnsubscibe";
+import { getDoctorSubscription } from "@/services/doctor/doctorService";
+import { SubscriptionPlan } from "@/types/subscriptionTypes";
+import { getErrorMessage } from "@/utils/handleError";
+import SubscriptionDetailsModal from "@/components/doctorComponents/SubscriptionDetailsModal";
 interface DoctorProfile {
   fullName: string;
   department?: string;
@@ -31,10 +35,13 @@ const DoctorProfileDashboard: React.FC = () => {
   // Sample data, in real app this would come from API/backend
   const [doctorData, setDoctorData] = useState<IDoctorProfileDataType>({});
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const {isSubscribed} = useAuthStoreDoctor()
+  const { isSubscribed } = useAuthStoreDoctor();
   //modal handling for updata profile
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [doctorProfile, setDoctorProfile] = useState(doctorData);
+  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+  const [subscriptionData, setSubscriptionData] =
+    useState<SubscriptionPlan | null>(null);
 
   const handleProfileUpdate = (updatedData: IDoctorProfileDataType) => {
     console.log("handleProfileUpdate called");
@@ -85,6 +92,40 @@ const DoctorProfileDashboard: React.FC = () => {
   const handleLogoutClose = () => {
     console.log("Closing Logout Modal"); // Debugging log
     setIsLogoutModalOpen(false);
+  };
+
+  const handleViewMyProfile = async () => {
+    try {
+      
+
+      if (!doctorData.currentSubscriptionId) {
+        toast.error("No subscription found.");
+        return;
+      }
+
+      console.log(
+        "---> Fetching subscription for:",
+        doctorData.currentSubscriptionId
+      );
+
+      const responseData = await getDoctorSubscription(
+        doctorData.currentSubscriptionId!
+      );
+
+      console.log("Subscription Data:", responseData.data);
+
+      if (responseData?.data) {
+        setSubscriptionData(responseData.data);
+
+        setIsSubscriptionModalOpen(true); // Open the modal
+      } else {
+        toast.error("Subscription details not found.");
+      }
+    } catch (error: unknown) {
+      const errorMessage = getErrorMessage(error);
+      console.error("Error fetching subscription details:", error);
+      toast.error(errorMessage);
+    }
   };
 
   // Navigation items
@@ -286,7 +327,7 @@ const DoctorProfileDashboard: React.FC = () => {
           )}
         </div>
 
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 space-x-2 flex justify-center">
           <button
             className="px-4 py-2 bg-blue-900 text-white rounded-md flex items-center hover:bg-blue-800 transition duration-200"
             style={{ backgroundColor: "#03045e" }}
@@ -308,6 +349,14 @@ const DoctorProfileDashboard: React.FC = () => {
             </svg>
             Edit Profile
           </button>
+          <button
+            className="px-4 py-2 bg-blue-900 text-white rounded-md flex items-center hover:bg-blue-800 transition duration-200"
+            style={{ backgroundColor: "#03045e" }}
+            onClick={() => handleViewMyProfile()}
+          >
+            <Calendar1Icon x={4} height={19} size={20} />
+            My subscription
+          </button>
         </div>
 
         {isEditModalOpen && (
@@ -317,6 +366,18 @@ const DoctorProfileDashboard: React.FC = () => {
             doctorData={doctorData}
             onProfileUpdate={handleProfileUpdate}
           />
+        )}
+
+        {isSubscriptionModalOpen && (
+          <>
+            {console.log(isSubscriptionModalOpen)}
+
+            <SubscriptionDetailsModal
+              isOpen={isSubscriptionModalOpen}
+              onClose={() => setIsSubscriptionModalOpen(false)}
+              subscriptionData={subscriptionData}
+            />
+          </>
         )}
       </div>
     );
@@ -482,31 +543,24 @@ const DoctorProfileDashboard: React.FC = () => {
           </>
         )}
 
-
-        {activeNav === "Subscriptions" &&(
+        {activeNav === "Subscriptions" && (
           <>
-          <Subscription/>
+            <Subscription />
           </>
         )}
 
-        {
-          activeNav === "Service Management" &&(
-            isSubscribed ?
+        {activeNav === "Service Management" &&
+          (isSubscribed ? (
             <>
-            <DoctorServiceListing/>
+              <DoctorServiceListing />
             </>
-            :
+          ) : (
             <>
-            <SubscriptionPrompt/>
+              <SubscriptionPrompt />
             </>
-          )
-        }
+          ))}
 
-
-
-
-
-        {isLogoutModalOpen&& (
+        {isLogoutModalOpen && (
           <>
             <LogoutConfirmationModal
               userType="doctor"
