@@ -1,7 +1,10 @@
 import { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
+import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/ScheduleModal";
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
+import { getErrorMessage } from "@/utils/handleError";
+import axios, { AxiosError } from "axios";
 
 export const featchAllDepartments = async () => {
     try {
@@ -123,13 +126,13 @@ export const createService = async (data: ServiceData) => {
 export const getServices = async (doctorId: string) => {
     try {
 
-        console.log(".......", doctorId);
+        
 
         const response = await axiosInstanceDoctor.get("/api/doctor/get-services", {
             params: { doctorId }
         });
 
-        console.log(response);
+       
 
         return response.data
 
@@ -170,3 +173,93 @@ export const getDoctorSubscription = async (subscriptionId:string) =>{
         throw error
     }
 }
+
+
+export const validateSchedule = async (data: FormValues) => {
+    try {
+        const response = await axiosInstanceDoctor.post("/api/doctor/validate-schedule", data);
+        console.log("validate schedule",response.data)
+        
+        return response.data;
+        
+    } catch (error:unknown) {
+        if(axios.isAxiosError(error)){
+            throw error
+        }
+
+        throw new Error(getErrorMessage(error))
+    }
+};
+
+export const generateSlote = async (data:FormValues) =>{
+
+    try {
+        console.log("i am service==> ",data) ;
+        
+
+        const response = await axiosInstanceDoctor.post("/api/doctor/generate-slots",data)
+
+        return response.data
+        
+    } catch (error:unknown) {
+        console.error("Error while slot generation:", error);
+        return {
+            success: false,
+            message: getErrorMessage(error)
+        };
+    }
+
+}
+
+export const createSchedule = async (data:ScheduleCreationData) =>{
+    try {
+
+        console.log("service**",data);
+        
+
+        const response = await axiosInstanceDoctor.post("/api/doctor/create-schedule",data)
+
+
+        return response.data
+    
+    } catch (error:unknown) {
+        console.error("Error while creating schedule:", error);
+        return {
+            success: false,
+            message: getErrorMessage(error)
+        };
+    }
+}
+
+export const fetchSchedules = async (params:any) => {
+    try {
+
+        
+      // Convert params object to URLSearchParams
+      const queryParams = new URLSearchParams();
+
+      console.log("service ==>", queryParams.toString());
+      
+      
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+          // Handle Date objects by converting to ISO string and taking just the date part
+          if (value instanceof Date) {
+            queryParams.append(key, value.toISOString().split('T')[0]);
+          } else {
+            queryParams.append(key, value.toString());
+          }
+        }
+      });
+      
+      const response = await axiosInstanceDoctor.get(`/api/doctor/fetch-schedules?${queryParams.toString()}`);
+
+      console.log("Evade kitttitoo",response.data.data);
+      
+
+      return response.data.data;
+    } catch (error) {
+      console.error('Error fetching schedules:', error);
+      throw error;
+    }
+  };

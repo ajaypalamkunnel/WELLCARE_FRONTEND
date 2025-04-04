@@ -73,7 +73,7 @@ const LoginComponent: React.FC = () => {
         const isVerified = doctor.isVerified
 
         setAuthDoctor(doctor.email, doctorAccessToken,doctor,isSubscribed,isVerified!,subscriptionExpiryDate);
-        console.log("********>",doctor);
+        // console.log("********>",doctor);
         
         setVerification(doctor?.isVerified);
         setTimeout(() => {

@@ -20,6 +20,7 @@ import { getDoctorSubscription } from "@/services/doctor/doctorService";
 import { SubscriptionPlan } from "@/types/subscriptionTypes";
 import { getErrorMessage } from "@/utils/handleError";
 import SubscriptionDetailsModal from "@/components/doctorComponents/SubscriptionDetailsModal";
+import AppointmentScheduler from "@/components/doctorComponents/AppoinmentSchedules";
 interface DoctorProfile {
   fullName: string;
   department?: string;
@@ -560,6 +561,20 @@ const DoctorProfileDashboard: React.FC = () => {
             </>
           ))}
 
+          {activeNav === "Slot Management" &&
+          (isSubscribed ?(
+            <>
+              <AppointmentScheduler/>
+            </>
+          ):(
+            <>
+            <SubscriptionPrompt />
+            </>
+          )
+
+          )
+
+          }
         {isLogoutModalOpen && (
           <>
             <LogoutConfirmationModal
@@ -569,6 +584,8 @@ const DoctorProfileDashboard: React.FC = () => {
             />
           </>
         )}
+
+
         {/* Other content sections would be conditionally rendered here */}
       </div>
     </div>
