@@ -207,23 +207,29 @@ export default function DoctorScheduleManager() {
     }
   };
   
-  // Format date to display format
-  const formatDate = (dateString: string) => {
-    try {
-      return format(parseISO(dateString), 'dd MMM yyyy');
-    } catch (error) {
-      return dateString;
+ // Format date to display format
+const formatDate = (dateString:string) => {
+  try {
+    // Check if dateString is a valid ISO date
+    if (dateString && Date.parse(dateString)) {
+      return format(new Date(dateString), 'dd MMM yyyy');
     }
-  };
+    return 'Invalid date';
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return dateString;
+  }
+};
   
-  // Format time to display format
-  const formatTime = (timeString: string) => {
-    try {
-      return format(parseISO(timeString), 'hh:mm a');
-    } catch (error) {
-      return timeString;
-    }
-  };
+const formatTime = (timeString:string) => {
+  const date = new Date(timeString);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'UTC' // 👈 Force UTC time
+  });
+};
   
   // Count available slots
   const countAvailableSlots = (slots: Slot[]) => {
@@ -409,12 +415,12 @@ export default function DoctorScheduleManager() {
               <div key={schedule._id} className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="p-5">
                   <div className="flex items-start justify-between">
-                    <div>
+                    {/* <div>
                       <h3 className="text-lg font-medium text-gray-900">Doctor ID: {schedule.doctorId}</h3>
                       {schedule.doctor && (
                         <p className="text-sm text-gray-500">{schedule.doctor.specialization}</p>
                       )}
-                    </div>
+                    </div> */}
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {formatDate(schedule.date)}
                     </span>

@@ -17,6 +17,7 @@ import {
   ArrowRight 
 } from 'lucide-react';
 import { UserProfileData, UserProfileFormData } from '@/types/userProfileData';
+import UserAppointmentsList from '@/components/userComponents/AppoinmentsList';
 // Define the main layout component
 const PatientPortal: React.FC = () => {
   // State to track the active section
@@ -114,7 +115,7 @@ getUserProfile()
 
         {activeSection === 'appointments' && <SectionContent title="My Appointments" />}
         {activeSection === 'records' && <SectionContent title="Medical Records" />}
-        {activeSection === 'upcoming' && <SectionContent title="Upcoming Appointments" />}
+        {activeSection === 'upcoming' && <UserAppointmentsList/>}
         {activeSection === 'completed' && <SectionContent title="Completed Appointments" />}
         {activeSection === 'Change-Password' && <PasswordChangeComponent id={user?._id!} userType='patient'/>}
         {activeSection === 'payments' && <SectionContent title="Payments" />}

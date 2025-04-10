@@ -30,6 +30,7 @@ export default function RootLayout({
       >
         <ToasterProvider/>
         {children}
+      {/* <script src="https://checkout.razorpay.com/v1/checkout.js"></script> */}
       </body>
     </html>
   );

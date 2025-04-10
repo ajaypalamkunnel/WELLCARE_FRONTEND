@@ -214,10 +214,13 @@ export const generateSlote = async (data:FormValues) =>{
 export const createSchedule = async (data:ScheduleCreationData) =>{
     try {
 
-        console.log("service**",data);
+        console.log("going data**",data);
         
 
         const response = await axiosInstanceDoctor.post("/api/doctor/create-schedule",data)
+
+        console.log("avadannu vanne njan aane ===>",response);
+        
 
 
         return response.data

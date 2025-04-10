@@ -24,7 +24,7 @@ interface Slot {
   slot_id?: string;
   start_time: string;
   end_time: string;
-  isBreak: boolean;
+  is_break: boolean;
 }
 
 interface ScheduleModalProps {
@@ -79,6 +79,7 @@ export default function ScheduleModal({
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [services, setServices] = useState<ServiceData[]>([]);
+  const [timeError, setTimeError] = useState<string>("");
   const { user } = useAuthStoreDoctor();
   const doctorId = user?.id;
   // Watch all form fields to check completeness
@@ -97,6 +98,52 @@ export default function ScheduleModal({
   useEffect(() => {
     fetchServices();
   }, []);
+
+  //  New validation for start time
+  useEffect(() => {
+    validateStartTime();
+  }, [formValues.start_time, formValues.date]);
+
+  const validateStartTime = () => {
+    if (!formValues.date || !formValues.start_time) {
+      setTimeError("");
+      return;
+    }
+
+    const currentDate = new Date();
+    const selectedDate = new Date(formValues.date);
+    const [hours, minutes] = formValues.start_time.split(":").map(Number);
+
+    // Set the selected time on the selected date
+    selectedDate.setHours(hours, minutes, 0, 0);
+
+    const today = new Date()
+    today.setHours(0,0,0,0)
+
+
+    if(selectedDate < today){
+      setTimeError("Cannot select past dates");
+      return
+    }
+
+    if (
+      selectedDate.getDate() === currentDate.getDate() &&
+      selectedDate.getMonth() === currentDate.getMonth() &&
+      selectedDate.getFullYear() === currentDate.getFullYear()
+    ) {
+      // Calculate minimum start time (current time + 3 hours)
+      const minStartTime = new Date(currentDate);
+      minStartTime.setHours(currentDate.getHours() + 3);
+
+      
+
+      if (selectedDate < minStartTime) {
+        setTimeError("Start time must be at least 3 hours from current time");
+        return;
+      }
+    }
+    setTimeError("");
+  };
 
   useEffect(() => {
     if (isFormComplete) {
@@ -133,6 +180,7 @@ export default function ScheduleModal({
       reset();
       setSlots([]);
       setError("");
+      setTimeError("");
       setIsScheduleValidated(false);
     }
   }, [isOpen, reset]);
@@ -192,6 +240,11 @@ export default function ScheduleModal({
       if (response.success) {
         console.log("generated slot : ", response.data);
 
+        const processedSlots = response.data.map((slot: Slot) => ({
+          ...slot,
+          is_break: Boolean(slot.is_break)
+        }));
+
         setSlots(response.data);
         toast.success("Slots generated successfully!");
       } else {
@@ -210,9 +263,13 @@ export default function ScheduleModal({
   // Toggle break status for a slot
   const toggleBreak = (id: string) => {
     setSlots(
-      slots.map((slot) =>
-        slot.slot_id === id ? { ...slot, isBreak: !slot.isBreak } : slot
-      )
+      slots.map((slot) => {
+        if (slot.slot_id === id) {
+          // Explicitly ensure is_break is a boolean value
+          return { ...slot, is_break: !Boolean(slot.is_break) };
+        }
+        return slot;
+      })
     );
   };
 
@@ -230,23 +287,23 @@ export default function ScheduleModal({
         doctorId: doctorId,
         date: formValues?.date,
         serviceId: formValues?.service,
-        start_time:formValues?.start_time,
-        end_time:formValues?.end_time,
-        duration:formValues?.duration,
+        start_time: formValues?.start_time,
+        end_time: formValues?.end_time,
+        duration: formValues?.duration,
         slots: slots,
       };
 
-      console.log("final----",scheduleData);
-      
+      console.log("final----", scheduleData);
 
       const response = await createSchedule(scheduleData);
 
-      console.log("^^^^^^",response);
-      
+      console.log("^^^^^^", response);
 
       if (response.success) {
         toast.success("Schedule created successfully!");
-        onSubmit(response.data);
+        console.log("ith aatooo response data.==>",response);
+        
+        onSubmit(response?.schedule);
         onClose();
       } else {
         throw new Error(response.message || "Failed to create schedule");
@@ -412,6 +469,9 @@ export default function ScheduleModal({
                     {errors.start_time.message}
                   </p>
                 )}
+                {timeError && (
+                  <p className="mt-1 text-sm text-red-600">{timeError}</p>
+                )}
               </div>
               <div>
                 <label
@@ -542,7 +602,7 @@ export default function ScheduleModal({
                 className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#03045e] hover:bg-[#020344] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                 onClick={generateSlots}
                 disabled={
-                  !isFormComplete || !isScheduleValidated || isGenerating
+                  !isFormComplete || !isScheduleValidated || isGenerating || !!timeError
                 }
               >
                 {isGenerating ? (
@@ -589,65 +649,67 @@ export default function ScheduleModal({
 
           {/* Slots Display */}
           {slots.length > 0 && (
-  <div className="mt-6">
-    <h4 className="text-md font-medium text-gray-900 mb-3">Time Slots</h4>
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-      {slots.map((slot) => {
-        // Create Date objects from the UTC strings
-        const startDate = new Date(slot.start_time);
-        const endDate = new Date(slot.end_time);
-        
-        // Format to IST time (HH:MM)
-        const startTimeIST = startDate.toLocaleTimeString('en-IN', {
-          timeZone: 'Asia/Kolkata',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        });
-        
-        const endTimeIST = endDate.toLocaleTimeString('en-IN', {
-          timeZone: 'Asia/Kolkata',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        });
+            <div className="mt-6">
+              <h4 className="text-md font-medium text-gray-900 mb-3">
+                Time Slots
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {slots.map((slot) => {
+                  // Create Date objects from the UTC strings
+                  const startDate = new Date(slot.start_time);
+                  const endDate = new Date(slot.end_time);
 
-        return (
-          <div
-            key={slot.slot_id}
-            className={`p-3 rounded-md border ${
-              slot.isBreak
-                ? "bg-gray-100 border-gray-300"
-                : "bg-white border-gray-200"
-            } shadow-sm transition-all duration-200 hover:shadow`}
-          >
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-900">
-                {startTimeIST} - {endTimeIST}
-              </span>
-              <div className="flex items-center">
-                <input
-                  id={`break-${slot.slot_id}`}
-                  name={`break-${slot.slot_id}`}
-                  type="checkbox"
-                  className="h-4 w-4 text-[#03045e] focus:ring-blue-500 border-gray-300 rounded"
-                  checked={slot.isBreak}
-                  onChange={() => toggleBreak(slot.slot_id!)}
-                />
-                <label
-                  htmlFor={`break-${slot.slot_id}`}
-                  className="ml-2 block text-sm text-gray-500"
-                >
-                  Break
-                </label>
+                  // Format to IST time (HH:MM)
+                  const startTimeIST = startDate.toLocaleTimeString("en-IN", {
+                    timeZone: "Asia/Kolkata",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  });
+
+                  const endTimeIST = endDate.toLocaleTimeString("en-IN", {
+                    timeZone: "Asia/Kolkata",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  });
+
+                  return (
+                    <div
+                      key={slot.slot_id}
+                      className={`p-3 rounded-md border ${
+                        slot.is_break
+                          ? "bg-gray-100 border-gray-300"
+                          : "bg-white border-gray-200"
+                      } shadow-sm transition-all duration-200 hover:shadow`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-900">
+                          {startTimeIST} - {endTimeIST}
+                        </span>
+                        <div className="flex items-center">
+                          <input
+                            id={`break-${slot.slot_id}`}
+                            name={`break-${slot.slot_id}`}
+                            type="checkbox"
+                            className="h-4 w-4 text-[#03045e] focus:ring-blue-500 border-gray-300 rounded"
+                            checked={slot.is_break}
+                            onChange={() => toggleBreak(slot.slot_id!)}
+                          />
+                          <label
+                            htmlFor={`break-${slot.slot_id}`}
+                            className="ml-2 block text-sm text-gray-500"
+                          >
+                            Break
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
-  </div>
-)}
+          )}
           {/* Submit Button */}
           <div className="mt-6">
             <button

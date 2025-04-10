@@ -53,7 +53,7 @@ const DoctorProfile = () => {
     if(user?.isVerified){
       console.log("hi booking");
       
-      router.push("/user/booking")
+      router.push(`/user/booking?doctorId=${doctorId}`)
     }else{
       router.push("/user/completeregistration")
     }

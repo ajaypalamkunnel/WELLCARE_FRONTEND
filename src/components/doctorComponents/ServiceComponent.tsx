@@ -428,7 +428,7 @@ const DoctorServiceListing: React.FC = () => {
                       control={control}
                       rules={{ 
                         required: "Fee is required",
-                        min: { value: 0, message: "Fee cannot be negative" }
+                        min: { value: 10, message: "Fee must be greater than 10" }
                       }}
                       render={({ field }) => (
                         <div>
@@ -454,6 +454,7 @@ const DoctorServiceListing: React.FC = () => {
                       name="description"
                       control={control}
                       rules={{ 
+                        required: "Description is required",
                         maxLength: { value: 500, message: "Description cannot exceed 500 characters" }
                       }}
                       render={({ field }) => (
