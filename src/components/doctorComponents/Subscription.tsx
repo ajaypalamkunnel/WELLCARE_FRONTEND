@@ -75,6 +75,7 @@ const Subscription = () => {
   const [error, setError] = useState<string | null>(null);
   const doctor = useAuthStoreDoctor((state) => state.user);
   const router = useRouter()
+  const setSubscription = useAuthStoreDoctor((state)=>state.setSubscription)
 
   const doctorId = doctor?.id;
 
@@ -117,6 +118,7 @@ const Subscription = () => {
               if (verifyResponse.success) {
                 toast.success("Subscription activated successfully!");
                 setTimeout(()=>{
+                  setSubscription(true)
                   router.push(`/doctordashboard/subscriptionsuccess?order_id=${orderId}`)
 
                 },100)

@@ -55,7 +55,7 @@ const DoctorProfile = () => {
       
       router.push(`/user/booking?doctorId=${doctorId}`)
     }else{
-      router.push("/user/completeregistration")
+      router.push(`/user/completeregistration?doctorId=${doctorId}`)
     }
 
   }

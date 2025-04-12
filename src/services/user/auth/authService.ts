@@ -1,7 +1,7 @@
 import axiosInstance from "@/utils/axiosInstance"
 import { IUser } from "../../../types/userTypes"
 import OTPInput from "@/components/otpPage/OTPInput";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { getErrorMessage } from "@/utils/handleError";
 import { NewPasswordFormValues } from "@/components/NewPassword";
 
@@ -11,7 +11,7 @@ import IDoctor from "@/types/IDoctor";
 import { IUserDetails } from "@/components/admin/ui/UserRegistrationForm";
 import { threadId } from "worker_threads";
 import { UserProfileData, UserProfileFormData } from "@/types/userProfileData";
-import { ApiResponse, AppointmentListItemDTO, formatDate, IInitiateBookingResponse, InitiateBookingPayload, IVerifyBookingResponse, VerifyBookingPayload } from "@/types/slotBooking";
+import { ApiResponse, AppointmentDetailDTO, AppointmentListItemDTO, CancelAppointmentResponseDTO, formatDate, IInitiateBookingResponse, InitiateBookingPayload, IVerifyBookingResponse, VerifyBookingPayload } from "@/types/slotBooking";
 import { promises } from "dns";
 
 export const registerBasicDetails = async (data: Partial<IUser>) => {
@@ -51,7 +51,7 @@ export const resentOTP = async (email: string) => {
 
 
 export const login = async (email: string, password: string): Promise<{ accessToken: string, user: IUser }> => {
-  
+
 
     try {
         const response = await axiosInstance.post("/login", { email, password }, { withCredentials: true })
@@ -295,7 +295,7 @@ export const initiateConsultationBooking = async (data: InitiateBookingPayload):
 
         const response = await axiosInstance.post("/consultation-booking/initiate", data)
 
-    console.log("initiateConsultationBooking==>",response.data)
+        console.log("initiateConsultationBooking==>", response.data)
 
         return response.data.data
 
@@ -324,26 +324,26 @@ export const verifyConsultationBooking = async (data: VerifyBookingPayload): Pro
 
 
 
-export const getBookingDetails = async (bookingId:string,slotId:string):Promise<ApiResponse>=>{
+export const getBookingDetails = async (bookingId: string, slotId: string): Promise<ApiResponse> => {
     try {
 
-        console.log("get Booking====>",bookingId,slotId);
-        
+        console.log("get Booking====>", bookingId, slotId);
 
 
 
-        const response = await axiosInstance.get("/consultation-booking/details",{
-            params:{
+
+        const response = await axiosInstance.get("/consultation-booking/details", {
+            params: {
                 bookingId,
                 slotId
             }
         })
 
-        console.log("succes page ill kittith ===>",response.data);
-        
+        console.log("succes page ill kittith ===>", response.data);
+
 
         return response.data
-        
+
     } catch (error) {
         throw error
     }
@@ -351,12 +351,12 @@ export const getBookingDetails = async (bookingId:string,slotId:string):Promise<
 
 
 
-export const getAppoinments = async (filter:string):Promise<AppointmentListItemDTO[]>=>{
+export const getAppoinments = async (filter: string): Promise<AppointmentListItemDTO[]> => {
     try {
 
-        const response = await axiosInstance.get("/my-appoinments",{
-            params:{
-                status:filter
+        const response = await axiosInstance.get("/my-appoinments", {
+            params: {
+                status: filter
             }
         })
         console.log(response.data)
@@ -365,6 +365,44 @@ export const getAppoinments = async (filter:string):Promise<AppointmentListItemD
     } catch (error) {
 
         throw error
-        
+
+    }
+}
+
+export const getAppoinmentsDetails = async (id: string): Promise<AppointmentDetailDTO> => {
+    try {
+
+        console.log("get appoinment===id", id);
+
+
+        const response = await axiosInstance.get(`/my-appoinments-detail/${id}`);
+
+        return response.data.data
+
+    } catch (error) {
+
+        throw error
+
+    }
+}
+
+
+export const CancelAppointment = async (appointmentId: string, reason?: string): Promise<CancelAppointmentResponseDTO> => {
+    try {
+
+        const response = await axiosInstance.patch(`/appointments/${appointmentId}/cancel`, { reason })
+
+        return response.data
+
+    } catch (error: any) {
+
+        const axiosError = error as AxiosError<{ error: string }>;
+
+        const errorMessage =
+            axiosError.response?.data?.error || "Failed to cancel the appointment";
+
+        console.error("CancelAppointment error:", errorMessage);
+        throw new Error(errorMessage);
+
     }
 }

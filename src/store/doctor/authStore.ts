@@ -12,7 +12,8 @@ interface AuthStateDoctor{
     isSubscribed: boolean | null;  // New field for subscription status
     subscriptionExpiryDate: string | null;
     setVerification:(isVerified?:boolean)=>void
-    setEmailDoctor:(email:string)=>void
+    setEmailDoctor:(email:string)=>void,
+    setSubscription:(isSubscribed:boolean)=>void,
     setAuthDoctor:(email:string,accessToken:string,user:IUser,isSubscribed: boolean,isVerified:boolean, subscriptionExpiryDate: string)=>void
     logout:()=>void
     adminLogout:()=>void
@@ -31,6 +32,9 @@ export const useAuthStoreDoctor = create<AuthStateDoctor>()(
             subscriptionExpiryDate: null,
             setVerification:(isVerified)=>set({isVerified}),
             setEmailDoctor:(emailDoctor) => set({emailDoctor}),
+            setSubscription(isSubscribed) {
+                set({isSubscribed})
+            },
             setAuthDoctor: (emailDoctor, accessTokenDoctor, user, isSubscribed,isVerified, subscriptionExpiryDate) =>
               set({ emailDoctor, accessTokenDoctor, user, isSubscribed,isVerified, subscriptionExpiryDate }, false, "setAuth"), 
             logout: () => set({ emailDoctor: null, accessTokenDoctor: null, user: null,isSubscribed: null, subscriptionExpiryDate: null }, false, "logout"),

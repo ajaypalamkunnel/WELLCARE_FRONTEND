@@ -9,6 +9,8 @@ import {
   formatDisplayDate,
   formatTime2,
 } from "@/utils/dateutilities";
+import { useRouter } from "next/navigation";
+import AppointmentDetail from "./AppointmentDetail";
 const UserAppointmentsList: React.FC = () => {
   const [appointments, setAppointments] = useState<AppointmentListItemDTO[]>(
     []
@@ -16,6 +18,9 @@ const UserAppointmentsList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("upcoming");
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null) 
+
+  const router = useRouter()
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -51,6 +56,24 @@ const UserAppointmentsList: React.FC = () => {
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setStatusFilter(e.target.value);
   };
+
+  const handleViewDetails = (appointmentId:string)=>{
+    console.log("====>",appointmentId);
+    setSelectedAppointmentId(appointmentId)
+    
+  }
+
+
+  if(selectedAppointmentId){
+    return(
+      <AppointmentDetail
+      appointmentId={selectedAppointmentId}
+      onBack={()=>setSelectedAppointmentId(null)}
+      />
+    )
+  }
+
+
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
@@ -139,6 +162,7 @@ const UserAppointmentsList: React.FC = () => {
                 <button
                   className="flex w-full items-center justify-between px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors"
                   style={{ backgroundColor: "#03C03C" }}
+                  onClick={()=>handleViewDetails(appointment._id)}
                 >
                   <span>View Details</span>
                   <ChevronRight size={18} />

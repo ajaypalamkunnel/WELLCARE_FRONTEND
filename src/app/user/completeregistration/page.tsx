@@ -6,7 +6,7 @@ import Header from '@/components/homeComponents/Header';
 import { userCompleteRegistration } from '@/services/user/auth/authService';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/user/authStore';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // Define the interfaces as specified
 
@@ -49,6 +49,8 @@ const PatientInformationForm: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const email = useAuthStore((state)=>state.email)
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const doctorId = searchParams.get("doctorId")
     const { 
         register, 
         handleSubmit, 
@@ -100,7 +102,7 @@ const PatientInformationForm: React.FC = () => {
         if(response.status === 200){
             toast.success("User details submitted successfully")
             reset()
-            router.push("/user/booking")
+            router.push(`/user/booking?doctorId=${doctorId}`)
 
         }else{
             throw new Error(response.data?.message || "Unexpected error occurred")

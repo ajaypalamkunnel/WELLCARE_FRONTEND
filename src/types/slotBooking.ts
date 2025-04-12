@@ -115,3 +115,54 @@ export interface AppointmentListItemDTO {
     profileImage: string;
   };
 }
+
+
+
+
+export interface AppointmentDetailDTO {
+  _id: string;
+  appointmentDate: Date;
+  status: string;
+  paymentStatus?: string;
+  slot: {
+    start_time: Date;
+    end_time: Date;
+  };
+  doctor: {
+    fullName: string;
+    specialization: string;
+    experience: number;
+    profileImage: string;
+    clinicAddress?: {
+      clinicName: string;
+      street: string;
+      city: string;
+      state: string;
+      country: string;
+    };
+  };
+  prescription?: {
+    _id: string;
+    fileUrl: string;
+    diagnosis: string;
+  };
+
+  service: {
+    name: string;
+    mode: "Online" | "In-Person" | "Both";
+    fee: number;
+    description: string;
+  }
+  
+}
+
+
+
+export interface CancelAppointmentResponseDTO {
+  message: string;
+  refund: {
+    status: "eligible" | "not_eligible";
+    amount: number;
+  };
+}
+
