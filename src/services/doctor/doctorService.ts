@@ -2,6 +2,7 @@ import { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/mod
 import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/ScheduleModal";
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
+import { ApiResponseDoctorAppointmentListItemDTO, AppointmentFilters, DoctorAppointmentDetailDTO } from "@/types/slotBooking";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 import { getErrorMessage } from "@/utils/handleError";
 import axios, { AxiosError } from "axios";
@@ -126,14 +127,11 @@ export const createService = async (data: ServiceData) => {
 export const getServices = async (doctorId: string) => {
     try {
 
-        
-
         const response = await axiosInstanceDoctor.get("/api/doctor/get-services", {
             params: { doctorId }
         });
 
-       
-
+    
         return response.data
 
 
@@ -266,3 +264,46 @@ export const fetchSchedules = async (params:any) => {
       throw error;
     }
   };
+
+
+  export const getDoctorAppointments = async (
+    filters: AppointmentFilters
+  ): Promise<ApiResponseDoctorAppointmentListItemDTO> => {
+    try {
+
+        console.log("ponath===>",filters);
+        
+      const response = await axiosInstanceDoctor.get("/api/doctor/appointments", {
+        params: filters,
+      });
+
+      console.log("Final URL:", response.config?.url);
+      console.log("response : ",response)
+  
+      return response.data.data;
+    } catch (error) {
+      console.error("Error while fetching doctor appointments:", error);
+      throw error;
+    }
+  };
+  
+
+
+  export const getDoctorAppointmentDetail = async(appointmentId:string):Promise<DoctorAppointmentDetailDTO>=>{
+    try {
+        const response = await axiosInstanceDoctor.get(
+          `/api/doctor/appointments/${appointmentId}/details`
+        );
+    
+        // Assuming your backend response follows: { success: true, message: "...", data: {...} }
+        return response.data.data;
+      } catch (error) {
+        const axiosError = error as AxiosError<{ error: string }>;
+    
+        const errorMessage =
+          axiosError.response?.data?.error || "Failed to fetch appointment detail";
+    
+        console.error("getDoctorAppointmentDetail error:", errorMessage);
+        throw new Error(errorMessage);
+      }
+  }

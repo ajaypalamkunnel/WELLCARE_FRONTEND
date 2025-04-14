@@ -7,6 +7,7 @@ import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import DoctorAppointmentsPage from "@/components/doctorComponents/AppointmentListing";
 export default function DoctorHome() {
   const user = useAuthStoreDoctor((state) => state.user);
   const [doctorData, setDoctorData] = useState<IDoctorProfileDataType>();
@@ -30,17 +31,22 @@ export default function DoctorHome() {
   const fullName: string = capitalizeFirstLetter(user?.fullName!);
 
   return (
-    <div>
-      {loading ? (
-        <Loader />
-        
+    <>
+      {user?.isSubscribed ? (
+        <DoctorAppointmentsPage />
       ) : (
-        <WelcomeDoctor
-          doctorName={fullName}
-          isVerified={doctorData?.isVerified!}
-          status={doctorData?.status!}
-        />
+        <div>
+          {loading ? (
+            <Loader />
+          ) : (
+            <WelcomeDoctor
+              doctorName={fullName}
+              isVerified={doctorData?.isVerified!}
+              status={doctorData?.status!}
+            />
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 }
