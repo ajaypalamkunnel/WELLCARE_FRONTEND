@@ -60,6 +60,8 @@ const DoctorProfile = () => {
 
   }
 
+  
+
   if (loading) return (
     <div className="flex justify-center items-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-medical-green"></div>
@@ -163,7 +165,13 @@ const DoctorProfile = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 mt-6">
-            <button className="flex-1 bg-medical-green hover:bg-medical-green-light text-white font-medium py-2 px-4 rounded-md transition flex items-center justify-center">
+            <button
+            onClick={
+              ()=>{
+                router.push(`/user/chat/${doctorId}`)
+              }
+            }
+             className="flex-1 bg-medical-green hover:bg-medical-green-light text-white font-medium py-2 px-4 rounded-md transition flex items-center justify-center">
               <MessageCircle size={18} className="mr-2" />
               Message
             </button>

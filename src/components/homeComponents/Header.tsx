@@ -1,11 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, Search, Video, Info, User, Home, X, LogIn, Section, Hospital } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/user/authStore";
 import { logout } from "@/services/user/auth/authService";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { connectSocket } from "@/utils/socket";
+
 interface HeaderProps {
   profileImageUrl?: string;
 }
@@ -16,10 +18,18 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
   const router = useRouter();
   const logoutstore = useAuthStore((state) => state.logout);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const user = useAuthStore()
   const isLoggedIn = !!accessToken;
+  const userId = user.user?.id
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  useEffect(()=>{
+    if(userId){
+      connectSocket(userId)
+    }
+  },[user])
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);

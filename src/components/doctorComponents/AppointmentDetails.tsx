@@ -1,8 +1,10 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, User, FileText, Camera, Upload, Phone, Home, Activity, AlertCircle, DollarSign, Tag, MapPin, AlertTriangle, MessageCircle } from 'lucide-react';
 import { formatDisplayDate, formatTime2 } from "../../utils/dateutilities"
 import { DoctorAppointmentDetailDTO } from '@/types/slotBooking';
 import { getDoctorAppointmentDetail } from '@/services/doctor/doctorService';
+import { useRouter } from 'next/navigation';
 
 interface DoctorAppointmentDetailProps {
   appointmentId: string;
@@ -13,6 +15,8 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
   const [appointment, setAppointment] = useState<DoctorAppointmentDetailDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter()
+  const userId = appointment?.patient._id
   
 
   useEffect(() => {
@@ -20,6 +24,8 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
       try {
         setLoading(true);
         const data = await getDoctorAppointmentDetail(appointmentId);
+        console.log("==>",data.patient._id);
+        
         setAppointment(data);
         setError(null);
       } catch (err) {
@@ -286,7 +292,7 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
               </button>
             )}
              <button
-                onClick={handleStartConsultation}
+                onClick={()=>router.push(`/doctordashboard/chat/${userId}`)}
                 className="w-full inline-flex justify-center items-center mt-4 px-4 py-3 bg-indigo-900 text-white text-sm font-medium rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
               >
                 <MessageCircle size={20} className="mr-2"/>
@@ -296,6 +302,8 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
 
         </div>
       </div>
+
+      
       
     </div>
   );

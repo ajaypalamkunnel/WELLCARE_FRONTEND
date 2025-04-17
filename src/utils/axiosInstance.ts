@@ -2,7 +2,7 @@ import axios from "axios";
 import { config } from "process";
 import { useAuthStore } from "@/store/user/authStore";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
 
 
 const axiosInstancePatinet = axios.create({

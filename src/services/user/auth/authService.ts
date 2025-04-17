@@ -13,6 +13,7 @@ import { threadId } from "worker_threads";
 import { UserProfileData, UserProfileFormData } from "@/types/userProfileData";
 import { ApiResponse, AppointmentDetailDTO, AppointmentListItemDTO, CancelAppointmentResponseDTO, formatDate, IInitiateBookingResponse, InitiateBookingPayload, IVerifyBookingResponse, VerifyBookingPayload } from "@/types/slotBooking";
 import { promises } from "dns";
+import { ChatUser } from "@/types/chat";
 
 export const registerBasicDetails = async (data: Partial<IUser>) => {
 
@@ -406,3 +407,40 @@ export const CancelAppointment = async (appointmentId: string, reason?: string):
 
     }
 }
+
+
+
+export const getChatInboxUser = async ():Promise<ChatUser[]>=>{
+    try {
+
+        const response = await axiosInstance.get("/inbox");
+
+        return response.data.data
+        
+    } catch (error) {
+        
+        throw error
+    }
+}
+
+
+
+
+export const getUserBasicInfo = async (userId: string): Promise<ChatUser> => {
+
+    try {
+        const response = await axiosInstanceDoctor.get(`/user-info/${userId}`);
+
+        console.log("✅ getUserBasicInfo response =>", response.data.data);
+        return response.data.data;
+        
+    } catch (error) {
+
+        console.error("❌ getUserBasicInfo failed", error);
+
+        throw error
+        
+    }
+
+}
+

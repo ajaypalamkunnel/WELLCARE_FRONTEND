@@ -1,8 +1,10 @@
 import { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
 import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/ScheduleModal";
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
+import { ChatUser } from "@/types/chat";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import { ApiResponseDoctorAppointmentListItemDTO, AppointmentFilters, DoctorAppointmentDetailDTO } from "@/types/slotBooking";
+import axiosInstancePatinet from "@/utils/axiosInstance";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 import { getErrorMessage } from "@/utils/handleError";
 import axios, { AxiosError } from "axios";
@@ -307,3 +309,36 @@ export const fetchSchedules = async (params:any) => {
         throw new Error(errorMessage);
       }
   }
+
+
+
+export const getChatInboxDoctor = async ():Promise<ChatUser[]>=>{
+    try {
+
+        const response = await axiosInstanceDoctor.get("/api/doctor/inbox");
+
+        return response.data.data
+        
+    } catch (error) {
+        
+        throw error
+    }
+}
+
+export const getDoctorBasicInfo = async (doctorId: string): Promise<ChatUser> => {
+
+    try {
+        const response = await axiosInstancePatinet.get(`/api/doctor/doctor-info/${doctorId}`);
+
+        console.log("✅ getDoctorBasicInfo response =>", response.data.data);
+        return response.data.data;
+        
+    } catch (error) {
+
+        console.error("❌ getDoctorBasicInfo failed", error);
+
+        throw error
+        
+    }
+
+}

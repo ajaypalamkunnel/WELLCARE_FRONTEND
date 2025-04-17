@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { logoutDoctor } from "@/services/doctor/authService";
 import toast from "react-hot-toast";
+import { connectSocket } from "@/utils/socket";
 
 interface HeaderProps {
   userImage?: string;
@@ -25,6 +26,15 @@ console.log("====>",user?.isVerified);
 
 
   const isLoggedIn = !!accessToken;
+
+  const doctorId = user?.id
+  useEffect(()=>{
+    if(doctorId){
+      connectSocket(doctorId)
+    }
+  },[user])
+
+
   const toggleProfileDropdown = () => {
     setIsProfileOpen(!isProfileOpen);
   };
@@ -123,7 +133,7 @@ console.log("====>",user?.isVerified);
             Appointments
           </a>
           <a
-            href="/messages"
+            href="/doctordashboard/chat"
             className="flex items-center hover:text-green-300 transition"
           >
             <svg
