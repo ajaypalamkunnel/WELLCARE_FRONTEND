@@ -57,7 +57,3 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({ messages, theme }) =>
 
 export default ChatMessageList;
 
-
-
-
-0

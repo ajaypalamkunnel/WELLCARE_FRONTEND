@@ -49,6 +49,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
   useEffect(() => {
     const fetchInbox = async () => {
       try {
+         //services/doctor/chatService.ts
         const data = await getChatInboxDoctor();
         console.log("inbox api ", data);
 
@@ -96,10 +97,11 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
     const fetchMessages = async () => {
       if (!selectedUser || !doctorId) return;
       try {
+        //services/doctor/chatService.ts
         const data = await getMessagesWithUserDoctor(selectedUser._id);
 
         const formattedMessages: Message[] = data.map((msg: any) => ({
-          fromSelf: msg.senderId === userId,
+          fromSelf: msg.senderId.toString() === doctorId,
           text: msg.content,
           time: formatTime(new Date(msg.createdAt)),
         }));
@@ -151,7 +153,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
   const handleSendMessage = (text: string) => {
     const socket = getSocket();
     if (!selectedUser || !socket || !doctorId) return;
-
+    console.log(">>>> handleSendMessage",text, selectedUser,"---",userId,"___",socket );
     const MessagePayload = {
      from: doctorId,
       to: selectedUser._id,
@@ -169,7 +171,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
           }),
 
     }
-
+    console.log("ponathe==",MessagePayload);
     setMessages((prev) => [...prev, newMessage]);
     socket.emit("send-message", MessagePayload);
   };

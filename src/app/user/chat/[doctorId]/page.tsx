@@ -1,16 +1,18 @@
-"use client"
+"use client";
 import ChatWrapper from "@/components/chatComponets/ChatWrapper";
-import { useParams } from "next/navigation"
+import Header from "@/components/doctorComponents/Header";
+import { useParams } from "next/navigation";
 
+const ChatWithDoctor = () => {
+  const params = useParams();
+  const doctorId = params?.doctorId as string;
 
-const ChatWithDoctor = ()=>{
-    const params = useParams()
-    const doctorId = params?.doctorId as string;
+  return (
+    <>
+      <Header />
+      <ChatWrapper doctorId={doctorId} />
+    </>
+  );
+};
 
-    console.log("hollll",doctorId);
-    
-
-    return <ChatWrapper doctorId={doctorId}/>
-}
-
-export default ChatWithDoctor
+export default ChatWithDoctor;

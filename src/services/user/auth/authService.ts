@@ -412,9 +412,10 @@ export const CancelAppointment = async (appointmentId: string, reason?: string):
 
 export const getChatInboxUser = async ():Promise<ChatUser[]>=>{
     try {
+        console.log("📡 Calling inbox API...");
 
         const response = await axiosInstance.get("/inbox");
-
+        console.log("📨 Inbox API response:", response.data);
         return response.data.data
         
     } catch (error) {
@@ -423,7 +424,7 @@ export const getChatInboxUser = async ():Promise<ChatUser[]>=>{
     }
 }
 
-
+    
 
 
 export const getUserBasicInfo = async (userId: string): Promise<ChatUser> => {

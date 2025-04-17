@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Menu, Search, Video, Info, User, Home, X, LogIn, Section, Hospital } from "lucide-react";
+import { Menu, Search, Video, Info, User, Home, X, LogIn, Section, Hospital, MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/user/authStore";
 import { logout } from "@/services/user/auth/authService";
@@ -88,9 +88,9 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
               <Hospital size={18} className="mr-1" />
               <span>Departments</span>
             </a>
-            <a href="#" className="flex items-center hover:text-gray-900">
-              <Video size={18} className="mr-1" />
-              <span>Video Consultation</span>
+            <a href="/user/chat" className="flex items-center hover:text-gray-900">
+              <MessageCircle size={18} className="mr-1" />
+              <span>Messages</span>
             </a>
             <a href="#" className="flex items-center hover:text-gray-900">
               <Info size={18} className="mr-1" />

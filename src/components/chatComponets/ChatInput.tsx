@@ -17,6 +17,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, theme }) => {
     if (message.trim()) {
       console.log("1)",message);
       
+      
       onSendMessage(message);
       setMessage("");
     }
