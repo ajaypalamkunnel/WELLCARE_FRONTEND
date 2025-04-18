@@ -6,7 +6,7 @@ import { useAuthStore } from "@/store/user/authStore";
 import { logout } from "@/services/user/auth/authService";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { connectSocket } from "@/utils/socket";
+import { connectSocket, getSocket } from "@/utils/socket";
 
 interface HeaderProps {
   profileImageUrl?: string;
@@ -37,6 +37,10 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
 
   const handleLogout = async () => {
     try {
+      const socket = getSocket()
+      if(socket){
+        socket.disconnect()
+      }
       await logout();
       logoutstore();
       // useAuthStore.getState().logout()

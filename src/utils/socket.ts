@@ -13,7 +13,7 @@ export const connectSocket = (userId:string) =>{
 
         socket.on("connect",()=>{
             console.log("✅ Connected to socket:", socket?.id);
-
+            console.log("🔁 Sending user-online:", userId);
              // Emit user-online
 
              socket?.emit("user-online",{userId})

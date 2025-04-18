@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { logoutDoctor } from "@/services/doctor/authService";
 import toast from "react-hot-toast";
-import { connectSocket } from "@/utils/socket";
+import { connectSocket, getSocket } from "@/utils/socket";
 
 interface HeaderProps {
   userImage?: string;
@@ -48,6 +48,14 @@ console.log("====>",user?.isVerified);
 
   const handleLogout = async () => {
     try {
+
+      const socket = getSocket()
+
+      if(socket){
+        socket.disconnect()
+      }
+
+
       await logoutDoctor();
 
       toast.success("Logging out...");

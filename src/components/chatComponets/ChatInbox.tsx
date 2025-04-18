@@ -22,7 +22,7 @@ const ChatInbox: React.FC<ChatInboxProps> = ({
   const filteredUsers = users.filter((user) =>
     user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  console.log("🚀==>",users);
   return (
     <div className="flex flex-col h-full border-r">
       {/* 🔍 Search */}
@@ -43,9 +43,11 @@ const ChatInbox: React.FC<ChatInboxProps> = ({
         </div>
       </div>
 
+       
       {/* 👥 Chat List */}
       <div className="flex-1 overflow-y-auto">
         {filteredUsers.map((user) => (
+          
           <div
             key={user._id}
             onClick={() => onSelectUser(user)}

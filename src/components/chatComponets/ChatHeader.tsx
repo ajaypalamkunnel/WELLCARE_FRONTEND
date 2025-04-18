@@ -20,6 +20,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   if (!selectedUser) return null;
 
+  console.log("🏵️vanna user==>",selectedUser)
+
   return (
     <div className="bg-white border-b p-3 flex items-center shadow-sm">
       {isMobile && (
