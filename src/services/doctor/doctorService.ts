@@ -1,8 +1,9 @@
 import { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
+import { CertificationData, CertificationFormData, EducationFormData } from "@/components/doctorComponents/forms/qualification/QualificationManagement";
 import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/ScheduleModal";
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import { ChatUser } from "@/types/chat";
-import IDoctorProfileDataType from "@/types/doctorFullDataType";
+import IDoctorProfileDataType, { ICertificate } from "@/types/doctorFullDataType";
 import { ApiResponseDoctorAppointmentListItemDTO, AppointmentFilters, DoctorAppointmentDetailDTO } from "@/types/slotBooking";
 import axiosInstancePatinet from "@/utils/axiosInstance";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
@@ -342,3 +343,116 @@ export const getDoctorBasicInfo = async (doctorId: string): Promise<ChatUser> =>
     }
 
 }
+
+
+
+
+export const markMessagesAsReadDoctor = async (receiverId:string) =>{
+    return await axiosInstanceDoctor.patch(`/api/chat/messages/mark-read/${receiverId}`)
+}
+
+
+
+export const editEducation = async ()=>{
+
+  
+
+
+}
+
+export const addNewEducation = async (data:EducationFormData) =>{
+
+    try {
+
+        const response = await axiosInstanceDoctor.post("/api/doctor/profile/addeducation",data)
+
+        console.log("vanna data:  ",response.data)
+
+        return response.data.data
+        
+    } catch (error) {
+
+        console.error("add new education", error);
+        throw error
+        
+    }
+    
+}
+
+
+export const addNewCertification = async (data:ICertificate) =>{
+
+    try {
+        
+        const response = await axiosInstanceDoctor.post("/api/doctor/profile/addCertificate",data)
+
+        console.log("vanna data:  ",response.data)
+
+
+        return response.data.data
+
+
+        
+    } catch (error) {
+
+        throw error
+        
+    }
+
+}
+
+
+
+export const updateEducation = async (data:EducationFormData) =>{
+
+    try {
+        console.log(data);
+        
+        
+        const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateEducation",data)
+
+        console.log("vanna data:  ",response.data)
+
+
+        return response.data
+
+
+        
+    } catch (error) {
+
+        console.error("Update education error:", error);
+
+        throw error
+        
+    }
+
+}
+
+
+
+export const updateCertification = async (data:CertificationFormData) =>{
+
+    try {
+        console.log(data);
+        
+        
+        const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateCertification",data)
+
+        console.log("vanna data:  ",response.data)
+
+
+        return response.data
+
+
+        
+    } catch (error) {
+
+        console.error("Update education error:", error);
+
+        throw error
+        
+    }
+
+}
+
+

@@ -14,9 +14,10 @@ interface CertificationModalProps {
 const CertificationModal: React.FC<CertificationModalProps> = ({ onClose, onSave, defaultValues }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<CertificationFormData>({
     defaultValues: defaultValues ? {
+      _id:defaultValues._id,
       name: defaultValues.name,
       issuedBy: defaultValues.issuedBy,
-      year: defaultValues.yearOfIssue
+      yearOfIssue: defaultValues.yearOfIssue
     } : undefined
   });
 
@@ -62,7 +63,7 @@ const CertificationModal: React.FC<CertificationModalProps> = ({ onClose, onSave
               Year of Issue
             </label>
             <input
-              {...register('year', { 
+              {...register('yearOfIssue', { 
                 required: 'Year is required',
                 pattern: {
                   value: /^\d{4}$/,
@@ -73,7 +74,7 @@ const CertificationModal: React.FC<CertificationModalProps> = ({ onClose, onSave
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               placeholder="e.g., 2021"
             />
-            {errors.year && <p className="mt-1 text-sm text-red-600">{errors.year.message}</p>}
+            {errors.yearOfIssue && <p className="mt-1 text-sm text-red-600">{errors.yearOfIssue.message}</p>}
           </div>
           
           <div className="flex justify-end space-x-3 pt-4">

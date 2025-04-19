@@ -18,3 +18,8 @@ export const getMessagesWithUser = async (receiverId: string): Promise<Message[]
   };
 
 
+
+
+  export const markMessagesAsReadUser = async (receiverId:string)=>{
+    return axiosInstancePatient.patch(`/api/chat/messages/mark-read/${receiverId}`)
+}

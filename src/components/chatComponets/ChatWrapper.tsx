@@ -9,7 +9,7 @@ import { userChatTheme } from "@/components/chatComponets/chatTheme";
 import React, { useEffect, useState, useRef } from "react";
 import { getSocket } from "@/utils/socket";
 import { useAuthStore } from "@/store/user/authStore";
-import { getMessagesWithUser } from "@/services/user/auth/chatServiceUser";
+import { getMessagesWithUser, markMessagesAsReadUser } from "@/services/user/auth/chatServiceUser";
 import { getChatInboxUser } from "@/services/user/auth/authService";
 import { formatTime } from "../chatComponets/DoctorChatWrapper"; // reusable time formatter
 import { Roles } from "@/types/chat";
@@ -110,6 +110,8 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
         const data = await getMessagesWithUser(selectedUser._id);
         console.log("get messages api response : =>", data);
 
+        
+        
         const formattedMessages: Message[] = data.map((msg: any) => ({
           fromSelf: msg.senderId.toString() === userId,
           text: msg.content,
@@ -122,6 +124,36 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
     };
     fetchMessages();
   }, [selectedUser]);
+
+
+  //-------------------- mark messages as read ------------------------
+  
+  useEffect(()=>{
+
+    const markAsRead = async () =>{
+
+      if(!selectedUser || !userId)return;
+
+      try {
+
+        await markMessagesAsReadUser(selectedUser._id)
+
+        setChatUsers((prevUsers)=>
+          prevUsers.map((user)=>
+            user._id === selectedUser._id ? {...user,unreadCount: 0}:user
+          )
+        )
+        console.log("✅ Messages marked as read");
+        
+      } catch (error) {
+        console.error("❌ Failed to mark messages as read", error);
+      }
+
+    }
+    markAsRead();
+  },[selectedUser])
+
+
 
   //--------------------- Socket message receive handling----------------------------
   useEffect(() => {
@@ -139,15 +171,33 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
 
       if (selectedUser && message.senderId === selectedUser._id) {
         setMessages((prev) => [...prev, formattedMessage]);
-      } else {
-        setChatUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user._id === message.senderId
-              ? { ...user, unreadCount: user.unreadCount + 1 }
-              : user
-          )
+      } 
+
+      setChatUsers((prevUsers) => {
+        const updated = prevUsers.map((user) =>
+          user._id === message.senderId
+            ? {
+                ...user,
+                lastMessage: message.content,
+                lastMessageTime: message.createdAt,
+                unreadCount:
+                  selectedUser && user._id === selectedUser._id
+                    ? 0 // reset if currently chatting
+                    : user.unreadCount + 1,
+              }
+            : user
         );
-      }
+  
+        //  Sort latest message on top
+        return updated.sort(
+          (a, b) =>
+            new Date(b.lastMessageTime).getTime() -
+            new Date(a.lastMessageTime).getTime()
+        );
+      });
+
+
+
     };
 
     socket.on("receive-message", handleReceive);

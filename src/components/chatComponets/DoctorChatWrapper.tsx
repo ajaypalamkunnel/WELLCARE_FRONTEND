@@ -9,7 +9,9 @@ import {
   getChatInboxDoctor,
   getMessagesWithUserDoctor,
 } from "@/services/doctor/chatServiceDoctor";
+import { markMessagesAsReadDoctor } from "@/services/doctor/doctorService";
 import { getUserBasicInfo } from "@/services/user/auth/authService"; // ✨ NEW
+
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { Roles } from "@/types/chat";
 import { ChatUser, Message } from "@/types/chat";
@@ -49,7 +51,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
   useEffect(() => {
     const fetchInbox = async () => {
       try {
-         //services/doctor/chatService.ts
+        //services/doctor/chatService.ts
         const data = await getChatInboxDoctor();
         console.log("inbox api ", data);
 
@@ -115,6 +117,29 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
     fetchMessages();
   }, [selectedUser]);
 
+  //-------------------- mark messages as read ------------------------
+
+  useEffect(() => {
+    const markAsRead = async () => {
+      if (!selectedUser || !doctorId) return;
+
+      try {
+        await markMessagesAsReadDoctor(selectedUser._id);
+
+        setChatUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user._id === selectedUser._id ? { ...user, unreadCount: 0 } : user
+          )
+        );
+        console.log("✅ Messages marked as read");
+      } catch (error) {
+        console.error("❌ Failed to mark messages as read", error);
+      }
+    };
+
+    markAsRead();
+  }, [selectedUser]);
+
   //------------------ Handle receive message ---------------------------------
   useEffect(() => {
     const socket = getSocket();
@@ -153,25 +178,32 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
   const handleSendMessage = (text: string) => {
     const socket = getSocket();
     if (!selectedUser || !socket || !doctorId) return;
-    console.log(">>>> handleSendMessage",text, selectedUser,"---",userId,"___",socket );
+    console.log(
+      ">>>> handleSendMessage",
+      text,
+      selectedUser,
+      "---",
+      userId,
+      "___",
+      socket
+    );
     const MessagePayload = {
-     from: doctorId,
+      from: doctorId,
       to: selectedUser._id,
-      message:text,
+      message: text,
       fromRole: Roles.DOCTOR,
       toRole: Roles.USER,
     };
 
-    const newMessage ={
-        fromSelf:true,
-        text,
-        time: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-
-    }
-    console.log("ponathe==",MessagePayload);
+    const newMessage = {
+      fromSelf: true,
+      text,
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+    console.log("ponathe==", MessagePayload);
     setMessages((prev) => [...prev, newMessage]);
     socket.emit("send-message", MessagePayload);
   };
