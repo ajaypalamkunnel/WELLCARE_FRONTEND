@@ -76,9 +76,9 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
       if (doctorInList) {
         setSelectedUser(chatUsers.find((u)=>u._id === doctorId)!);
         setShowInbox(false);
-        console.log("ondu😌");
+        // console.log("ondu😌");
       } else {
-        console.log("ella😌");
+        // console.log("ella😌");
         try {
           if (!doctorId) return;
           const doctor = await getDoctorBasicInfo(doctorId!);
