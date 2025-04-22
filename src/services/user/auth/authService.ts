@@ -14,6 +14,7 @@ import { UserProfileData, UserProfileFormData } from "@/types/userProfileData";
 import { ApiResponse, AppointmentDetailDTO, AppointmentListItemDTO, CancelAppointmentResponseDTO, formatDate, IInitiateBookingResponse, InitiateBookingPayload, IVerifyBookingResponse, VerifyBookingPayload } from "@/types/slotBooking";
 import { promises } from "dns";
 import { ChatUser } from "@/types/chat";
+import { PaginatedTransactionResponseDTO, TransactionQueryParams, WalletSummaryDTO } from "@/types/wallet";
 
 export const registerBasicDetails = async (data: Partial<IUser>) => {
 
@@ -443,5 +444,38 @@ export const getUserBasicInfo = async (userId: string): Promise<ChatUser> => {
         
     }
 
+}
+
+
+export const getWalletSummary = async ():Promise<WalletSummaryDTO>=>{
+    try {
+
+        const response = await axiosInstance.get("/wallet");
+
+        return response.data.data
+        
+    } catch (error) {
+
+        throw error
+        
+    }
+}
+
+export const getWalletTransactions = async (params:TransactionQueryParams):Promise<PaginatedTransactionResponseDTO>=>{
+    try {
+
+        const response = await axiosInstance.get("/wallet/transactions",{
+            params:{
+                page:params.page||1,
+                limit:params.limit||10,
+                sort:params.sort || "desc",
+            }
+        })
+
+        return response.data.data
+        
+    } catch (error) {
+        throw error;
+    }
 }
 

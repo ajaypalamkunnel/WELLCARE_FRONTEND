@@ -36,6 +36,10 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
   const [cancelReason, setCancelReason] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
 
+  const appoinmentStatusCancelled = appointment?.status === 'cancelled'
+  console.log(appoinmentStatusCancelled);
+  
+
   useEffect(() => {
     const fetchAppointmentDetails = async () => {
       if (!appointmentId) {
@@ -344,22 +348,23 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
           </div>
         </div>
       )}
+      
 
       {/* Action Buttons */}
-      <div className="flex flex-col md:flex-row gap-3 mt-6">
+      {!appoinmentStatusCancelled&&<div className="flex flex-col md:flex-row gap-3 mt-6">
         <button className="flex-1 bg-medical-green text-white py-3 px-4 rounded-md hover:bg-medical-green-light transition-colors font-medium flex items-center justify-center">
           <MessageCircle size={18} className="mr-2" />
           Message Doctor
         </button>
 
-        <button
+       <button
           onClick={()=>setShowCancelModal(true)}
           className="flex-1 bg-red-500 text-white py-3 px-4 rounded-md hover:bg-red-600 transition-colors font-medium flex items-center justify-center"
         >
           <XCircle size={18} className="mr-2" />
           Cancel Appointment
         </button>
-      </div>
+      </div>}
 
       {/* Disclaimer */}
       <div className="mt-4 p-3 bg-yellow-50 rounded-md flex items-start">

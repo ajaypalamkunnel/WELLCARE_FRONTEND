@@ -4,6 +4,10 @@ import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
 
+    if (req.nextUrl.pathname === "/__nextjs_original-stack-frames") {
+        return new NextResponse(null, { status: 204 });
+      }
+
     console.log("hoiiiii middleware");
 
 
@@ -29,5 +33,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/user/profile", "/admin/dashboard", "/doctordashboard/home", "/doctordashboard/registration", "/doctordashboard/profile","/doctordashboard/subscriptionsuccess"]
+    matcher: ["/user/profile", "/admin/dashboard", "/doctordashboard/home", "/doctordashboard/registration", "/doctordashboard/profile","/doctordashboard/subscriptionsuccess","/__nextjs_original-stack-frames",]
 }

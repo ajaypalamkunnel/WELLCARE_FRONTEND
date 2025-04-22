@@ -9,7 +9,10 @@ import { userChatTheme } from "@/components/chatComponets/chatTheme";
 import React, { useEffect, useState, useRef } from "react";
 import { getSocket } from "@/utils/socket";
 import { useAuthStore } from "@/store/user/authStore";
-import { getMessagesWithUser, markMessagesAsReadUser } from "@/services/user/auth/chatServiceUser";
+import {
+  getMessagesWithUser,
+  markMessagesAsReadUser,
+} from "@/services/user/auth/chatServiceUser";
 import { getChatInboxUser } from "@/services/user/auth/authService";
 import { formatTime } from "../chatComponets/DoctorChatWrapper"; // reusable time formatter
 import { Roles } from "@/types/chat";
@@ -21,9 +24,6 @@ interface ChatWrapperProps {
 }
 
 const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
-  console.log("📦 ChatWrapper component rendered");
-
-
   const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [showInbox, setShowInbox] = useState(true);
@@ -32,8 +32,6 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
 
   const user = useAuthStore();
   const userId = user.user?.id;
-
-  
 
   //--------------------- Handle screen size--------------------
   useEffect(() => {
@@ -45,8 +43,6 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
 
   //---------------------- Fetch inbox users left panel-----------------------
   useEffect(() => {
-    console.log("🚀 useEffect triggered for inbox");
-
     const fetchInbox = async () => {
       try {
         //services/user/auth/authService.ts
@@ -68,21 +64,19 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
 
   useEffect(() => {
     const loadDoctorIfMissing = async () => {
-      console.log("inside loadDoctorIfMissing==>", doctorId);
+      
       if (!doctorId) return;
 
       const doctorInList = chatUsers.some((user) => user._id === doctorId);
 
       if (doctorInList) {
-        setSelectedUser(chatUsers.find((u)=>u._id === doctorId)!);
+        setSelectedUser(chatUsers.find((u) => u._id === doctorId)!);
         setShowInbox(false);
-        // console.log("ondu😌");
       } else {
-        // console.log("ella😌");
         try {
           if (!doctorId) return;
           const doctor = await getDoctorBasicInfo(doctorId!);
-          
+
           console.log("vanna data ", doctor);
 
           setChatUsers((prev) => {
@@ -97,9 +91,7 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
       }
     };
 
-    
-      loadDoctorIfMissing()
-    
+    loadDoctorIfMissing();
   }, [doctorId, chatUsers]);
 
   //-------------------- Fetch messages when user selected------------------------
@@ -110,8 +102,6 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
         const data = await getMessagesWithUser(selectedUser._id);
         console.log("get messages api response : =>", data);
 
-        
-        
         const formattedMessages: Message[] = data.map((msg: any) => ({
           fromSelf: msg.senderId.toString() === userId,
           text: msg.content,
@@ -123,44 +113,36 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
       }
     };
     fetchMessages();
-  }, [selectedUser]);
-
+  }, [selectedUser?._id]);
 
   //-------------------- mark messages as read ------------------------
-  
-  useEffect(()=>{
 
-    const markAsRead = async () =>{
-
-      if(!selectedUser || !userId)return;
+  useEffect(() => {
+    const markAsRead = async () => {
+      if (!selectedUser || !userId) return;
 
       try {
+        await markMessagesAsReadUser(selectedUser._id);
 
-        await markMessagesAsReadUser(selectedUser._id)
-
-        setChatUsers((prevUsers)=>
-          prevUsers.map((user)=>
-            user._id === selectedUser._id ? {...user,unreadCount: 0}:user
+        setChatUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user._id === selectedUser._id ? { ...user, unreadCount: 0 } : user
           )
-        )
-        console.log("✅ Messages marked as read");
-        
+        );
+        console.log(" Messages marked as read");
       } catch (error) {
-        console.error("❌ Failed to mark messages as read", error);
+        console.error(" Failed to mark messages as read", error);
       }
-
-    }
+    };
     markAsRead();
-  },[selectedUser])
-
-
+  }, [selectedUser?._id]);
 
   //--------------------- Socket message receive handling----------------------------
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
 
-    const handleReceive = (message:any) => {
+    const handleReceive = (message: any) => {
       console.log("📥 Received message:", message);
 
       const formattedMessage = {
@@ -171,7 +153,7 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
 
       if (selectedUser && message.senderId === selectedUser._id) {
         setMessages((prev) => [...prev, formattedMessage]);
-      } 
+      }
 
       setChatUsers((prevUsers) => {
         const updated = prevUsers.map((user) =>
@@ -187,7 +169,7 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
               }
             : user
         );
-  
+
         //  Sort latest message on top
         return updated.sort(
           (a, b) =>
@@ -195,9 +177,6 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
             new Date(a.lastMessageTime).getTime()
         );
       });
-
-
-
     };
 
     socket.on("receive-message", handleReceive);
@@ -208,16 +187,22 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
 
   //--------------------- Socket message send handling----------------------------
   const handleSendMessage = (text: string) => {
-
-    
     const socket = getSocket();
-    console.log(">>>> handleSendMessage",text, selectedUser,"---",userId,"___",socket );
+    console.log(
+      ">>>> handleSendMessage",
+      text,
+      selectedUser,
+      "---",
+      userId,
+      "___",
+      socket
+    );
     if (!selectedUser || !socket || !userId) return;
 
     const messagePayload = {
       from: userId,
       to: selectedUser._id,
-      message:text,
+      message: text,
       type: "text",
       fromRole: Roles.USER,
       toRole: Roles.DOCTOR,
@@ -231,9 +216,30 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
         minute: "2-digit",
       }),
     };
-    console.log("ponathe==",messagePayload);
-    
+    //  Append to message list
+
+    console.log("ponathe==", messagePayload);
+
     setMessages((prev) => [...prev, newMessage]);
+
+    setChatUsers((prevUsers) => {
+      const updated = prevUsers.map((user) =>
+        user._id === selectedUser._id
+          ? {
+              ...user,
+              lastMessage: text,
+              lastMessageTime: new Date().toISOString(), // ISO for proper sorting
+            }
+          : user
+      );
+
+      return updated.sort(
+        (a, b) =>
+          new Date(b.lastMessageTime).getTime() -
+          new Date(a.lastMessageTime).getTime()
+      );
+    });
+
     socket.emit("send-message", messagePayload);
   };
 

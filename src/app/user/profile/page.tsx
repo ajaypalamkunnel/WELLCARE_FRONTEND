@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { UserProfileData, UserProfileFormData } from '@/types/userProfileData';
 import UserAppointmentsList from '@/components/userComponents/AppoinmentsList';
+import Wallet from '@/components/userComponents/Wallet';
 // Define the main layout component
 const PatientPortal: React.FC = () => {
   // State to track the active section
@@ -54,9 +55,7 @@ getUserProfile()
     { id: 'profile', label: 'Profile', icon: <User size={20} /> },
     { id: 'appointments', label: 'My Appointments', icon: <Calendar size={20} /> },
     { id: 'records', label: 'Medical Records', icon: <FileText size={20} /> },
-    { id: 'upcoming', label: 'Upcoming Appointments', icon: <Clock size={20} /> },
-    { id: 'completed', label: 'Completed Appointments', icon: <CheckCircle size={20} /> },
-    { id: 'payments', label: 'Payments', icon: <CreditCard size={20} /> },
+    { id: 'wallet', label: 'wallet', icon: <CreditCard size={20} /> },
     { id: 'Change-Password', label: 'Change Password', icon: <KeyIcon size={20} /> },
     { id: 'logout', label: 'Logout', icon: <LogOut size={20} /> },
   ];
@@ -113,12 +112,10 @@ getUserProfile()
         
         {activeSection === 'profile' && <ProfileSection user={user!}  />}
 
-        {activeSection === 'appointments' && <SectionContent title="My Appointments" />}
+        {activeSection === 'appointments' && <UserAppointmentsList/>}
         {activeSection === 'records' && <SectionContent title="Medical Records" />}
-        {activeSection === 'upcoming' && <UserAppointmentsList/>}
-        {activeSection === 'completed' && <SectionContent title="Completed Appointments" />}
         {activeSection === 'Change-Password' && <PasswordChangeComponent id={user?._id!} userType='patient'/>}
-        {activeSection === 'payments' && <SectionContent title="Payments" />}
+        {activeSection === 'wallet' && <Wallet/>}
 
         
       </div>

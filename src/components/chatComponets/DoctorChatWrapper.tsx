@@ -115,7 +115,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
     };
 
     fetchMessages();
-  }, [selectedUser]);
+  }, [selectedUser?._id]);
 
   //-------------------- mark messages as read ------------------------
 
@@ -131,14 +131,14 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
             user._id === selectedUser._id ? { ...user, unreadCount: 0 } : user
           )
         );
-        console.log("✅ Messages marked as read");
+        console.log(" Messages marked as read");
       } catch (error) {
-        console.error("❌ Failed to mark messages as read", error);
+        console.error("Failed to mark messages as read", error);
       }
     };
 
     markAsRead();
-  }, [selectedUser]);
+  }, [selectedUser?._id]);
 
   //------------------ Handle receive message ---------------------------------
   useEffect(() => {
@@ -146,7 +146,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
     if (!socket) return;
 
     const handleReceive = (message: any) => {
-      console.log("📥 Doctor received message:", message);
+      console.log(" Doctor received message:", message);
 
       const formattedMessage = {
         fromSelf: false,
@@ -157,13 +157,28 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
       if (selectedUser && message.senderId === selectedUser._id) {
         setMessages((prev) => [...prev, formattedMessage]);
       } else {
-        setChatUsers((prevUsers) =>
-          prevUsers.map((user) =>
+        setChatUsers((prevUsers) => {
+          const updated = prevUsers.map((user) =>
             user._id === message.senderId
-              ? { ...user, unreadCount: user.unreadCount + 1 }
+              ? {
+                  ...user,
+                  lastMessage: message.content,
+                  lastMessageTime: message.createdAt,
+                  unreadCount:
+                    selectedUser && user._id === selectedUser._id
+                      ? 0
+                      : user.unreadCount + 1,
+                }
               : user
-          )
-        );
+          );
+
+          //  Sort the inbox by most recent message
+          return updated.sort(
+            (a, b) =>
+              new Date(b.lastMessageTime).getTime() -
+              new Date(a.lastMessageTime).getTime()
+          );
+        });
       }
     };
 
@@ -178,15 +193,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
   const handleSendMessage = (text: string) => {
     const socket = getSocket();
     if (!selectedUser || !socket || !doctorId) return;
-    console.log(
-      ">>>> handleSendMessage",
-      text,
-      selectedUser,
-      "---",
-      userId,
-      "___",
-      socket
-    );
+
     const MessagePayload = {
       from: doctorId,
       to: selectedUser._id,
@@ -203,8 +210,28 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
         minute: "2-digit",
       }),
     };
-    console.log("ponathe==", MessagePayload);
+
     setMessages((prev) => [...prev, newMessage]);
+
+    //  Update and sort inbox list after sending
+    setChatUsers((prevUsers) => {
+      const updated = prevUsers.map((user) =>
+        user._id === selectedUser._id
+          ? {
+              ...user,
+              lastMessage: text,
+              lastMessageTime: new Date().toISOString(), // For sorting
+            }
+          : user
+      );
+
+      return updated.sort(
+        (a, b) =>
+          new Date(b.lastMessageTime).getTime() -
+          new Date(a.lastMessageTime).getTime()
+      );
+    });
+
     socket.emit("send-message", MessagePayload);
   };
 
