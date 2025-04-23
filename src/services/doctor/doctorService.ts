@@ -456,3 +456,27 @@ export const updateCertification = async (data:CertificationFormData) =>{
 }
 
 
+
+
+export const cancelSchedule = async (reason:string,selectedScheduleId:string) =>{
+
+    try {
+
+        const response = await axiosInstanceDoctor.patch(`/api/doctor/schedules/${selectedScheduleId}/cancel`,{
+            reason:reason
+        })
+
+        console.log(response.data);
+        
+
+        return response.data
+    } catch (error) {
+
+        // console.error("error while cancelling schedule",error);
+
+        throw error
+        
+        
+    }
+
+}
