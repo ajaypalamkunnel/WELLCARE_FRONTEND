@@ -28,16 +28,16 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, theme }) => {
       onSubmit={handleSubmit}
       className="bg-white border-t p-3 flex items-center"
     >
-      {/* 📎 Attachment button (not functional yet) */}
-      <button
+      {/*  Attachment button (not functional yet) */}
+      {/* <button
         type="button"
         className="p-2 rounded-full hover:bg-gray-100 mr-2"
         title="Attach file"
       >
         <Paperclip size={20} className="text-gray-600" />
-      </button>
+      </button> */}
 
-      {/* 📝 Message input */}
+      {/*  Message input */}
       <input
         type="text"
         value={message}

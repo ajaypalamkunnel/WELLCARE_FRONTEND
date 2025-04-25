@@ -120,7 +120,7 @@ console.log("====>",user?.isVerified);
             </svg>
             Home
           </a>
-          <a
+          {/* <a
             href="/appointments"
             className="flex items-center hover:text-green-300 transition"
           >
@@ -139,7 +139,7 @@ console.log("====>",user?.isVerified);
               ></path>
             </svg>
             Appointments
-          </a>
+          </a> */}
           <a
             href="/doctordashboard/chat"
             className="flex items-center hover:text-green-300 transition"

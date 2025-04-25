@@ -124,7 +124,7 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
             appointment.paymentStatus === 'paid' ? 'bg-blue-100 text-blue-800' : 
             'bg-orange-100 text-orange-800'
           }`}>
-            <DollarSign size={16} className="mr-1" />
+            ₹
             Payment: {appointment.paymentStatus.charAt(0).toUpperCase() + appointment.paymentStatus.slice(1)}
           </div>
         </div>
@@ -242,7 +242,7 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
                 </div>
               </div>
               <div className="text-indigo-900 font-medium">
-                Fee: ${appointment.service.fee.toFixed(2)}
+                Fee: ₹{appointment.service.fee.toFixed(2)}
               </div>
               {appointment.service.description && (
                 <div className="text-gray-700">

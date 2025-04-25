@@ -62,7 +62,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         </p>
       </div>
       <div className="flex items-center space-x-3">
-        <button className="p-2 rounded-full hover:bg-gray-100">
+        {/* <button className="p-2 rounded-full hover:bg-gray-100">
           <Phone size={20} className="text-gray-600" />
         </button>
         <button className="p-2 rounded-full hover:bg-gray-100">
@@ -70,7 +70,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         </button>
         <button className="p-2 rounded-full hover:bg-gray-100">
           <MoreVertical size={20} className="text-gray-600" />
-        </button>
+        </button> */}
       </div>
     </div>
   );

@@ -55,7 +55,13 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
         const data = await getChatInboxDoctor();
         console.log("inbox api ", data);
 
-        setChatUsers(data);
+        const sorted = data.sort(
+          (a,b)=>
+            new Date(b.lastMessageTime).getTime() -
+          new Date(a.lastMessageTime).getTime()
+        )
+
+        setChatUsers(sorted);
       } catch (err) {
         console.error("Failed to fetch doctor chat inbox", err);
       }

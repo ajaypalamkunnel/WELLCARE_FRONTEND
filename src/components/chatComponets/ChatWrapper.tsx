@@ -48,11 +48,22 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
         //services/user/auth/authService.ts
         const data = await getChatInboxUser();
         console.log("📨 chat inbox api response : =>", data);
-        setChatUsers((prev) => {
-          const uniqueMap = new Map<string, ChatUser>();
-          [...prev, ...data].forEach((user) => uniqueMap.set(user._id, user));
-          return Array.from(uniqueMap.values());
-        });
+
+
+        const uniqueMap = new Map<string, ChatUser>();
+        [...data].forEach((user) => uniqueMap.set(user._id, user));
+        const uniqueUsers = Array.from(uniqueMap.values());
+
+        const sortedUsers = uniqueUsers.sort(
+          (a, b) =>
+            new Date(b.lastMessageTime).getTime() -
+            new Date(a.lastMessageTime).getTime()
+        );
+  
+        setChatUsers(sortedUsers);
+
+
+
       } catch (error) {
         console.error(" Failed to fetch inbox", error);
       }

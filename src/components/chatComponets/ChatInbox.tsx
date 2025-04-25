@@ -1,4 +1,4 @@
-"use client";// Move types to common file
+"use client"; // Move types to common file
 import { ChatUser } from "@/types/chat";
 import { ChatTheme } from "./chatTheme";
 import { Search } from "lucide-react";
@@ -22,7 +22,7 @@ const ChatInbox: React.FC<ChatInboxProps> = ({
   const filteredUsers = users.filter((user) =>
     user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log("🚀==>",users);
+  console.log("🚀==>", users);
   return (
     <div className="flex flex-col h-full border-r">
       {/* 🔍 Search */}
@@ -36,18 +36,13 @@ const ChatInbox: React.FC<ChatInboxProps> = ({
             className={`w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2`}
             style={{ boxShadow: `0 0 0 2px ${theme.primary}33` }}
           />
-          <Search
-            size={18}
-            className="absolute left-3 top-2.5 text-gray-400"
-          />
+          <Search size={18} className="absolute left-3 top-2.5 text-gray-400" />
         </div>
       </div>
 
-       
-      {/* 👥 Chat List */}
+      {/*  Chat List */}
       <div className="flex-1 overflow-y-auto">
         {filteredUsers.map((user) => (
-          
           <div
             key={user._id}
             onClick={() => onSelectUser(user)}
@@ -79,9 +74,7 @@ const ChatInbox: React.FC<ChatInboxProps> = ({
                 <span
                   className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white"
                   style={{
-                    backgroundColor: user.isOnline
-                      ? theme.primary
-                      : "#9CA3AF", // gray-400
+                    backgroundColor: user.isOnline ? theme.primary : "#9CA3AF", // gray-400
                   }}
                 />
               </div>
@@ -91,7 +84,10 @@ const ChatInbox: React.FC<ChatInboxProps> = ({
                 <div className="flex justify-between items-center">
                   <h4 className="font-medium truncate">{user.fullName}</h4>
                   <span className="text-xs text-gray-500">
-                    {user.lastMessageTime}
+                    {new Date(user.lastMessageTime).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
                 <p className="text-sm text-gray-600 truncate">
