@@ -17,6 +17,7 @@ import { Roles } from "@/types/chat";
 import { ChatUser, Message } from "@/types/chat";
 import { getSocket } from "@/utils/socket";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface DoctorChatWrapperProps {
   userId?: string; // NEW
@@ -56,10 +57,10 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
         console.log("inbox api ", data);
 
         const sorted = data.sort(
-          (a,b)=>
+          (a, b) =>
             new Date(b.lastMessageTime).getTime() -
-          new Date(a.lastMessageTime).getTime()
-        )
+            new Date(a.lastMessageTime).getTime()
+        );
 
         setChatUsers(sorted);
       } catch (err) {
@@ -112,6 +113,8 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
           fromSelf: msg.senderId.toString() === doctorId,
           text: msg.content,
           time: formatTime(new Date(msg.createdAt)),
+          mediaUrl: msg.mediaUrl,
+          mediaType: msg.mediaType,
         }));
 
         setMessages(formattedMessages);
@@ -158,6 +161,8 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
         fromSelf: false,
         text: message.content, //  map correctly
         time: formatTime(new Date(message.createdAt)), //  use server time
+        mediaUrl: message.mediaUrl,
+        mediaType: message.mediaType,
       };
 
       if (selectedUser && message.senderId === selectedUser._id) {
@@ -196,25 +201,44 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
 
   //------------------ Handle sent message ---------------------------------
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = (
+    text: string,
+    mediaUrl?: string,
+    mediaType?: string
+  ) => {
     const socket = getSocket();
     if (!selectedUser || !socket || !doctorId) return;
+
+    if (!text.trim() && !mediaUrl) {
+      toast.error("Cannot send empty message without media");
+      console.warn("Cannot send empty message without media");
+      return;
+    }
+
+    console.log("===>", mediaUrl);
+
+    const isMedia = Boolean(mediaUrl);
 
     const MessagePayload = {
       from: doctorId,
       to: selectedUser._id,
       message: text,
+      type: isMedia ? mediaType : "text",
+      mediaUrl: mediaUrl || undefined,
+      mediaType: mediaType || undefined,
       fromRole: Roles.DOCTOR,
       toRole: Roles.USER,
     };
 
     const newMessage = {
       fromSelf: true,
-      text,
+      text: text || (mediaType ? `[${mediaType}]` : ""),
       time: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       }),
+      mediaUrl: mediaUrl,
+      mediaType: mediaType as "image" | "video" | "file" | undefined,
     };
 
     setMessages((prev) => [...prev, newMessage]);

@@ -3,8 +3,6 @@ import { ArrowLeft, MoreVertical, Phone, Video } from "lucide-react";
 import { ChatTheme } from "./chatTheme"; // Adjust path as needed
 import { ChatUser } from "@/types/chat";
 
-
-
 interface ChatHeaderProps {
   selectedUser: ChatUser | null;
   isMobile: boolean;
@@ -20,17 +18,22 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   if (!selectedUser) return null;
 
-  console.log("🏵️vanna user==>",selectedUser)
+  console.log("🏵️vanna user==>", selectedUser);
 
   return (
-    <div className="bg-white border-b p-3 flex items-center shadow-sm">
+    <div className="bg-white border-b border-gray-50 p-4 flex items-center shadow-sm sticky top-0 z-10">
       {isMobile && (
-        <button onClick={onBackClick} className="mr-2">
-          <ArrowLeft size={20} />
+        <button 
+          onClick={onBackClick} 
+          className="mr-3 p-2 rounded-full hover:bg-gray-50 transition-colors"
+          aria-label="Go back"
+        >
+          <ArrowLeft size={20} className="text-gray-500" />
         </button>
       )}
-      <div className="relative mr-3">
-        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+      
+      <div className="relative mr-4">
+        <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden">
           {selectedUser.profileImage ? (
             <img
               src={selectedUser.profileImage}
@@ -38,7 +41,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
-            <span className="text-gray-500 font-medium">
+            <span className="text-gray-500 font-semibold text-lg">
               {selectedUser.fullName
                 .split(" ")
                 .map((n) => n[0])
@@ -51,25 +54,37 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           style={{
             backgroundColor: selectedUser.isOnline
               ? theme.primary
-              : "#9CA3AF", // gray-400
+              : "#D1D5DB", // Lighter gray
           }}
         />
       </div>
+      
       <div className="flex-1">
-        <h3 className="font-medium">{selectedUser.fullName}</h3>
-        <p className="text-xs text-gray-500">
-          {selectedUser.isOnline ? "Online" : "Offline"}
+        <h3 className="font-medium text-gray-700">{selectedUser.fullName}</h3>
+        <p className="text-xs font-normal text-gray-400">
+          {selectedUser.isOnline ? (
+            <span className="flex items-center">
+              <span className="flex h-2 w-2 mr-1.5 rounded-full bg-green-300"></span>
+              Online
+            </span>
+          ) : (
+            <span className="flex items-center">
+              <span className="flex h-2 w-2 mr-1.5 rounded-full bg-gray-300"></span>
+              Last seen recently
+            </span>
+          )}
         </p>
       </div>
-      <div className="flex items-center space-x-3">
-        {/* <button className="p-2 rounded-full hover:bg-gray-100">
-          <Phone size={20} className="text-gray-600" />
+      
+      <div className="flex items-center gap-2">
+        {/* <button className="p-2.5 rounded-full hover:bg-gray-50 transition-colors" aria-label="Call">
+          <Phone size={20} className="text-gray-400" />
         </button>
-        <button className="p-2 rounded-full hover:bg-gray-100">
-          <Video size={20} className="text-gray-600" />
+        <button className="p-2.5 rounded-full hover:bg-gray-50 transition-colors" aria-label="Video call">
+          <Video size={20} className="text-gray-400" />
         </button>
-        <button className="p-2 rounded-full hover:bg-gray-100">
-          <MoreVertical size={20} className="text-gray-600" />
+        <button className="p-2.5 rounded-full hover:bg-gray-50 transition-colors" aria-label="More options">
+          <MoreVertical size={20} className="text-gray-400" />
         </button> */}
       </div>
     </div>

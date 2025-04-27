@@ -18,6 +18,7 @@ import { formatTime } from "../chatComponets/DoctorChatWrapper"; // reusable tim
 import { Roles } from "@/types/chat";
 import { ChatUser, Message } from "@/types/chat"; // move types here
 import { getDoctorBasicInfo } from "@/services/doctor/doctorService";
+import toast from "react-hot-toast";
 
 interface ChatWrapperProps {
   doctorId?: string;
@@ -49,7 +50,6 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
         const data = await getChatInboxUser();
         console.log("📨 chat inbox api response : =>", data);
 
-
         const uniqueMap = new Map<string, ChatUser>();
         [...data].forEach((user) => uniqueMap.set(user._id, user));
         const uniqueUsers = Array.from(uniqueMap.values());
@@ -59,11 +59,8 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
             new Date(b.lastMessageTime).getTime() -
             new Date(a.lastMessageTime).getTime()
         );
-  
+
         setChatUsers(sortedUsers);
-
-
-
       } catch (error) {
         console.error(" Failed to fetch inbox", error);
       }
@@ -75,7 +72,6 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
 
   useEffect(() => {
     const loadDoctorIfMissing = async () => {
-      
       if (!doctorId) return;
 
       const doctorInList = chatUsers.some((user) => user._id === doctorId);
@@ -117,6 +113,8 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
           fromSelf: msg.senderId.toString() === userId,
           text: msg.content,
           time: formatTime(new Date(msg.createdAt)),
+          mediaUrl: msg.mediaUrl,
+          mediaType: msg.mediaType,
         }));
         setMessages(formattedMessages);
       } catch (error) {
@@ -160,6 +158,8 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
         fromSelf: false,
         text: message.content, // map correctly
         time: formatTime(new Date(message.createdAt)), //  use server time
+        mediaUrl: message.mediaUrl,
+          mediaType: message.mediaType,
       };
 
       if (selectedUser && message.senderId === selectedUser._id) {
@@ -197,7 +197,11 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
   }, [selectedUser]);
 
   //--------------------- Socket message send handling----------------------------
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = (
+    text: string,
+    mediaUrl?: string,
+    mediaType?: string
+  ) => {
     const socket = getSocket();
     console.log(
       ">>>> handleSendMessage",
@@ -210,22 +214,39 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
     );
     if (!selectedUser || !socket || !userId) return;
 
+    if (!text.trim() && !mediaUrl) {
+      toast.error("Cannot send empty message without media");
+      console.warn("Cannot send empty message without media");
+      return;
+    }
+
+    console.log("===>", mediaUrl);
+
+    const isMedia = Boolean(mediaUrl);
+
     const messagePayload = {
       from: userId,
       to: selectedUser._id,
       message: text,
-      type: "text",
+      type: isMedia ? mediaType : "text",
+      mediaUrl: mediaUrl || undefined,
+      mediaType: mediaType || undefined,
       fromRole: Roles.USER,
       toRole: Roles.DOCTOR,
     };
 
     const newMessage = {
       fromSelf: true,
-      text,
+      text: text || (mediaType ? `[${mediaType}]` : ""),
       time: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
+
       }),
+
+      mediaUrl:mediaUrl,
+      mediaType: mediaType as "image" | "video" | "file" | undefined
+     
     };
     //  Append to message list
 
