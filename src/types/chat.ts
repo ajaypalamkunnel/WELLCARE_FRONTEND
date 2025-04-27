@@ -11,11 +11,13 @@ export interface ChatUser {
 }
 
 export interface Message {
+  _id?:string
   fromSelf: boolean;
   text: string;
   time: string;
   mediaUrl?: string;
   mediaType?: "image" | "video" | "file";
+  isFadingOut?: boolean;
 }
 
 // constants/roles.ts

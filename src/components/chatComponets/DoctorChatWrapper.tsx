@@ -111,10 +111,11 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
 
         const formattedMessages: Message[] = data.map((msg: any) => ({
           fromSelf: msg.senderId.toString() === doctorId,
-          text: msg.content,
+          text: msg.isDeleted ? "🚫 This message was deleted" : msg.content,
           time: formatTime(new Date(msg.createdAt)),
-          mediaUrl: msg.mediaUrl,
-          mediaType: msg.mediaType,
+          mediaUrl: msg.isDeleted ? undefined : msg.mediaUrl,
+          mediaType: msg.isDeleted ? undefined : msg.mediaType,
+          isDeleted: msg.isDeleted,
         }));
 
         setMessages(formattedMessages);
@@ -158,11 +159,15 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
       console.log(" Doctor received message:", message);
 
       const formattedMessage = {
+        _id: message._id,
         fromSelf: false,
-        text: message.content, //  map correctly
+        text: message.isDeleted
+          ? "🚫 This message was deleted"
+          : message.content, //  map correctly
         time: formatTime(new Date(message.createdAt)), //  use server time
-        mediaUrl: message.mediaUrl,
-        mediaType: message.mediaType,
+        mediaUrl: message.isDeleted ? undefined : message.mediaUrl,
+        mediaType: message.isDeleted ? undefined : message.mediaType,
+        isDeleted: message.isDeleted,
       };
 
       if (selectedUser && message.senderId === selectedUser._id) {
@@ -193,9 +198,47 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
       }
     };
 
+    //message deleting handler
+
+    const handleMessageDeleted = ({ messageId }: { messageId: string }) => {
+      console.log("🗑️ Message deleted:", messageId);
+
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg._id === messageId) {
+            return {
+              ...msg,
+              isFadingOut: true,
+            };
+          }
+          return msg;
+        })
+      );
+
+      setTimeout(() => {
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (msg._id === messageId) {
+              return {
+                ...msg,
+                text: "🚫 This message was deleted",
+                mediaUrl: undefined,
+                mediaType: undefined,
+                isDeleted: true,
+                isFadingOut: false,
+              };
+            }
+            return msg;
+          })
+        );
+      }, 700);
+    };
+
     socket.on("receive-message", handleReceive);
+    socket.on("message-deleted", handleMessageDeleted);
     return () => {
       socket.off("receive-message", handleReceive);
+      socket.off("message-deleted", handleMessageDeleted);
     };
   }, [selectedUser]);
 
@@ -218,6 +261,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
     console.log("===>", mediaUrl);
 
     const isMedia = Boolean(mediaUrl);
+    const tempId = Date.now().toString();
 
     const MessagePayload = {
       from: doctorId,
@@ -231,6 +275,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
     };
 
     const newMessage = {
+      tempId,
       fromSelf: true,
       text: text || (mediaType ? `[${mediaType}]` : ""),
       time: new Date().toLocaleTimeString([], {
@@ -262,7 +307,28 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
       );
     });
 
-    socket.emit("send-message", MessagePayload);
+    socket.emit("send-message", MessagePayload, (response: any) => {
+      if (response.success) {
+        const savedMessage = response.message;
+
+        // Replace temp message with real saved message
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+            (msg as any).tempId === tempId
+              ? {
+                  ...msg,
+                  _id: savedMessage._id,
+                  sending: false,
+                  time: formatTime(new Date(savedMessage.createdAt)),
+                }
+              : msg
+          )
+        );
+      } else {
+        toast.error("Failed to send message. Please try again.");
+        console.error("Message sending failed:", response.message);
+      }
+    });
   };
 
   const handleSelectUser = (user: ChatUser) => {

@@ -30,7 +30,9 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
   const [showInbox, setShowInbox] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
-
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingDeleteMessageId, setPendingDeleteMessageId] = useState<string | null>(null);
+  
   const user = useAuthStore();
   const userId = user.user?.id;
 
@@ -110,11 +112,13 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
         console.log("get messages api response : =>", data);
 
         const formattedMessages: Message[] = data.map((msg: any) => ({
+          _id: msg._id,
           fromSelf: msg.senderId.toString() === userId,
-          text: msg.content,
+          text: msg.isDeleted ? "🚫 This message was deleted" : msg.content,
           time: formatTime(new Date(msg.createdAt)),
-          mediaUrl: msg.mediaUrl,
-          mediaType: msg.mediaType,
+          mediaUrl: msg.isDeleted ? undefined : msg.mediaUrl,
+          mediaType: msg.isDeleted ? undefined : msg.mediaType,
+          isDeleted: msg.isDeleted,
         }));
         setMessages(formattedMessages);
       } catch (error) {
@@ -155,11 +159,15 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
       console.log("📥 Received message:", message);
 
       const formattedMessage = {
+        _id: message._id,
         fromSelf: false,
-        text: message.content, // map correctly
+        text: message.isDeleted
+          ? "🚫 This message was deleted"
+          : message.content, // map correctly
         time: formatTime(new Date(message.createdAt)), //  use server time
-        mediaUrl: message.mediaUrl,
-          mediaType: message.mediaType,
+        mediaUrl: message.isDeleted ? undefined : message.mediaUrl,
+        mediaType: message.isDeleted ? undefined : message.mediaType,
+        isDeleted: message.isDeleted,
       };
 
       if (selectedUser && message.senderId === selectedUser._id) {
@@ -190,9 +198,47 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
       });
     };
 
+    //message deleting handler
+
+    const handleMessageDeleted = ({ messageId }: { messageId: string }) => {
+      console.log("🗑️ Message deleted:", messageId);
+
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg._id === messageId) {
+            return {
+              ...msg,
+              isFadingOut: true,
+            };
+          }
+          return msg;
+        })
+      );
+
+      setTimeout(() => {
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (msg._id === messageId) {
+              return {
+                ...msg,
+                text: "🚫 This message was deleted",
+                mediaUrl: undefined,
+                mediaType: undefined,
+                isDeleted: true,
+                isFadingOut: false,
+              };
+            }
+            return msg;
+          })
+        );
+      }, 1000);
+    };
+
     socket.on("receive-message", handleReceive);
+    socket.on("message-deleted", handleMessageDeleted);
     return () => {
       socket.off("receive-message", handleReceive);
+      socket.off("message-deleted", handleMessageDeleted);
     };
   }, [selectedUser]);
 
@@ -224,6 +270,8 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
 
     const isMedia = Boolean(mediaUrl);
 
+    const tempId = Date.now().toString();
+
     const messagePayload = {
       from: userId,
       to: selectedUser._id,
@@ -236,17 +284,16 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
     };
 
     const newMessage = {
+      tempId,
       fromSelf: true,
       text: text || (mediaType ? `[${mediaType}]` : ""),
       time: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
-
       }),
 
-      mediaUrl:mediaUrl,
-      mediaType: mediaType as "image" | "video" | "file" | undefined
-     
+      mediaUrl: mediaUrl,
+      mediaType: mediaType as "image" | "video" | "file" | undefined,
     };
     //  Append to message list
 
@@ -272,7 +319,28 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
       );
     });
 
-    socket.emit("send-message", messagePayload);
+    socket.emit("send-message", messagePayload, (response: any) => {
+      if (response.success) {
+        const savedMessage = response.message;
+
+        // Replace temp message with real saved message
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+            (msg as any).tempId === tempId
+              ? {
+                  ...msg,
+                  _id: savedMessage._id,
+                  sending: false,
+                  time: formatTime(new Date(savedMessage.createdAt)),
+                }
+              : msg
+          )
+        );
+      } else {
+        toast.error("Failed to send message. Please try again.");
+        console.error("Message sending failed:", response.message);
+      }
+    });
   };
 
   return (
