@@ -30,9 +30,7 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
   const [showInbox, setShowInbox] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [pendingDeleteMessageId, setPendingDeleteMessageId] = useState<string | null>(null);
-  
+
   const user = useAuthStore();
   const userId = user.user?.id;
 

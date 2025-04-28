@@ -106,7 +106,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, theme }) => {
               disabled={uploading}
               className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition-colors"
             >
-              {uploading ? "sending..." : "Send"}
+              {uploading ? <Loader2 size={20} className="animate-spin"/> : "Send"}
             </button>
             <button
               type="button"
@@ -147,7 +147,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, theme }) => {
           style={{ boxShadow: `0 0 0 2px ${theme.primary}22` }}
         />
 
-        {/* 🚀 Send button */}
+        {/*  Send button */}
         <button
           type="submit"
           className="ml-2 p-2 text-white rounded-full transition-colors"
