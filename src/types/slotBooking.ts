@@ -123,6 +123,7 @@ export interface AppointmentDetailDTO {
   _id: string;
   appointmentDate: Date;
   status: string;
+  prescriptionUrl?:string
   paymentStatus?: string;
   slot: {
     start_time: Date;

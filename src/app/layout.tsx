@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ToasterProvider from "@/components/toastProvider/ToasterProvider";
+import IncomingCallModal from "@/components/videoCallComponents/IncomingCallModal";
+import GlobalSocketListener from "@/components/providers/GlobalSocketListener";
+import SocketInitializer from "@/components/providers/SocketInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,8 +32,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ToasterProvider/>
+        <SocketInitializer /> 
+        <GlobalSocketListener/>
+        <IncomingCallModal/>
         {children}
-      {/* <script src="https://checkout.razorpay.com/v1/checkout.js"></script> */}
+      
       </body>
     </html>
   );

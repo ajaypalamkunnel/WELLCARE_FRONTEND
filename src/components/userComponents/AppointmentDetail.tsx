@@ -30,6 +30,9 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
   const [appointment, setAppointment] = useState<AppointmentDetailDTO | null>(
     null
   );
+
+  console.log("==>",appointment);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -37,6 +40,7 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
   const [isCancelling, setIsCancelling] = useState(false);
 
   const appoinmentStatusCancelled = appointment?.status === 'cancelled'
+  const appoinmentStatusCompleted = appointment?.status === 'completed'
   console.log(appoinmentStatusCancelled);
   
 
@@ -334,9 +338,9 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
               {appointment.prescription.diagnosis}
             </p>
 
-            {appointment.prescription.fileUrl && (
+            {appointment.prescriptionUrl && (
               <a
-                href={appointment.prescription.fileUrl}
+                href={appointment?.prescriptionUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center text-medical-green hover:text-medical-green-light transition-colors"
@@ -351,7 +355,7 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
       
 
       {/* Action Buttons */}
-      {!appoinmentStatusCancelled&&<div className="flex flex-col md:flex-row gap-3 mt-6">
+      {(!appoinmentStatusCancelled && !appoinmentStatusCompleted)&&<div className="flex flex-col md:flex-row gap-3 mt-6">
         <button className="flex-1 bg-medical-green text-white py-3 px-4 rounded-md hover:bg-medical-green-light transition-colors font-medium flex items-center justify-center">
           <MessageCircle size={18} className="mr-2" />
           Message Doctor

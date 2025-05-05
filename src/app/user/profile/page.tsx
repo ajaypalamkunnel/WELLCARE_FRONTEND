@@ -28,7 +28,7 @@ const PatientPortal: React.FC = () => {
 
 
 useEffect(()=>{
-
+// ----------------
     const getUserProfile = async () =>{
         try {
             setLoading(true)
@@ -48,6 +48,8 @@ useEffect(()=>{
             setLoading(false)
         }
     }
+
+    // ----------------
 getUserProfile()
 },[])
   // Define navigation items

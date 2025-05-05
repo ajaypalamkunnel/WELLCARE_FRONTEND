@@ -4,11 +4,13 @@ import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import { ChatUser } from "@/types/chat";
 import IDoctorProfileDataType, { ICertificate } from "@/types/doctorFullDataType";
+import { SubmitPrescriptionPayload } from "@/types/prescription";
 import { ApiResponseDoctorAppointmentListItemDTO, AppointmentFilters, DoctorAppointmentDetailDTO } from "@/types/slotBooking";
 import axiosInstancePatinet from "@/utils/axiosInstance";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 import { getErrorMessage } from "@/utils/handleError";
 import axios, { AxiosError } from "axios";
+import { log } from "console";
 
 export const featchAllDepartments = async () => {
     try {
@@ -134,7 +136,7 @@ export const getServices = async (doctorId: string) => {
             params: { doctorId }
         });
 
-    
+
         return response.data
 
 
@@ -162,13 +164,13 @@ export const updateService = async (updatedData: ServiceData) => {
 }
 
 
-export const getDoctorSubscription = async (subscriptionId:string) =>{
+export const getDoctorSubscription = async (subscriptionId: string) => {
     try {
 
         const response = await axiosInstanceDoctor.get(`/api/doctor/get-my-subscription/${subscriptionId}`)
 
         return response.data
-        
+
     } catch (error) {
         console.log("Error while get doctor subscription data");
         throw error
@@ -179,12 +181,12 @@ export const getDoctorSubscription = async (subscriptionId:string) =>{
 export const validateSchedule = async (data: FormValues) => {
     try {
         const response = await axiosInstanceDoctor.post("/api/doctor/validate-schedule", data);
-        console.log("validate schedule",response.data)
-        
+        console.log("validate schedule", response.data)
+
         return response.data;
-        
-    } catch (error:unknown) {
-        if(axios.isAxiosError(error)){
+
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
             throw error
         }
 
@@ -192,17 +194,17 @@ export const validateSchedule = async (data: FormValues) => {
     }
 };
 
-export const generateSlote = async (data:FormValues) =>{
+export const generateSlote = async (data: FormValues) => {
 
     try {
-        console.log("i am service==> ",data) ;
-        
+        console.log("i am service==> ", data);
 
-        const response = await axiosInstanceDoctor.post("/api/doctor/generate-slots",data)
+
+        const response = await axiosInstanceDoctor.post("/api/doctor/generate-slots", data)
 
         return response.data
-        
-    } catch (error:unknown) {
+
+    } catch (error: unknown) {
         console.error("Error while slot generation:", error);
         return {
             success: false,
@@ -212,21 +214,21 @@ export const generateSlote = async (data:FormValues) =>{
 
 }
 
-export const createSchedule = async (data:ScheduleCreationData) =>{
+export const createSchedule = async (data: ScheduleCreationData) => {
     try {
 
-        console.log("going data**",data);
-        
+        console.log("going data**", data);
 
-        const response = await axiosInstanceDoctor.post("/api/doctor/create-schedule",data)
 
-        console.log("avadannu vanne njan aane ===>",response);
-        
+        const response = await axiosInstanceDoctor.post("/api/doctor/create-schedule", data)
+
+        console.log("avadannu vanne njan aane ===>", response);
+
 
 
         return response.data
-    
-    } catch (error:unknown) {
+
+    } catch (error: unknown) {
         console.error("Error while creating schedule:", error);
         return {
             success: false,
@@ -235,93 +237,93 @@ export const createSchedule = async (data:ScheduleCreationData) =>{
     }
 }
 
-export const fetchSchedules = async (params:any) => {
+export const fetchSchedules = async (params: any) => {
     try {
 
-        
-      // Convert params object to URLSearchParams
-      const queryParams = new URLSearchParams();
 
-      console.log("service ==>", queryParams.toString());
-      
-      
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== null && value !== undefined && value !== '') {
-          // Handle Date objects by converting to ISO string and taking just the date part
-          if (value instanceof Date) {
-            queryParams.append(key, value.toISOString().split('T')[0]);
-          } else {
-            queryParams.append(key, value.toString());
-          }
-        }
-      });
-      
-      const response = await axiosInstanceDoctor.get(`/api/doctor/fetch-schedules?${queryParams.toString()}`);
+        // Convert params object to URLSearchParams
+        const queryParams = new URLSearchParams();
 
-      console.log("Evade kitttitoo",response.data.data);
-      
+        console.log("service ==>", queryParams.toString());
 
-      return response.data.data;
+
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+                // Handle Date objects by converting to ISO string and taking just the date part
+                if (value instanceof Date) {
+                    queryParams.append(key, value.toISOString().split('T')[0]);
+                } else {
+                    queryParams.append(key, value.toString());
+                }
+            }
+        });
+
+        const response = await axiosInstanceDoctor.get(`/api/doctor/fetch-schedules?${queryParams.toString()}`);
+
+        console.log("Evade kitttitoo", response.data.data);
+
+
+        return response.data.data;
     } catch (error) {
-      console.error('Error fetching schedules:', error);
-      throw error;
+        console.error('Error fetching schedules:', error);
+        throw error;
     }
-  };
+};
 
 
-  export const getDoctorAppointments = async (
+export const getDoctorAppointments = async (
     filters: AppointmentFilters
-  ): Promise<ApiResponseDoctorAppointmentListItemDTO> => {
+): Promise<ApiResponseDoctorAppointmentListItemDTO> => {
     try {
 
-        console.log("ponath===>",filters);
-        
-      const response = await axiosInstanceDoctor.get("/api/doctor/appointments", {
-        params: filters,
-      });
+        console.log("ponath===>", filters);
 
-      console.log("Final URL:", response.config?.url);
-      console.log("response : ",response)
-  
-      return response.data.data;
+        const response = await axiosInstanceDoctor.get("/api/doctor/appointments", {
+            params: filters,
+        });
+
+        console.log("Final URL:", response.config?.url);
+        console.log("response : ", response)
+
+        return response.data.data;
     } catch (error) {
-      console.error("Error while fetching doctor appointments:", error);
-      throw error;
+        console.error("Error while fetching doctor appointments:", error);
+        throw error;
     }
-  };
-  
+};
 
 
-  export const getDoctorAppointmentDetail = async(appointmentId:string):Promise<DoctorAppointmentDetailDTO>=>{
+
+export const getDoctorAppointmentDetail = async (appointmentId: string): Promise<DoctorAppointmentDetailDTO> => {
     try {
         const response = await axiosInstanceDoctor.get(
-          `/api/doctor/appointments/${appointmentId}/details`
+            `/api/doctor/appointments/${appointmentId}/details`
         );
-    
+
         // Assuming your backend response follows: { success: true, message: "...", data: {...} }
         return response.data.data;
-      } catch (error) {
+    } catch (error) {
         const axiosError = error as AxiosError<{ error: string }>;
-    
+
         const errorMessage =
-          axiosError.response?.data?.error || "Failed to fetch appointment detail";
-    
+            axiosError.response?.data?.error || "Failed to fetch appointment detail";
+
         console.error("getDoctorAppointmentDetail error:", errorMessage);
         throw new Error(errorMessage);
-      }
-  }
+    }
+}
 
 
 
-export const getChatInboxDoctor = async ():Promise<ChatUser[]>=>{
+export const getChatInboxDoctor = async (): Promise<ChatUser[]> => {
     try {
 
         const response = await axiosInstanceDoctor.get("/api/doctor/inbox");
 
         return response.data.data
-        
+
     } catch (error) {
-        
+
         throw error
     }
 }
@@ -333,13 +335,13 @@ export const getDoctorBasicInfo = async (doctorId: string): Promise<ChatUser> =>
 
         console.log("✅ getDoctorBasicInfo response =>", response.data.data);
         return response.data.data;
-        
+
     } catch (error) {
 
         console.error("❌ getDoctorBasicInfo failed", error);
 
         throw error
-        
+
     }
 
 }
@@ -347,110 +349,110 @@ export const getDoctorBasicInfo = async (doctorId: string): Promise<ChatUser> =>
 
 
 
-export const markMessagesAsReadDoctor = async (receiverId:string) =>{
+export const markMessagesAsReadDoctor = async (receiverId: string) => {
     return await axiosInstanceDoctor.patch(`/api/chat/messages/mark-read/${receiverId}`)
 }
 
 
 
-export const editEducation = async ()=>{
+export const editEducation = async () => {
 
-  
+
 
 
 }
 
-export const addNewEducation = async (data:EducationFormData) =>{
+export const addNewEducation = async (data: EducationFormData) => {
 
     try {
 
-        const response = await axiosInstanceDoctor.post("/api/doctor/profile/addeducation",data)
+        const response = await axiosInstanceDoctor.post("/api/doctor/profile/addeducation", data)
 
-        console.log("vanna data:  ",response.data)
+        console.log("vanna data:  ", response.data)
 
         return response.data.data
-        
+
     } catch (error) {
 
         console.error("add new education", error);
         throw error
-        
+
     }
-    
+
 }
 
 
-export const addNewCertification = async (data:ICertificate) =>{
+export const addNewCertification = async (data: ICertificate) => {
 
     try {
-        
-        const response = await axiosInstanceDoctor.post("/api/doctor/profile/addCertificate",data)
 
-        console.log("vanna data:  ",response.data)
+        const response = await axiosInstanceDoctor.post("/api/doctor/profile/addCertificate", data)
+
+        console.log("vanna data:  ", response.data)
 
 
         return response.data.data
 
 
-        
+
     } catch (error) {
 
         throw error
-        
+
     }
 
 }
 
 
 
-export const updateEducation = async (data:EducationFormData) =>{
+export const updateEducation = async (data: EducationFormData) => {
 
     try {
         console.log(data);
-        
-        
-        const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateEducation",data)
 
-        console.log("vanna data:  ",response.data)
+
+        const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateEducation", data)
+
+        console.log("vanna data:  ", response.data)
 
 
         return response.data
 
 
-        
+
     } catch (error) {
 
         console.error("Update education error:", error);
 
         throw error
-        
+
     }
 
 }
 
 
 
-export const updateCertification = async (data:CertificationFormData) =>{
+export const updateCertification = async (data: CertificationFormData) => {
 
     try {
         console.log(data);
-        
-        
-        const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateCertification",data)
 
-        console.log("vanna data:  ",response.data)
+
+        const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateCertification", data)
+
+        console.log("vanna data:  ", response.data)
 
 
         return response.data
 
 
-        
+
     } catch (error) {
 
         console.error("Update education error:", error);
 
         throw error
-        
+
     }
 
 }
@@ -458,16 +460,16 @@ export const updateCertification = async (data:CertificationFormData) =>{
 
 
 
-export const cancelSchedule = async (reason:string,selectedScheduleId:string) =>{
+export const cancelSchedule = async (reason: string, selectedScheduleId: string) => {
 
     try {
 
-        const response = await axiosInstanceDoctor.patch(`/api/doctor/schedules/${selectedScheduleId}/cancel`,{
-            reason:reason
+        const response = await axiosInstanceDoctor.patch(`/api/doctor/schedules/${selectedScheduleId}/cancel`, {
+            reason: reason
         })
 
         console.log(response.data);
-        
+
 
         return response.data
     } catch (error) {
@@ -475,8 +477,53 @@ export const cancelSchedule = async (reason:string,selectedScheduleId:string) =>
         // console.error("error while cancelling schedule",error);
 
         throw error
-        
-        
+
+
     }
 
 }
+
+
+export const submitPrescription = async (data: SubmitPrescriptionPayload) => {
+    try {
+        console.log(data);
+        
+        const response = await axiosInstanceDoctor.post("/api/doctor/submit-prescription", data)
+        return response.data
+    } catch (error) {
+        console.error("Prescription submission failed:", error);
+        throw error;
+    }
+}
+
+
+export const getWalletSummary = async (type?: "credit" | "debit", page = 1, limit = 10) => {
+    try {
+      const response = await axiosInstanceDoctor.get("/api/doctor/getWalletSummary", {
+        params: { type, page, limit }
+      });
+
+      console.log("getWalletSummary :",response.data.data);
+      
+
+      
+      return response.data.data;
+
+
+    } catch (error) {
+      console.error("Wallet summary fetch failed:", error);
+      throw error;
+    }
+  };
+
+
+  export const withdrawAmountApi = async (amount: number) => {
+    try {
+      const response = await axiosInstanceDoctor.post("/api/doctor/withdraw", { amount });
+      return response.data;
+    } catch (error) {
+      console.error("Withdraw failed:", error);
+      throw error;
+    }
+  };
+  

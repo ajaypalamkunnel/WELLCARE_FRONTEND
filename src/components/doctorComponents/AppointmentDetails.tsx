@@ -1,22 +1,48 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, User, FileText, Camera, Upload, Phone, Home, Activity, AlertCircle, DollarSign, Tag, MapPin, AlertTriangle, MessageCircle } from 'lucide-react';
-import { formatDisplayDate, formatTime2 } from "../../utils/dateutilities"
-import { DoctorAppointmentDetailDTO } from '@/types/slotBooking';
-import { getDoctorAppointmentDetail } from '@/services/doctor/doctorService';
-import { useRouter } from 'next/navigation';
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  Calendar,
+  Clock,
+  User,
+  FileText,
+  Camera,
+  Upload,
+  Phone,
+  Home,
+  Activity,
+  AlertCircle,
+  DollarSign,
+  Tag,
+  MapPin,
+  AlertTriangle,
+  MessageCircle,
+} from "lucide-react";
+import { formatDisplayDate, formatTime2 } from "../../utils/dateutilities";
+import { DoctorAppointmentDetailDTO } from "@/types/slotBooking";
+import { getDoctorAppointmentDetail } from "@/services/doctor/doctorService";
+import { useRouter } from "next/navigation";
+import { getSocket } from "@/utils/socket";
+import { useAuthStoreDoctor } from "@/store/doctor/authStore";
+import { useCallStore } from "@/store/call/callStore";
+
 
 interface DoctorAppointmentDetailProps {
   appointmentId: string;
 }
 
-
-const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appointmentId }) => {
-  const [appointment, setAppointment] = useState<DoctorAppointmentDetailDTO | null>(null);
+const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({
+  appointmentId,
+}) => {
+  const [appointment, setAppointment] =
+    useState<DoctorAppointmentDetailDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter()
-  const userId = appointment?.patient._id
+  const router = useRouter();
+  const userId = appointment?.patient._id;
+
+  const doctor = useAuthStoreDoctor()
+  const doctorId = doctor.user?.id
+
   
 
   useEffect(() => {
@@ -24,13 +50,13 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
       try {
         setLoading(true);
         const data = await getDoctorAppointmentDetail(appointmentId);
-        console.log("==>",data.patient._id);
-        
+        console.log("==>", data.patient._id);
+
         setAppointment(data);
         setError(null);
       } catch (err) {
-        setError('Failed to load appointment details. Please try again later.');
-        console.error('Error fetching appointment details:', err);
+        setError("Failed to load appointment details. Please try again later.");
+        console.error("Error fetching appointment details:", err);
       } finally {
         setLoading(false);
       }
@@ -41,19 +67,32 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
     }
   }, [appointmentId]);
 
-  const handleStartConsultation = () => {
-    console.log('Starting video consultation...');
-    // Implementation for starting video consultation
+  const handleStartConsultation = (userId: string) => {
+    if (!userId) return
+
+    const socket = getSocket()
+
+    const callerId = doctorId;
+    const receiverId = appointment?.patient._id
+
+    if(!callerId||!receiverId) return
+
+    socket?.emit("start-call",{callerId,receiverId})
+
+    useCallStore.getState().setCallerDetails(appointment.patient.fullName,appointment._id,appointment.patient._id)
+    router.push(`/doctor/video-call/${appointment.patient._id}`);
+
+   
   };
 
   const handleUploadPrescription = () => {
-    console.log('Uploading prescription...');
+    console.log("Uploading prescription...");
     // Implementation for uploading prescription
   };
 
   const handleViewPrescription = () => {
     if (appointment?.prescription?.fileUrl) {
-      window.open(appointment.prescription.fileUrl, '_blank');
+      window.open(appointment.prescription.fileUrl, "_blank");
     }
   };
 
@@ -76,8 +115,8 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
           <h2 className="text-xl font-bold">Error</h2>
         </div>
         <p>{error}</p>
-        <button 
-          onClick={() => window.location.reload()} 
+        <button
+          onClick={() => window.location.reload()}
           className="mt-4 bg-indigo-900 text-white px-4 py-2 rounded-md hover:bg-indigo-800 transition-colors"
         >
           Retry
@@ -108,24 +147,35 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
       {/* Header with Status */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-gray-200">
         <div>
-          <h1 className="text-2xl font-bold text-indigo-900">Appointment Details</h1>
+          <h1 className="text-2xl font-bold text-indigo-900">
+            Appointment Details
+          </h1>
           <div className="text-gray-600 mt-1">ID: {appointment._id}</div>
         </div>
         <div className="flex flex-col mt-4 md:mt-0 md:items-end">
-          <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-            appointment.status === 'booked' ? 'bg-green-100 text-green-800' : 
-            appointment.status === 'cancelled' ? 'bg-red-100 text-red-800' : 
-            'bg-yellow-100 text-yellow-800'
-          }`}>
+          <div
+            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+              appointment.status === "booked"
+                ? "bg-green-100 text-green-800"
+                : appointment.status === "cancelled"
+                ? "bg-red-100 text-red-800"
+                : "bg-yellow-100 text-yellow-800"
+            }`}
+          >
             <Tag size={16} className="mr-1" />
-            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+            {appointment.status.charAt(0).toUpperCase() +
+              appointment.status.slice(1)}
           </div>
-          <div className={`inline-flex items-center mt-2 px-3 py-1 rounded-full text-sm font-medium ${
-            appointment.paymentStatus === 'paid' ? 'bg-blue-100 text-blue-800' : 
-            'bg-orange-100 text-orange-800'
-          }`}>
-            ₹
-            Payment: {appointment.paymentStatus.charAt(0).toUpperCase() + appointment.paymentStatus.slice(1)}
+          <div
+            className={`inline-flex items-center mt-2 px-3 py-1 rounded-full text-sm font-medium ${
+              appointment.paymentStatus === "paid"
+                ? "bg-blue-100 text-blue-800"
+                : "bg-orange-100 text-orange-800"
+            }`}
+          >
+            ₹ Payment:{" "}
+            {appointment.paymentStatus.charAt(0).toUpperCase() +
+              appointment.paymentStatus.slice(1)}
           </div>
         </div>
       </div>
@@ -137,11 +187,11 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
             <h2 className="flex items-center text-lg font-semibold text-indigo-900 mb-4">
               <User size={20} className="mr-2" /> Patient Information
             </h2>
-            
+
             <div className="flex items-center mb-4">
               {appointment.patient.profileUrl ? (
-                <img 
-                  src={appointment.patient.profileUrl} 
+                <img
+                  src={appointment.patient.profileUrl}
                   alt={appointment.patient.fullName}
                   className="w-16 h-16 rounded-full object-cover mr-4"
                 />
@@ -152,10 +202,12 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
               )}
               <div>
                 <h3 className="font-medium">{appointment.patient.fullName}</h3>
-                <p className="text-sm text-gray-600">{appointment.patient.gender}</p>
+                <p className="text-sm text-gray-600">
+                  {appointment.patient.gender}
+                </p>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex items-start">
                 <Phone size={16} className="mr-2 mt-1 text-indigo-900" />
@@ -170,10 +222,12 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
                     <div>Blood: {hasPersonalInfo.blood_group}</div>
                     <div className="col-span-2">
                       <p className="text-sm mt-1">
-                        <span className="font-medium">Allergies:</span> {hasPersonalInfo.allergies || 'None'}
+                        <span className="font-medium">Allergies:</span>{" "}
+                        {hasPersonalInfo.allergies || "None"}
                       </p>
                       <p className="text-sm mt-1">
-                        <span className="font-medium">Chronic Conditions:</span> {hasPersonalInfo.chronic_disease || 'None'}
+                        <span className="font-medium">Chronic Conditions:</span>{" "}
+                        {hasPersonalInfo.chronic_disease || "None"}
                       </p>
                     </div>
                   </div>
@@ -185,13 +239,17 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
                   <div className="flex items-start">
                     <MapPin size={16} className="mr-2 mt-1 text-indigo-900" />
                     <div className="text-sm">
-                      {hasAddress.houseName && <div>{hasAddress.houseName}</div>}
+                      {hasAddress.houseName && (
+                        <div>{hasAddress.houseName}</div>
+                      )}
                       {hasAddress.street && <div>{hasAddress.street}</div>}
                       <div>
                         {hasAddress.city && `${hasAddress.city}, `}
                         {hasAddress.state}
                       </div>
-                      {hasAddress.postalCode && <div>{hasAddress.postalCode}</div>}
+                      {hasAddress.postalCode && (
+                        <div>{hasAddress.postalCode}</div>
+                      )}
                       {hasAddress.country && <div>{hasAddress.country}</div>}
                     </div>
                   </div>
@@ -211,12 +269,15 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
             <div className="flex flex-col md:flex-row md:items-center justify-between">
               <div className="flex items-center mb-3 md:mb-0">
                 <Calendar size={20} className="mr-3 text-indigo-900" />
-                <span>{formatDisplayDate(new Date(appointment.appointmentDate))}</span>
+                <span>
+                  {formatDisplayDate(new Date(appointment.appointmentDate))}
+                </span>
               </div>
               <div className="flex items-center">
                 <Clock size={20} className="mr-3 text-indigo-900" />
                 <span>
-                  {formatTime2(new Date(appointment.slot.start_time))} - {formatTime2(new Date(appointment.slot.end_time))}
+                  {formatTime2(new Date(appointment.slot.start_time))} -{" "}
+                  {formatTime2(new Date(appointment.slot.end_time))}
                 </span>
               </div>
             </div>
@@ -229,10 +290,16 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
             </h2>
             <div className="space-y-3">
               <div className="flex justify-between items-start">
-                <div className="font-medium text-lg">{appointment.service.name}</div>
-                <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                  isOnlineAppointment ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800'
-                }`}>
+                <div className="font-medium text-lg">
+                  {appointment.service.name}
+                </div>
+                <div
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                    isOnlineAppointment
+                      ? "bg-indigo-100 text-indigo-800"
+                      : "bg-green-100 text-green-800"
+                  }`}
+                >
                   {isOnlineAppointment ? (
                     <Camera size={16} className="mr-1" />
                   ) : (
@@ -260,7 +327,9 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
               </h2>
               <div className="mb-3">
                 <h4 className="font-medium">Diagnosis:</h4>
-                <p className="text-gray-700 mt-1">{hasPrescription.diagnosis}</p>
+                <p className="text-gray-700 mt-1">
+                  {hasPrescription.diagnosis}
+                </p>
               </div>
               <button
                 onClick={handleViewPrescription}
@@ -276,7 +345,7 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
           <div className="mt-6">
             {isOnlineAppointment ? (
               <button
-                onClick={handleStartConsultation}
+                onClick={() => handleStartConsultation(appointment.patient._id)}
                 className="w-full inline-flex justify-center items-center px-4 py-3 bg-indigo-900 text-white text-sm font-medium rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
               >
                 <Camera size={20} className="mr-2" />
@@ -291,20 +360,16 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({ appoi
                 Upload Prescription
               </button>
             )}
-             <button
-                onClick={()=>router.push(`/doctordashboard/chat/${userId}`)}
-                className="w-full inline-flex justify-center items-center mt-4 px-4 py-3 bg-indigo-900 text-white text-sm font-medium rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-              >
-                <MessageCircle size={20} className="mr-2"/>
-                Message
-              </button>
+            <button
+              onClick={() => router.push(`/doctordashboard/chat/${userId}`)}
+              className="w-full inline-flex justify-center items-center mt-4 px-4 py-3 bg-indigo-900 text-white text-sm font-medium rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            >
+              <MessageCircle size={20} className="mr-2" />
+              Message
+            </button>
           </div>
-
         </div>
       </div>
-
-      
-      
     </div>
   );
 };

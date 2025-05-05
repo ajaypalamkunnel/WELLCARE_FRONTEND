@@ -379,6 +379,8 @@ export const getAppoinmentsDetails = async (id: string): Promise<AppointmentDeta
 
         const response = await axiosInstance.get(`/my-appoinments-detail/${id}`);
 
+        console.log("==>", response.data.data)
+
         return response.data.data
 
     } catch (error) {
