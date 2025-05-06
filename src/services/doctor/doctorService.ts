@@ -3,6 +3,7 @@ import { CertificationData, CertificationFormData, EducationFormData } from "@/c
 import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/ScheduleModal";
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import { ChatUser } from "@/types/chat";
+import { AppointmentStatusSummary } from "@/types/dashboardDto";
 import IDoctorProfileDataType, { ICertificate } from "@/types/doctorFullDataType";
 import { SubmitPrescriptionPayload } from "@/types/prescription";
 import { ApiResponseDoctorAppointmentListItemDTO, AppointmentFilters, DoctorAppointmentDetailDTO } from "@/types/slotBooking";
@@ -487,7 +488,7 @@ export const cancelSchedule = async (reason: string, selectedScheduleId: string)
 export const submitPrescription = async (data: SubmitPrescriptionPayload) => {
     try {
         console.log(data);
-        
+
         const response = await axiosInstanceDoctor.post("/api/doctor/submit-prescription", data)
         return response.data
     } catch (error) {
@@ -499,30 +500,122 @@ export const submitPrescription = async (data: SubmitPrescriptionPayload) => {
 
 export const getWalletSummary = async (type?: "credit" | "debit", page = 1, limit = 10) => {
     try {
-      const response = await axiosInstanceDoctor.get("/api/doctor/getWalletSummary", {
-        params: { type, page, limit }
-      });
+        const response = await axiosInstanceDoctor.get("/api/doctor/getWalletSummary", {
+            params: { type, page, limit }
+        });
 
-      console.log("getWalletSummary :",response.data.data);
-      
+        console.log("getWalletSummary :", response.data.data);
 
-      
-      return response.data.data;
+        return response.data.data;
 
 
     } catch (error) {
-      console.error("Wallet summary fetch failed:", error);
+        console.error("Wallet summary fetch failed:", error);
+        throw error;
+    }
+};
+
+
+export const withdrawAmountApi = async (amount: number) => {
+    try {
+        const response = await axiosInstanceDoctor.post("/api/doctor/withdraw", { amount });
+        return response.data;
+    } catch (error) {
+        console.error("Withdraw failed:", error);
+        throw error;
+    }
+};
+
+
+
+export const getAppointmentSummary = async (
+    startDate?: string,
+    endDate?: string
+): Promise<AppointmentStatusSummary> => {
+
+    try {
+
+        const response = await axiosInstanceDoctor.get("/api/doctor/appointment-summary", {
+            params: { startDate, endDate }
+        })
+
+        return response.data.data
+    } catch (error) {
+        console.error("Failed to fetch appointment summary:", error);
+        throw error;
+    }
+
+}
+
+
+export const getAppointmentTrend = async (
+    startDate: string,
+    endDate: string,
+    interval: "day" | "week" | "month"
+) => {
+    try {
+
+        const response = await axiosInstanceDoctor.get("/api/doctor/appointment-trend", {
+            params: { startDate, endDate, interval },
+        });
+        return response.data.data;
+
+    } catch (error) {
+        console.error("Failed to fetch appointment trend:", error);
+        throw error;
+    }
+}
+
+export const getRevenueTrend = async (
+    startDate: string,
+    endDate: string,
+    interval: "day" | "week" | "month"
+) => {
+    try {
+        const response = await axiosInstanceDoctor.get("/api/doctor/revenue-trend", {
+            params: { startDate, endDate, interval },
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error("Revenue trend fetch failed:", error);
+        throw error;
+    }
+};
+
+
+export const getTopServices = async (
+    startDate: string,
+    endDate: string,
+    interval: "day" | "week" | "month"
+  ) => {
+    try {
+      const response = await axiosInstanceDoctor.get("/api/doctor/top-services", {
+        params: { startDate, endDate, interval },
+      });
+      console.log("====>",response.data.data);
+      
+      return response.data.data;
+    } catch (error) {
+      console.error("Top services fetch failed:", error);
       throw error;
     }
   };
+  
 
-
-  export const withdrawAmountApi = async (amount: number) => {
+  export const generateDoctorReport = async (
+    startDate: string,
+    endDate: string,
+    format: "pdf" | "excel"
+  ) => {
     try {
-      const response = await axiosInstanceDoctor.post("/api/doctor/withdraw", { amount });
-      return response.data;
+      const response = await axiosInstanceDoctor.get("/api/doctor/generate-report", {
+        params: { startDate, endDate, format },
+      });
+      console.log("==>",response.data.data);
+      
+      return response.data.data; // includes downloadUrl
     } catch (error) {
-      console.error("Withdraw failed:", error);
+      console.error("Report generation failed:", error);
       throw error;
     }
   };

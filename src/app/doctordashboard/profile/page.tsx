@@ -22,6 +22,7 @@ import { getErrorMessage } from "@/utils/handleError";
 import SubscriptionDetailsModal from "@/components/doctorComponents/SubscriptionDetailsModal";
 import AppointmentScheduler from "@/components/doctorComponents/AppoinmentSchedules";
 import DoctorWallet from "@/components/doctorComponents/DoctorWallet";
+import DashboardDoctor from "@/components/doctorComponents/dashboard/DashboardDoctor";
 interface DoctorProfile {
   fullName: string;
   department?: string;
@@ -575,6 +576,17 @@ const DoctorProfileDashboard: React.FC = () => {
           (isSubscribed ? (
             <>
               <DoctorWallet />
+            </>
+          ) : (
+            <>
+              <SubscriptionPrompt />
+            </>
+          ))}
+
+        {activeNav === "Dashboard" &&
+          (isSubscribed ? (
+            <>
+              <DashboardDoctor />
             </>
           ) : (
             <>
