@@ -16,6 +16,7 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  GitGraph,
 } from "lucide-react";
 import { logoutAdmin } from "@/services/admin/authServices";
 import toast from "react-hot-toast";
@@ -52,7 +53,7 @@ const AdminDashboard: React.FC = () => {
     { id: "doctors", label: "Doctors", icon: <Users size={20} /> },
     { id: "applications", label: "Applications", icon: <FileText size={20} /> },
     { id: "patients", label: "Patients", icon: <User size={20} /> },
-    { id: "appointments", label: "Appointments", icon: <Calendar size={20} /> },
+    { id: "appointments", label: "Doctor Analytics", icon: <GitGraph size={20} /> },
     { id: "plans", label: "Plans", icon: <CreditCard size={20} /> },
     { id: "departments", label: "Departments", icon: <Building2 size={20} /> },
   ];

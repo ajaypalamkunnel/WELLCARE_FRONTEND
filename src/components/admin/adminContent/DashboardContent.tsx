@@ -1,8 +1,17 @@
 import React from 'react'
+import SubscriptionOverview from '../report-components/SubscriptionOverview'
+import RevenueTrendChart from '../report-components/RevenueTrendChart'
+import PlanDistributionChart from '../report-components/PlanDistributionChart'
+import SubscriptionReportDownload from '../report-components/SubscriptionReportDownload'
 
 const DashboardContent = () => {
   return (
-    <div>DashboardContent</div>
+    <>
+    <SubscriptionOverview/>
+    <RevenueTrendChart/>
+    <PlanDistributionChart/>
+    <SubscriptionReportDownload/>
+    </>
   )
 }
 
