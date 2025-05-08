@@ -31,8 +31,7 @@ const BookingConfirmation = () => {
         
       try {
         const response = await getBookingDetails(bookingId, slotId);
-        console.log("success aayi vannath ==> ",response);
-        
+      
         setBooking(response.data);
       } catch (error) {
         toast.error("Failed to load booking details. Please try again.");

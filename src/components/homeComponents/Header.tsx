@@ -1,12 +1,26 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Menu, Search, Video, Info, User, Home, X, LogIn, Section, Hospital, MessageCircle } from "lucide-react";
+import {
+  Menu,
+  Search,
+  Video,
+  Info,
+  User,
+  Home,
+  X,
+  LogIn,
+  Section,
+  Hospital,
+  MessageCircle,
+  BellIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/user/authStore";
 import { logout } from "@/services/user/auth/authService";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { connectSocket, getSocket } from "@/utils/socket";
+import NotificationModal from "../commonUIElements/NotificationModal";
 
 interface HeaderProps {
   profileImageUrl?: string;
@@ -18,18 +32,19 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
   const router = useRouter();
   const logoutstore = useAuthStore((state) => state.logout);
   const accessToken = useAuthStore((state) => state.accessToken);
-  const user = useAuthStore()
+  const user = useAuthStore();
   const isLoggedIn = !!accessToken;
-  const userId = user.user?.id
+  const userId = user.user?.id;
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+  const [open, setOpen] = useState(false);
 
-  useEffect(()=>{
-    if(userId){
-      connectSocket(userId)
+  useEffect(() => {
+    if (userId) {
+      connectSocket(userId);
     }
-  },[user])
+  }, [user]);
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
@@ -37,9 +52,9 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
 
   const handleLogout = async () => {
     try {
-      const socket = getSocket()
-      if(socket){
-        socket.disconnect()
+      const socket = getSocket();
+      if (socket) {
+        socket.disconnect();
       }
       await logout();
       logoutstore();
@@ -84,22 +99,42 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
               <Home size={18} className="mr-1" />
               <span>Home</span>
             </a>
-            <a href="/user/doctors" className="flex items-center hover:text-gray-900">
+            <a
+              href="/user/doctors"
+              className="flex items-center hover:text-gray-900"
+            >
               <Search size={18} className="mr-1" />
               <span>Find Doctor</span>
             </a>
-            <a href="/user/departments" className="flex items-center hover:text-gray-900">
+            <a
+              href="/user/departments"
+              className="flex items-center hover:text-gray-900"
+            >
               <Hospital size={18} className="mr-1" />
               <span>Departments</span>
             </a>
-            <a href="/user/chat" className="flex items-center hover:text-gray-900">
+            <a
+              href="/user/chat"
+              className="flex items-center hover:text-gray-900"
+            >
               <MessageCircle size={18} className="mr-1" />
               <span>Messages</span>
             </a>
-            <a href="#" className="flex items-center hover:text-gray-900">
-              <Info size={18} className="mr-1" />
-              <span>About Us</span>
-            </a>
+            <>
+              <button
+                onClick={() => setOpen(true)}
+                className="flex items-center"
+              >
+                <BellIcon size={18} className="mr-1" />
+                <span className="ml-2">Notifications</span>
+              </button>
+
+              <NotificationModal
+                isOpen={open}
+                onClose={() => setOpen(false)}
+                isDoctor={false}
+              />
+            </>
           </div>
 
           {/* Profile Section */}
@@ -185,7 +220,7 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
             >
               <div className="flex items-center">
-              <Hospital size={18} className="mr-1" />
+                <Hospital size={18} className="mr-1" />
                 <span>Departments</span>
               </div>
             </a>

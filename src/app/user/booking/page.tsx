@@ -201,10 +201,6 @@ const DoctorSchedule: React.FC = () => {
             });
 
 
-            console.log("*******>",verifyResponse);
-
-            console.log("booking id : ",verifyResponse.bookingId);
-            console.log("slot id : ",slotId);
 
             if(verifyResponse.status){
               

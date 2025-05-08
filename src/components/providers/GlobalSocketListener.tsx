@@ -2,7 +2,10 @@
 
 import { useCallStore } from "@/store/call/callStore";
 import { getSocket } from "@/utils/socket";
+
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { notify } from "../commonUIElements/NotificationContainer";
 
 const GlobalSocketListener = () => {
   const [initialized, setInitialized] = useState(false);
@@ -31,10 +34,23 @@ const GlobalSocketListener = () => {
         useCallStore.getState().setIncomingCall(callerId, callerName);
       });
 
+      socket.on("receive-notification", (notification) => {
+        console.log("🔔 Notification received:", notification);
+        // toast.success(notification.message || "You have a new notification", {
+        //   duration: 4000,
+        // });
+        notify({
+          title: "📩 New Notification",
+          message: notification.message,
+          type: "info",
+        });
+      });
+
       setInitialized(true);
 
       return () => {
         socket?.off("call-request");
+        socket?.off("receive-notification");
       };
     };
 

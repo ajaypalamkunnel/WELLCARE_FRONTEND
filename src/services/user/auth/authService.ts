@@ -15,6 +15,7 @@ import { ApiResponse, AppointmentDetailDTO, AppointmentListItemDTO, CancelAppoin
 import { promises } from "dns";
 import { ChatUser } from "@/types/chat";
 import { PaginatedTransactionResponseDTO, TransactionQueryParams, WalletSummaryDTO } from "@/types/wallet";
+import { NotificationDTO } from "@/types/notificationDto";
 
 export const registerBasicDetails = async (data: Partial<IUser>) => {
 
@@ -249,11 +250,11 @@ export const userProfileEdit = async (data: Partial<UserProfileData>) => {
             personalInfo: { ...user?.personalInfo }
         }
 
-        console.log(">>>>>>", updatedata)
+        
 
 
         const response = await axiosInstance.put("/complete-registration", updatedata)
-        console.log("------------------>", response.data);
+        
 
         return response
 
@@ -279,7 +280,7 @@ export const getDoctorScheduleByDate = async (doctorId: string, date: Date) => {
             }
         })
 
-        console.log("vannath==>", response.data)
+       
         return response.data
 
     } catch (error) {
@@ -297,8 +298,7 @@ export const initiateConsultationBooking = async (data: InitiateBookingPayload):
 
         const response = await axiosInstance.post("/consultation-booking/initiate", data)
 
-        console.log("initiateConsultationBooking==>", response.data)
-
+        
         return response.data.data
 
     } catch (error) {
@@ -329,9 +329,7 @@ export const verifyConsultationBooking = async (data: VerifyBookingPayload): Pro
 export const getBookingDetails = async (bookingId: string, slotId: string): Promise<ApiResponse> => {
     try {
 
-        console.log("get Booking====>", bookingId, slotId);
-
-
+    
 
 
         const response = await axiosInstance.get("/consultation-booking/details", {
@@ -341,8 +339,7 @@ export const getBookingDetails = async (bookingId: string, slotId: string): Prom
             }
         })
 
-        console.log("succes page ill kittith ===>", response.data);
-
+       
 
         return response.data
 
@@ -374,12 +371,11 @@ export const getAppoinments = async (filter: string): Promise<AppointmentListIte
 export const getAppoinmentsDetails = async (id: string): Promise<AppointmentDetailDTO> => {
     try {
 
-        console.log("get appoinment===id", id);
-
+        
 
         const response = await axiosInstance.get(`/my-appoinments-detail/${id}`);
 
-        console.log("==>", response.data.data)
+       
 
         return response.data.data
 
@@ -415,10 +411,10 @@ export const CancelAppointment = async (appointmentId: string, reason?: string):
 
 export const getChatInboxUser = async ():Promise<ChatUser[]>=>{
     try {
-        console.log("📡 Calling inbox API...");
+        
 
         const response = await axiosInstance.get("/inbox");
-        console.log("📨 Inbox API response:", response.data);
+        
         return response.data.data
         
     } catch (error) {
@@ -435,7 +431,7 @@ export const getUserBasicInfo = async (userId: string): Promise<ChatUser> => {
     try {
         const response = await axiosInstanceDoctor.get(`/user-info/${userId}`);
 
-        console.log("✅ getUserBasicInfo response =>", response.data.data);
+       
         return response.data.data;
         
     } catch (error) {
@@ -481,3 +477,20 @@ export const getWalletTransactions = async (params:TransactionQueryParams):Promi
     }
 }
 
+
+export const fetchNotifications = async () => {
+    try {
+
+        console.log("heloooo");
+        
+        const response = await axiosInstance.get("/get-notifications",);
+
+        console.log("==>",response.data.data);
+        
+
+        return response.data.data as NotificationDTO[];
+
+    } catch (error) {
+        throw error
+    }
+};

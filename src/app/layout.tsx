@@ -5,6 +5,7 @@ import ToasterProvider from "@/components/toastProvider/ToasterProvider";
 import IncomingCallModal from "@/components/videoCallComponents/IncomingCallModal";
 import GlobalSocketListener from "@/components/providers/GlobalSocketListener";
 import SocketInitializer from "@/components/providers/SocketInitializer";
+import NotificationContainer from "@/components/commonUIElements/NotificationContainer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
         <SocketInitializer /> 
         <GlobalSocketListener/>
         <IncomingCallModal/>
+        <NotificationContainer/>
         {children}
       
       </body>

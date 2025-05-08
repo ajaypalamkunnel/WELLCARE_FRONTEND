@@ -52,7 +52,7 @@ const MainBanner1 = () => {
       
       {/* Search bar section */}
       <div className="container mx-auto px-4 mb-12">
-        <div className="bg-white rounded-lg shadow-lg p-4 max-w-4xl mx-auto">
+        {/* <div className="bg-white rounded-lg shadow-lg p-4 max-w-4xl mx-auto">
           <div className="flex flex-col md:flex-row">
             <div className="flex items-center border-b md:border-b-0 md:border-r border-gray-300 p-2 md:w-1/2">
               <MapPin className="text-gray-400 mr-2" size={20} />
@@ -71,7 +71,7 @@ const MainBanner1 = () => {
               />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import { ChatUser } from "@/types/chat";
 import { AppointmentStatusSummary } from "@/types/dashboardDto";
 import IDoctorProfileDataType, { ICertificate } from "@/types/doctorFullDataType";
+import { NotificationDTO } from "@/types/notificationDto";
 import { SubmitPrescriptionPayload } from "@/types/prescription";
 import { ApiResponseDoctorAppointmentListItemDTO, AppointmentFilters, DoctorAppointmentDetailDTO } from "@/types/slotBooking";
 import axiosInstancePatinet from "@/utils/axiosInstance";
@@ -28,11 +29,11 @@ export const doctorRegistration = async (doctorProfileData: IDoctorProfileDataTy
 
     try {
 
-        console.log("doctorRegistration service ===>", doctorProfileData);
+
 
         const response = await axiosInstanceDoctor.post("/api/doctor/doctorregistration", doctorProfileData)
         setTimeout(() => {
-            console.log("API from service====>", response);
+
 
         }, 1000)
 
@@ -223,7 +224,7 @@ export const createSchedule = async (data: ScheduleCreationData) => {
 
         const response = await axiosInstanceDoctor.post("/api/doctor/create-schedule", data)
 
-        console.log("avadannu vanne njan aane ===>", response);
+
 
 
 
@@ -245,7 +246,7 @@ export const fetchSchedules = async (params: any) => {
         // Convert params object to URLSearchParams
         const queryParams = new URLSearchParams();
 
-        console.log("service ==>", queryParams.toString());
+
 
 
         Object.entries(params).forEach(([key, value]) => {
@@ -277,14 +278,13 @@ export const getDoctorAppointments = async (
 ): Promise<ApiResponseDoctorAppointmentListItemDTO> => {
     try {
 
-        console.log("ponath===>", filters);
+
 
         const response = await axiosInstanceDoctor.get("/api/doctor/appointments", {
             params: filters,
         });
 
-        console.log("Final URL:", response.config?.url);
-        console.log("response : ", response)
+
 
         return response.data.data;
     } catch (error) {
@@ -334,7 +334,7 @@ export const getDoctorBasicInfo = async (doctorId: string): Promise<ChatUser> =>
     try {
         const response = await axiosInstancePatinet.get(`/api/doctor/doctor-info/${doctorId}`);
 
-        console.log("✅ getDoctorBasicInfo response =>", response.data.data);
+
         return response.data.data;
 
     } catch (error) {
@@ -369,7 +369,7 @@ export const addNewEducation = async (data: EducationFormData) => {
 
         const response = await axiosInstanceDoctor.post("/api/doctor/profile/addeducation", data)
 
-        console.log("vanna data:  ", response.data)
+
 
         return response.data.data
 
@@ -389,7 +389,7 @@ export const addNewCertification = async (data: ICertificate) => {
 
         const response = await axiosInstanceDoctor.post("/api/doctor/profile/addCertificate", data)
 
-        console.log("vanna data:  ", response.data)
+
 
 
         return response.data.data
@@ -414,7 +414,7 @@ export const updateEducation = async (data: EducationFormData) => {
 
         const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateEducation", data)
 
-        console.log("vanna data:  ", response.data)
+
 
 
         return response.data
@@ -441,7 +441,7 @@ export const updateCertification = async (data: CertificationFormData) => {
 
         const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateCertification", data)
 
-        console.log("vanna data:  ", response.data)
+
 
 
         return response.data
@@ -469,7 +469,7 @@ export const cancelSchedule = async (reason: string, selectedScheduleId: string)
             reason: reason
         })
 
-        console.log(response.data);
+
 
 
         return response.data
@@ -504,7 +504,7 @@ export const getWalletSummary = async (type?: "credit" | "debit", page = 1, limi
             params: { type, page, limit }
         });
 
-        console.log("getWalletSummary :", response.data.data);
+
 
         return response.data.data;
 
@@ -587,36 +587,50 @@ export const getTopServices = async (
     startDate: string,
     endDate: string,
     interval: "day" | "week" | "month"
-  ) => {
+) => {
     try {
-      const response = await axiosInstanceDoctor.get("/api/doctor/top-services", {
-        params: { startDate, endDate, interval },
-      });
-      console.log("====>",response.data.data);
-      
-      return response.data.data;
-    } catch (error) {
-      console.error("Top services fetch failed:", error);
-      throw error;
-    }
-  };
-  
+        const response = await axiosInstanceDoctor.get("/api/doctor/top-services", {
+            params: { startDate, endDate, interval },
+        });
 
-  export const generateDoctorReport = async (
+        return response.data.data;
+    } catch (error) {
+        console.error("Top services fetch failed:", error);
+        throw error;
+    }
+};
+
+
+export const generateDoctorReport = async (
     startDate: string,
     endDate: string,
     format: "pdf" | "excel"
-  ) => {
+) => {
     try {
-      const response = await axiosInstanceDoctor.get("/api/doctor/generate-report", {
-        params: { startDate, endDate, format },
-      });
-      console.log("==>",response.data.data);
-      
-      return response.data.data; // includes downloadUrl
+        const response = await axiosInstanceDoctor.get("/api/doctor/generate-report", {
+            params: { startDate, endDate, format },
+        });
+
+
+        return response.data.data; // includes downloadUrl
     } catch (error) {
-      console.error("Report generation failed:", error);
-      throw error;
+        console.error("Report generation failed:", error);
+        throw error;
     }
-  };
-  
+};
+
+
+export const fetchNotificationsDoctor = async () => {
+    try {
+        const response = await axiosInstanceDoctor.get("/api/doctor/get-notifications",);
+
+        console.log("==>",response.data.data);
+        
+        return response.data.data as NotificationDTO[];
+
+    } catch (error) {
+        console.log(error);
+        
+        throw error
+    }
+};

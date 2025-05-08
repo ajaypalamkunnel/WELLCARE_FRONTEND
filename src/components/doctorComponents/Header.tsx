@@ -1,12 +1,13 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { ChevronDown, LogIn, LogOut, User } from "lucide-react";
+import { BellIcon, ChevronDown, LogIn, LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { logoutDoctor } from "@/services/doctor/authService";
 import toast from "react-hot-toast";
 import { connectSocket, getSocket } from "@/utils/socket";
+import NotificationModal from "../commonUIElements/NotificationModal";
 
 interface HeaderProps {
   userImage?: string;
@@ -23,6 +24,7 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
 console.log("====>",user?.isVerified);
 
   const profileRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false);
 
 
   const isLoggedIn = !!accessToken;
@@ -160,26 +162,14 @@ console.log("====>",user?.isVerified);
             </svg>
             Messages
           </a>
-          <a
-            href="/notifications"
-            className="flex items-center hover:text-green-300 transition"
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-              ></path>
-            </svg>
-            Notifications
-          </a>
+          <>
+      <button onClick={() => setOpen(true)} className="flex items-center">
+        <BellIcon size={18} className="mr-1"/>
+        <span className="ml-2">Notifications</span>
+      </button>
+
+      <NotificationModal isOpen={open} onClose={() => setOpen(false)} isDoctor={true} />
+    </>
         </nav>
 
         {/* Profile Dropdown */}

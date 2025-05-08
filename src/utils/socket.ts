@@ -1,10 +1,13 @@
 import {io,Socket} from 'socket.io-client'
 import { API_BASE_URL } from './axiosInstance';
 
+
 let socket: Socket | null = null;
 
 
-export const connectSocket = (userId:string) =>{
+export const connectSocket = (userId:string,
+    onNotification?: (data: any) => void
+) =>{
     if(!socket){
         socket = io(API_BASE_URL,{
             transports:["websocket"],
@@ -22,6 +25,13 @@ export const connectSocket = (userId:string) =>{
         socket.on("disconnect",()=>{
             console.log("❌ Disconnected from socket:", socket?.id);
             
+        })
+
+        // Notification Event
+        socket.on("receive-notification",(notification)=>{
+            console.log("🔔 New Notification Received:", notification);
+            if (onNotification) onNotification(notification);
+
         })
     }
 }
