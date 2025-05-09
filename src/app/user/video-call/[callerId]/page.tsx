@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import VideoCallLayout from "@/components/doctorComponents/videoCall/VideoCallLayout";
 import { getSocket } from "@/utils/socket";
 import {
@@ -13,73 +14,43 @@ import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 const UserVideoCallPage = () => {
-  const { callerId } = useParams(); // doctor ID
+  const { callerId } = useParams(); // Doctor ID
   const localStreamRef = useRef<HTMLVideoElement>(null);
   const remoteStreamRef = useRef<HTMLVideoElement>(null);
   const [micEnabled, setMicEnabled] = useState(true);
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const router = useRouter();
 
-  console.log("caller id😌",callerId);
-  
   useEffect(() => {
     const socket = getSocket();
-    console.log("--->",socket);
-    
+    console.log("✅ [Patient] Connected to socket:", socket?.id);
+    console.log("🩺 Caller (Doctor) ID:", callerId);
+
     let localStream: MediaStream;
 
+    // 👇 Setup listeners BEFORE creating media or peer connection
+    socket?.on("webrtc-offer", async ({ offer }) => {
+      console.log("📩 [Patient] Received WebRTC offer:", offer);
 
-    const setUpConnection = async () => {
-       localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      console.log("✅ Patient local stream tracks:", localStream.getTracks());
-      if (localStreamRef.current) {
-        localStreamRef.current.srcObject = localStream;
-        console.log("🎥 Patient video element assigned local stream");
+      await setRemoteDescription(offer);
+
+      if (localStream) {
+        addLocalTrack(localStream);
+        console.log("📤 [Patient] Added local tracks after setting remote description");
       }
 
-      createPeerConnection({
-        onIceCandidate: (candidate) => {
-          console.log("-----",candidate);
-          socket?.emit("webrtc-candidate", {
-            targetId: callerId,
-            candidate,
-          });
-        },
-        onTrack: (remoteStream) => {
-          console.log("👀 Got remote stream");
-          if (remoteStreamRef.current) {
-            remoteStreamRef.current.srcObject = remoteStream;
-          }
-        },
-      });
+      const answer = await createAnswer();
 
-      addLocalTrack(localStream);
-    };
-
-    setUpConnection();
-
-    socket?.on("webrtc-offer", async ({ offer }) => {
-      console.log("Received offer:", offer);
-    
-      await setRemoteDescription(offer); // Step 1
-    
-    
-    
-      const answer = await createAnswer(); // Step 3
-    
       socket.emit("webrtc-answer", {
         targetId: callerId,
         answer,
       });
+
+      console.log("📨 [Patient] Sent WebRTC answer to doctor");
     });
-    
-    
 
     socket?.on("webrtc-candidate", async ({ candidate }) => {
-      console.log("Received ICE candidate:", candidate);
+      console.log("📥 [Patient] Received ICE candidate:", candidate);
       await addIceCandidate(candidate);
     });
 
@@ -87,6 +58,44 @@ const UserVideoCallPage = () => {
       console.log("📴 Doctor ended the call");
       handleEndCall(true);
     });
+
+    const setUpConnection = async () => {
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+
+        console.log("🎤 [Patient] Got local media tracks:", localStream.getTracks());
+
+        if (localStreamRef.current) {
+          localStreamRef.current.srcObject = localStream;
+          console.log("🎥 [Patient] Set local video element stream");
+        }
+
+        createPeerConnection({
+          onIceCandidate: (candidate) => {
+            console.log("📡 [Patient] Sending ICE candidate:", candidate);
+            socket?.emit("webrtc-candidate", {
+              targetId: callerId,
+              candidate,
+            });
+          },
+          onTrack: (remoteStream) => {
+            console.log("👀 [Patient] Received remote stream:", remoteStream.getTracks());
+            if (remoteStreamRef.current) {
+              remoteStreamRef.current.srcObject = remoteStream;
+            } else {
+              console.warn("⚠️ remoteStreamRef is null");
+            }
+          },
+        });
+      } catch (error) {
+        console.error("❌ [Patient] Failed to get user media:", error);
+      }
+    };
+
+    setUpConnection();
 
     return () => {
       socket?.off("webrtc-offer");
@@ -102,35 +111,27 @@ const UserVideoCallPage = () => {
       socket?.emit("end-call", { to: callerId });
     }
 
-    // Stop local stream
     const stream = localStreamRef.current?.srcObject as MediaStream;
-
     stream?.getTracks().forEach((track) => track.stop());
 
-    // Clean up video refs
     if (localStreamRef.current) localStreamRef.current.srcObject = null;
     if (remoteStreamRef.current) remoteStreamRef.current.srcObject = null;
 
-    // Close WebRTC
     closeConnection();
 
-    // Redirect
     router.push("/");
   };
 
   const handleToggleMic = () => {
     const stream = localStreamRef.current?.srcObject as MediaStream;
-
-    stream.getAudioTracks().forEach((track) => {
+    stream?.getAudioTracks().forEach((track) => {
       track.enabled = !micEnabled;
     });
-
     setMicEnabled((prev) => !prev);
   };
 
   const handleToggleCamera = () => {
     const stream = localStreamRef.current?.srcObject as MediaStream;
-
     stream?.getVideoTracks().forEach((track) => {
       track.enabled = !cameraEnabled;
     });
@@ -140,7 +141,7 @@ const UserVideoCallPage = () => {
   return (
     <VideoCallLayout
       isDoctor={false}
-      remoteUserName={"Doctor"}
+      remoteUserName="Doctor"
       localStreamRef={localStreamRef}
       remoteStreamRef={remoteStreamRef}
       micEnabled={micEnabled}

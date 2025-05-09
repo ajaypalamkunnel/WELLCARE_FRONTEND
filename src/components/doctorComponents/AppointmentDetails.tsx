@@ -25,7 +25,6 @@ import { getSocket } from "@/utils/socket";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { useCallStore } from "@/store/call/callStore";
 
-
 interface DoctorAppointmentDetailProps {
   appointmentId: string;
 }
@@ -40,10 +39,8 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({
   const router = useRouter();
   const userId = appointment?.patient._id;
 
-  const doctor = useAuthStoreDoctor()
-  const doctorId = doctor.user?.id
-
-  
+  const doctor = useAuthStoreDoctor();
+  const doctorId = doctor.user?.id;
 
   useEffect(() => {
     const fetchAppointmentDetail = async () => {
@@ -68,21 +65,25 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({
   }, [appointmentId]);
 
   const handleStartConsultation = (userId: string) => {
-    if (!userId) return
+    if (!userId) return;
 
-    const socket = getSocket()
+    const socket = getSocket();
 
     const callerId = doctorId;
-    const receiverId = appointment?.patient._id
+    const receiverId = appointment?.patient._id;
 
-    if(!callerId||!receiverId) return
+    if (!callerId || !receiverId) return;
 
-    socket?.emit("start-call",{callerId,receiverId})
+    socket?.emit("start-call", { callerId, receiverId });
 
-    useCallStore.getState().setCallerDetails(appointment.patient.fullName,appointment._id,appointment.patient._id)
+    useCallStore
+      .getState()
+      .setCallerDetails(
+        appointment.patient.fullName,
+        appointment._id,
+        appointment.patient._id
+      );
     router.push(`/doctor/video-call/${appointment.patient._id}`);
-
-   
   };
 
   const handleUploadPrescription = () => {
@@ -343,7 +344,7 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({
 
           {/* Action Button */}
           <div className="mt-6">
-            {isOnlineAppointment ? (
+            {isOnlineAppointment && (appointment.status !== "completed") ? (
               <button
                 onClick={() => handleStartConsultation(appointment.patient._id)}
                 className="w-full inline-flex justify-center items-center px-4 py-3 bg-indigo-900 text-white text-sm font-medium rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
@@ -359,7 +360,7 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({
                 <Upload size={20} className="mr-2" />
                 Upload Prescription
               </button>
-            )}
+            )}+
             <button
               onClick={() => router.push(`/doctordashboard/chat/${userId}`)}
               className="w-full inline-flex justify-center items-center mt-4 px-4 py-3 bg-indigo-900 text-white text-sm font-medium rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"

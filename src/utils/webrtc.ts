@@ -4,25 +4,41 @@ type SignalingCallbacks = {
 }
 
 let peerConnection: RTCPeerConnection | null = null
+let remoteMediaStream: MediaStream | null = null;
 
 
 export const getPeerConnection = () => peerConnection
 
-
 export const createPeerConnection = (callback: SignalingCallbacks) => {
+
+
+    if (peerConnection) {
+        // console.error(" PeerConnection already exists. Reusing the same connection.");
+        return peerConnection;
+    }
+
     const config: RTCConfiguration = {
         iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          {
-            urls: "turn:relay.metered.ca:80",
-            username: "demo",
-            credential: "demo"
-          }
+            { urls: "stun:stun.l.google.com:19302" },
+            {
+                urls: "turn:relay.metered.ca:80",
+                username: "demo",
+                credential: "demo"
+            }
         ]
-      };
+    };
 
 
     peerConnection = new RTCPeerConnection(config)
+    remoteMediaStream = new MediaStream();
+
+    peerConnection.oniceconnectionstatechange = () => {
+        console.log("❄️ ICE State:", peerConnection?.iceConnectionState);
+    };
+
+    peerConnection.onconnectionstatechange = () => {
+        console.log("🔗 Connection State:", peerConnection?.connectionState);
+    };
 
 
 
@@ -34,13 +50,16 @@ export const createPeerConnection = (callback: SignalingCallbacks) => {
     }
 
 
-    let remoteMediaStream = new MediaStream(); // 🔥 Persistent stream outside the handler
+
 
     peerConnection.ontrack = (event) => {
         console.log("✅ ontrack fired:", event.track.kind);
 
-        // Add only the new track to the existing stream
-        remoteMediaStream.addTrack(event.track); // 🔥 Append instead of replace
+        if (!remoteMediaStream) {
+            remoteMediaStream = new MediaStream();
+        }
+
+        remoteMediaStream.addTrack(event.track);
 
         callback.onTrack(remoteMediaStream); // Call only once full stream is built
     };
@@ -49,10 +68,13 @@ export const createPeerConnection = (callback: SignalingCallbacks) => {
 }
 
 export const addLocalTrack = (stream: MediaStream) => {
-    if (!peerConnection) return;
+    if (!peerConnection) {
+        console.error("❌ No peer connection when trying to add local tracks");
+        return;
+    }
 
-    const senders = peerConnection.getSenders();
-  console.log("📤 Adding local tracks. Current senders:", senders);
+
+    console.log("📤 Adding local tracks. Current senders:", peerConnection.getSenders());
 
     stream.getTracks().forEach((track) => {
 
@@ -62,7 +84,10 @@ export const addLocalTrack = (stream: MediaStream) => {
 }
 
 export const createOffer = async () => {
-    if (!peerConnection) return null
+    if (!peerConnection) {
+        console.error("❌ Cannot create offer — no peer connection");
+        return null;
+    }
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer)
     return offer
@@ -70,7 +95,10 @@ export const createOffer = async () => {
 
 export const createAnswer = async () => {
 
-    if (!peerConnection) return
+    if (!peerConnection) {
+        console.error("❌ Cannot create answer — no peer connection");
+        return;
+      }
 
     const answer = await peerConnection.createAnswer();
 
@@ -81,17 +109,25 @@ export const createAnswer = async () => {
 
 
 export const setRemoteDescription = async (sdp: RTCSessionDescriptionInit) => {
-    if (!peerConnection) return
+    if (!peerConnection) {
+        console.error("❌ No peer connection to set remote description");
+        return;
+      }
     await peerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
 }
 
 export const addIceCandidate = async (candidate: RTCIceCandidate) => {
-    if (!peerConnection) return;
+
+    if (!peerConnection) {
+        console.error("❌ Cannot add ICE candidate — no peer connection");
+        return;
+      }
+    
     try {
         await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
         console.log("🧊 ICE candidate added");
     } catch (err) {
-        console.warn("⚠️ Failed to add ICE candidate:", err);
+        console.error("⚠️ Failed to add ICE candidate:", err);
     }
 };
 
@@ -100,4 +136,5 @@ export const closeConnection = () => {
         peerConnection.close();
         peerConnection = null;
     }
+    remoteMediaStream = null
 };

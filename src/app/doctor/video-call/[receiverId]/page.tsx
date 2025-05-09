@@ -15,11 +15,10 @@ import {
 } from "@/utils/webrtc";
 import { Dialog } from "@headlessui/react";
 import { useParams, useRouter } from "next/navigation";
-
 import React, { useEffect, useRef, useState } from "react";
 
 const DoctorVideoCallPage = () => {
-  const { receiverId } = useParams();
+  const { receiverId } = useParams(); // Patient ID
   const localStreamRef = useRef<HTMLVideoElement>(null);
   const remoteStreamRef = useRef<HTMLVideoElement>(null);
   const [micEnabled, setMicEnabled] = useState(true);
@@ -28,54 +27,70 @@ const DoctorVideoCallPage = () => {
 
   const router = useRouter();
   const { user } = useAuthStoreDoctor();
-  const callStore = useCallStore();
   const doctorId = user?.id;
   const doctorName = user?.fullName;
-  const prescriptionSubmitted = useCallStore(
-    (state) => state.prescriptionSubmitted
-  );
 
-  // ------------------------------------
+  const remoteUserName = useCallStore((state) => state.remoteUserName);
+  const prescriptionSubmitted = useCallStore((state) => state.prescriptionSubmitted);
+
   useEffect(() => {
     const socket = getSocket();
+    console.log("✅ [Doctor] Connected to socket:", socket?.id);
+    console.log("🧑‍⚕️ Receiver (Patient) ID:", receiverId);
+
+    let localStream: MediaStream;
+
+    // Register all socket listeners first
+    socket?.on("webrtc-answer", async ({ answer }) => {
+      console.log("📩 [Doctor] Received WebRTC answer from patient");
+      await setRemoteDescription(answer);
+    });
+
+    socket?.on("webrtc-candidate", async ({ candidate }) => {
+      console.log("📥 [Doctor] Received ICE candidate:", candidate);
+      await addIceCandidate(candidate);
+    });
 
     const startCall = async () => {
       try {
-        //  Get local stream
-        const localStream = await navigator.mediaDevices.getUserMedia({
+        // Get local stream
+        localStream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: true,
         });
 
-        //Display local video
+        console.log("🎤 [Doctor] Got local stream tracks:", localStream.getTracks());
+
         if (localStreamRef.current) {
           localStreamRef.current.srcObject = localStream;
         }
 
-        //create peer connection
-
+        // Create peer connection
         createPeerConnection({
           onIceCandidate: (candidate) => {
+            console.log("📡 [Doctor] Sending ICE candidate:", candidate);
             socket?.emit("webrtc-candidate", {
               targetId: receiverId,
               candidate,
             });
           },
           onTrack: (remoteStream) => {
-            console.log("👀 Got remote stream");
+            console.log("👀 [Doctor] Got remote stream:", remoteStream.getTracks());
             if (remoteStreamRef.current) {
               remoteStreamRef.current.srcObject = remoteStream;
+            } else {
+              console.warn("⚠️ remoteStreamRef is null");
             }
           },
         });
 
-        // . Add local tracks
+        // Add local tracks before creating offer
         addLocalTrack(localStream);
 
-        // offer creating
         const offer = await createOffer();
-        console.log("🎥 Created offer:", offer);
+        console.log("🎥 [Doctor] Created offer:", offer);
 
+        // Notify the backend about the call
         socket?.emit("start-call", {
           callerId: doctorId,
           receiverId,
@@ -87,35 +102,17 @@ const DoctorVideoCallPage = () => {
           offer,
         });
       } catch (error) {
-        console.error("Failed to start call:", error);
+        console.error("❌ [Doctor] Failed to start call:", error);
       }
     };
 
     startCall();
-
-    // --------------------------------------
-
-    // Receive answer from patient
-    socket?.on("webrtc-answer", async ({ answer }) => {
-      console.log("Received answer from patient");
-      await setRemoteDescription(answer);
-
-      //  Make sure tracks are added after remote description
-    });
-
-    // Receive ICE candidate from patient
-    socket?.on("webrtc-candidate", async ({ candidate }) => {
-      console.log("Received ICE candidate from patient", candidate);
-      await addIceCandidate(candidate);
-    });
 
     return () => {
       socket?.off("webrtc-answer");
       socket?.off("webrtc-candidate");
     };
   }, [receiverId]);
-
-  // --------------------- handle end call-------------------
 
   const handleEndCall = () => {
     const socket = getSocket();
@@ -129,44 +126,26 @@ const DoctorVideoCallPage = () => {
       to: receiverId,
     });
 
-    // Stop local stream
-    const localVideoEl = localStreamRef.current;
-    if (localVideoEl?.srcObject) {
-      const stream = localVideoEl.srcObject as MediaStream;
+    const stream = localStreamRef.current?.srcObject as MediaStream;
+    stream?.getTracks().forEach((track) => track.stop());
 
-      stream.getTracks().forEach((track) => {
-        track.stop(); //  This stops the camera and mic
-      });
-      localVideoEl.srcObject = null;
-    }
+    if (localStreamRef.current) localStreamRef.current.srcObject = null;
+    if (remoteStreamRef.current) remoteStreamRef.current.srcObject = null;
 
-    // Clear remote stream
-    const remoteVideoEl = remoteStreamRef.current;
-    if (remoteVideoEl?.srcObject) {
-      remoteVideoEl.srcObject = null;
-    }
-
-    // Close WebRTC connection
     closeConnection();
     useCallStore.getState().clearCall();
 
-    // Redirect
     router.push("/doctordashboard/home");
   };
 
-  // --------------------mic handling------------------
-
   const handleToggleMic = () => {
     const stream = localStreamRef.current?.srcObject as MediaStream;
-
     stream?.getAudioTracks().forEach((track) => {
       track.enabled = !micEnabled;
     });
-
     setMicEnabled((prev) => !prev);
   };
 
-  // -----------------------------camera handling--------------------
   const handleToggleCamera = () => {
     const stream = localStreamRef.current?.srcObject as MediaStream;
     stream?.getVideoTracks().forEach((track) => {
@@ -174,7 +153,6 @@ const DoctorVideoCallPage = () => {
     });
     setCameraEnabled((prev) => !prev);
   };
-  const remoteUserName = useCallStore((state) => state.remoteUserName);
 
   return (
     <>
@@ -190,6 +168,7 @@ const DoctorVideoCallPage = () => {
         onToggleMic={handleToggleMic}
         onToggleCamera={handleToggleCamera}
       />
+
       <Dialog
         open={showEndCallWarning}
         onClose={() => setShowEndCallWarning(false)}
