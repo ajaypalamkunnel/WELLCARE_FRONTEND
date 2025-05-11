@@ -27,6 +27,7 @@ const UserVideoCallPage = () => {
     console.log("🩺 Caller (Doctor) ID:", callerId);
 
     let localStream: MediaStream;
+    let peerConnectionInitialized = false;
 
     // 👇 Setup listeners BEFORE creating media or peer connection
     socket?.on("webrtc-offer", async ({ offer }) => {
@@ -36,7 +37,9 @@ const UserVideoCallPage = () => {
 
       if (localStream) {
         addLocalTrack(localStream);
-        console.log("📤 [Patient] Added local tracks after setting remote description");
+        console.log(
+          "📤 [Patient] Added local tracks after setting remote description"
+        );
       }
 
       const answer = await createAnswer();
@@ -66,7 +69,10 @@ const UserVideoCallPage = () => {
           audio: true,
         });
 
-        console.log("🎤 [Patient] Got local media tracks:", localStream.getTracks());
+        console.log(
+          "🎤 [Patient] Got local media tracks:",
+          localStream.getTracks()
+        );
 
         if (localStreamRef.current) {
           localStreamRef.current.srcObject = localStream;
@@ -82,18 +88,67 @@ const UserVideoCallPage = () => {
             });
           },
           onTrack: (remoteStream) => {
-            console.log("👀 [Patient] Received remote stream:", remoteStream.getTracks());
-            if (remoteStreamRef.current) {
+            console.log(
+              "👀 [Patient] Received remote stream:",
+              remoteStream.getTracks()
+            );
+
+             if (remoteStreamRef.current) {
               remoteStreamRef.current.srcObject = remoteStream;
-            } else {
-              console.warn("⚠️ remoteStreamRef is null");
+              console.log("✅ Remote stream set to video element");
             }
+
           },
         });
+
+        addLocalTrack(localStream)
+        peerConnectionInitialized = true;
+          console.log("🔄 [Patient] Local tracks added to peer connection");
       } catch (error) {
         console.error("❌ [Patient] Failed to get user media:", error);
       }
     };
+
+    // Setup listeners
+    socket?.on("webrtc-offer", async ({ offer }) => {
+      console.log("📩 [Patient] Received WebRTC offer");
+
+      if (!peerConnectionInitialized) {
+        console.log("⚠️ Peer connection not ready, initializing now");
+        await setUpConnection();
+      }
+
+      try {
+        await setRemoteDescription(offer);
+        console.log("📥 [Patient] Remote description set");
+
+        const answer = await createAnswer();
+        console.log("📨 [Patient] Created answer");
+
+        socket.emit("webrtc-answer", {
+          targetId: callerId,
+          answer,
+        });
+      } catch (err) {
+        console.error("❌ Failed to handle offer:", err);
+      }
+    });
+
+    socket?.on("webrtc-candidate", async ({ candidate }) => {
+      console.log("📥 [Patient] Received ICE candidate");
+      try {
+        if (candidate) {
+          await addIceCandidate(candidate);
+        }
+      } catch (err) {
+        console.error("❌ Failed to add ICE candidate:", err);
+      }
+    });
+
+    socket?.on("end-call", () => {
+      console.log("📴 Doctor ended the call");
+      handleEndCall(true);
+    });
 
     setUpConnection();
 
@@ -111,23 +166,37 @@ const UserVideoCallPage = () => {
       socket?.emit("end-call", { to: callerId });
     }
 
-    const stream = localStreamRef.current?.srcObject as MediaStream;
-    stream?.getTracks().forEach((track) => track.stop());
+    // Clean up local stream
+    const localStream = localStreamRef.current?.srcObject as MediaStream;
+    if (localStream) {
+      localStream.getTracks().forEach((track) => track.stop());
+    }
 
+    // Clean up remote stream
+    const remoteStream = remoteStreamRef.current?.srcObject as MediaStream;
+    if (remoteStream) {
+      remoteStream.getTracks().forEach((track) => track.stop());
+    }
+
+    // Clear video elements
     if (localStreamRef.current) localStreamRef.current.srcObject = null;
     if (remoteStreamRef.current) remoteStreamRef.current.srcObject = null;
 
+    // Close connection
     closeConnection();
 
+    // Navigate away
     router.push("/");
   };
 
   const handleToggleMic = () => {
-    const stream = localStreamRef.current?.srcObject as MediaStream;
-    stream?.getAudioTracks().forEach((track) => {
-      track.enabled = !micEnabled;
-    });
-    setMicEnabled((prev) => !prev);
+     const stream = localStreamRef.current?.srcObject as MediaStream;
+    if (stream) {
+      stream.getAudioTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setMicEnabled(!micEnabled);
+    }
   };
 
   const handleToggleCamera = () => {
@@ -154,3 +223,156 @@ const UserVideoCallPage = () => {
 };
 
 export default UserVideoCallPage;
+
+// ----------------------------
+
+// "use client";
+
+// import VideoCallLayout from "@/components/doctorComponents/videoCall/VideoCallLayout";
+// import { getSocket } from "@/utils/socket";
+// import {
+//   addIceCandidate,
+//   addLocalTrack,
+//   closeConnection,
+//   createAnswer,
+//   createPeerConnection,
+//   setRemoteDescription,
+// } from "@/utils/webrtc";
+// import { useParams, useRouter } from "next/navigation";
+// import React, { useEffect, useRef, useState } from "react";
+
+// const UserVideoCallPage = () => {
+//   const { callerId } = useParams();
+//   const localStreamRef = useRef<HTMLVideoElement>(null);
+//   const remoteStreamRef = useRef<HTMLVideoElement>(null);
+//   const [micEnabled, setMicEnabled] = useState(true);
+//   const [cameraEnabled, setCameraEnabled] = useState(true);
+//   const [callActive, setCallActive] = useState(false);
+//   const router = useRouter();
+
+//   useEffect(() => {
+//   const socket = getSocket();
+//   let localStream: MediaStream;
+//   let pcInitialized = false;
+
+//   const setupPeerConnection = async () => {
+//     try {
+//       // 1. Get media FIRST
+//       localStream = await navigator.mediaDevices.getUserMedia({
+//         video: {
+//           width: { ideal: 1280 },
+//           height: { ideal: 720 }
+//         },
+//         audio: true
+//       });
+
+//       // 2. Attach to video element IMMEDIATELY
+//       if (localStreamRef.current) {
+//         localStreamRef.current.srcObject = localStream;
+//         localStreamRef.current.muted = true;
+//         localStreamRef.current.play().catch(e => console.error("Local play error:", e));
+//       }
+
+//       // 3. Create peer connection
+//       createPeerConnection({
+//         onIceCandidate: (candidate) => {
+//           socket?.emit("webrtc-candidate", { targetId: callerId, candidate });
+//         },
+//         onTrack: (remoteStream) => {
+//           console.log("Remote stream received");
+//           if (remoteStreamRef.current) {
+//             remoteStreamRef.current.srcObject = remoteStream;
+//             remoteStreamRef.current.play().catch(e => console.error("Remote play error:", e));
+//           }
+//         }
+//       });
+
+//       pcInitialized = true;
+//     } catch (err) {
+//       console.error("Setup failed:", err);
+//     }
+//   };
+
+//   // Handle offer
+//   const handleOffer = async ({ offer }: { offer: RTCSessionDescriptionInit }) => {
+//     if (!pcInitialized) {
+//       await setupPeerConnection();
+//     }
+//     await setRemoteDescription(offer);
+//     const answer = await createAnswer();
+//     socket?.emit("webrtc-answer", { targetId: callerId, answer });
+//   };
+
+//   socket?.on("webrtc-offer", handleOffer);
+  
+//   // Initial setup
+//   setupPeerConnection();
+
+//   return () => {
+//     socket?.off("webrtc-offer", handleOffer);
+//     if (localStream) {
+//       localStream.getTracks().forEach(track => track.stop());
+//     }
+//     closeConnection();
+//   };
+// }, [callerId]);
+
+//   const handleEndCall = (remoteEnded = false) => {
+//     const socket = getSocket();
+//     if (!remoteEnded) {
+//       socket?.emit("end-call", { to: callerId });
+//     }
+
+//     // Clean up media streams
+//     const localStream = localStreamRef.current?.srcObject as MediaStream;
+//     const remoteStream = remoteStreamRef.current?.srcObject as MediaStream;
+
+//     [localStream, remoteStream].forEach((stream) => {
+//       if (stream) {
+//         stream.getTracks().forEach((track) => track.stop());
+//       }
+//     });
+
+//     // Clear video elements
+//     if (localStreamRef.current) localStreamRef.current.srcObject = null;
+//     if (remoteStreamRef.current) remoteStreamRef.current.srcObject = null;
+
+//     // Close connection and cleanup
+//     closeConnection();
+//     setCallActive(false);
+
+//     router.push("/");
+//   };
+
+//   const toggleMedia = (type: "audio" | "video") => {
+//     const stream = localStreamRef.current?.srcObject as MediaStream;
+//     if (!stream) return;
+
+//     const tracks =
+//       type === "audio" ? stream.getAudioTracks() : stream.getVideoTracks();
+
+//     tracks.forEach((track) => {
+//       track.enabled = !track.enabled;
+//     });
+
+//     if (type === "audio") setMicEnabled((prev) => !prev);
+//     if (type === "video") setCameraEnabled((prev) => !prev);
+//   };
+
+//   return (
+//     <VideoCallLayout
+//       isDoctor={false}
+//       remoteUserName="Doctor"
+//       localStreamRef={localStreamRef}
+//       remoteStreamRef={remoteStreamRef}
+//       micEnabled={micEnabled}
+//       cameraEnabled={cameraEnabled}
+//       onEndCall={handleEndCall}
+//       onToggleMic={() => toggleMedia("audio")}
+//       onToggleCamera={() => toggleMedia("video")}
+//       callStatus={callActive ? "connected" : "connecting"}
+//     />
+//   );
+// };
+
+// export default UserVideoCallPage;
