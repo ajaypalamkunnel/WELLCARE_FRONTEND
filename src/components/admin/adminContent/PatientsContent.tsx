@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import DoctorCard from "../ui/Card";
 import IUser from "@/types/user";
 import toast from "react-hot-toast";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import {
   fetchAllPatients,
   updateUserStatus,
@@ -14,18 +14,18 @@ const PatientsContent = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-
+const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
-    console.log("hiiiiiiiiiiiiiiiiiiiiiii");
+   
 
     const getPatients = async () => {
       try {
         setLoading(true);
-        const response = await fetchAllPatients(currentPage, 6);
+        const response = await fetchAllPatients(currentPage, 6,searchTerm);
         console.log(response);
 
         setPatients(response?.data.users);
-        setTotalPages(response.data.totalPages);
+        setTotalPages(response.data.totalPages||0);
       } catch (error) {
         setError("Failed to fetch patients");
         toast.error("Failed to load patients. Please try again.");
@@ -35,7 +35,7 @@ const PatientsContent = () => {
     };
 
     getPatients();
-  }, [currentPage]);
+  }, [currentPage,searchTerm]);
 
   //--------------------------------pagination Handler functions----------------------------
   const handleNextPage = () => {
@@ -49,6 +49,11 @@ const PatientsContent = () => {
       setCurrentPage((prev) => prev - 1);
     }
   };
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(event.target.value);
+      setCurrentPage(1);
+    };
 
   const handleBlock = async (_id: string, currentStatus: number) => {
     try {
@@ -82,7 +87,23 @@ const PatientsContent = () => {
       style={{ backgroundColor: "#1b1e27", minHeight: "100vh" }}
     >
       <h2 className="text-2xl font-bold text-white mb-6">Patients</h2>
-      {loading && <p className="text-white">Loading patients...</p>}
+
+       <div className="relative mb-6">
+        <input
+          type="text"
+          placeholder="Search by doctor name..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="w-full px-4 py-2 pl-10 text-white bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+      </div>
+
+
+
+     {!loading && !error && patients.length === 0 && (
+        <p className="text-center text-white text-lg mt-4">No results found.</p>
+      )}
       {error && <p className="text-red-500">{error}</p>}
       <div className="space-y-4">
         {patients.map((patient) => (

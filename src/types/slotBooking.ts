@@ -3,7 +3,7 @@ export interface Slot {
     slot_id?: string;
     start_time: string;
     end_time: string;
-    status?: 'available' | 'booked';
+    status?: 'available' | 'booked' | "pending";
     is_break?: boolean;
   }
   

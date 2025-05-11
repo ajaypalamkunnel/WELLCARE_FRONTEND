@@ -185,7 +185,7 @@ const Subscription = () => {
     };
 
     fetchPlans();
-  }, []);
+  }, [doctorId]);
 
   // Filter and sort plans
   useEffect(() => {

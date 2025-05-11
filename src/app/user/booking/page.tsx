@@ -24,7 +24,6 @@ declare global {
   }
 }
 
-
 const DoctorSchedule: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -38,7 +37,7 @@ const DoctorSchedule: React.FC = () => {
   );
   const searchParams = useSearchParams();
   const doctorId = searchParams.get("doctorId");
-  const router = useRouter()
+  const router = useRouter();
 
   const user = useAuthStore((state) => state.user);
   const userId = user?.id;
@@ -126,14 +125,13 @@ const DoctorSchedule: React.FC = () => {
 
   // Handle slot selection
   const handleSlotSelect = (slot: Slot, scheduleId: string) => {
-    console.log("eduthe slot==>",slot);
-    
+    console.log("eduthe slot==>", slot);
+
     if (slot.status === "available" && !slot.is_break) {
       setSelectedSlot(slot);
       setSelectedScheduleId(scheduleId);
     }
   };
-  
 
   const handlePayNow = async (
     scheduleId: string,
@@ -146,9 +144,7 @@ const DoctorSchedule: React.FC = () => {
   ) => {
     // Here you can implement your payment logic
 
-    
     try {
-
       const loadRazorpay = () =>
         new Promise<void>((resolve, reject) => {
           const razorpayScript = document.createElement("script");
@@ -159,9 +155,7 @@ const DoctorSchedule: React.FC = () => {
           document.body.appendChild(razorpayScript);
         });
 
-        await loadRazorpay();
-
-
+      await loadRazorpay();
 
       const initResponse = await initiateConsultationBooking({
         patientId: userId!,
@@ -169,12 +163,10 @@ const DoctorSchedule: React.FC = () => {
         slotId: slotId,
       });
 
+      const { orderId, amount, currency } = initResponse;
 
+      console.log("kodukkan ponath ==>", initResponse);
 
-      const { orderId, amount, currency } = initResponse
-
-      console.log("kodukkan ponath ==>",initResponse);
-      
       const options: RazorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
         amount: amount * 100,
@@ -182,7 +174,7 @@ const DoctorSchedule: React.FC = () => {
         name: "WellCare Healthcare",
         description: "Consultation Appointment Booking",
         order_id: orderId,
-        handler: async function (response:RazorpayPaymentResponse) {
+        handler: async function (response: RazorpayPaymentResponse) {
           const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
             response;
 
@@ -200,37 +192,30 @@ const DoctorSchedule: React.FC = () => {
               serviceId,
             });
 
-
-
-            if(verifyResponse.status){
-              
+            if (verifyResponse.status) {
               toast.success(`Appointment booked successfully!`);
-  
-              router.push(`/user/booking/success?bookingId=${verifyResponse.bookingId}&slotId=${slotId}`)
+
+              router.push(
+                `/user/booking/success?bookingId=${verifyResponse.bookingId}&slotId=${slotId}`
+              );
             }
-
-            
-            
-
-
           } catch (verifyError) {
             toast.error("Payment succeeded, but booking failed!");
           }
         },
-        prefill:{
+        prefill: {
           name: user?.fullName, // Optional
           email: user?.email, // Optional
           contact: "", // Optional
         },
         theme: {
           color: "#0d9488",
-        }
-
+        },
       };
-      if(window.Razorpay){
+      if (window.Razorpay) {
         const rzp = new window.Razorpay(options);
-        rzp.open()
-      }else{
+        rzp.open();
+      } else {
         toast.error("Razorpay SDK failed to load. Please try again later.");
       }
     } catch (error) {
@@ -522,6 +507,9 @@ const DoctorSchedule: React.FC = () => {
                     } else if (slot.status === "booked") {
                       slotClass +=
                         " bg-gray-200 text-gray-600 cursor-not-allowed";
+                    } else if (slot.status === "pending") {
+                      slotClass +=
+                        " bg-orange-100 border-orange-300 text-orange-700 cursor-not-allowed";
                     } else {
                       slotClass +=
                         " border-medical-green hover:bg-medical-green hover:text-white";
@@ -545,6 +533,8 @@ const DoctorSchedule: React.FC = () => {
                             ? "Break"
                             : slot.status === "booked"
                             ? "Booked"
+                            : slot.status === "pending"
+                            ? "Pending"
                             : "Available"}
                         </div>
                       </div>
@@ -586,7 +576,7 @@ const DoctorSchedule: React.FC = () => {
                   >
                     Pay Now
                   </button>
-                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                 </div>
               </div>
             ))}

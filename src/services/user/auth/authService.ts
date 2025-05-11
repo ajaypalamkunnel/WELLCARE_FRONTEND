@@ -250,11 +250,11 @@ export const userProfileEdit = async (data: Partial<UserProfileData>) => {
             personalInfo: { ...user?.personalInfo }
         }
 
-        
+
 
 
         const response = await axiosInstance.put("/complete-registration", updatedata)
-        
+
 
         return response
 
@@ -280,7 +280,7 @@ export const getDoctorScheduleByDate = async (doctorId: string, date: Date) => {
             }
         })
 
-       
+
         return response.data
 
     } catch (error) {
@@ -298,7 +298,7 @@ export const initiateConsultationBooking = async (data: InitiateBookingPayload):
 
         const response = await axiosInstance.post("/consultation-booking/initiate", data)
 
-        
+
         return response.data.data
 
     } catch (error) {
@@ -329,7 +329,7 @@ export const verifyConsultationBooking = async (data: VerifyBookingPayload): Pro
 export const getBookingDetails = async (bookingId: string, slotId: string): Promise<ApiResponse> => {
     try {
 
-    
+
 
 
         const response = await axiosInstance.get("/consultation-booking/details", {
@@ -339,7 +339,7 @@ export const getBookingDetails = async (bookingId: string, slotId: string): Prom
             }
         })
 
-       
+
 
         return response.data
 
@@ -371,11 +371,11 @@ export const getAppoinments = async (filter: string): Promise<AppointmentListIte
 export const getAppoinmentsDetails = async (id: string): Promise<AppointmentDetailDTO> => {
     try {
 
-        
+
 
         const response = await axiosInstance.get(`/my-appoinments-detail/${id}`);
 
-       
+
 
         return response.data.data
 
@@ -409,21 +409,21 @@ export const CancelAppointment = async (appointmentId: string, reason?: string):
 
 
 
-export const getChatInboxUser = async ():Promise<ChatUser[]>=>{
+export const getChatInboxUser = async (): Promise<ChatUser[]> => {
     try {
-        
+
 
         const response = await axiosInstance.get("/inbox");
-        
+
         return response.data.data
-        
+
     } catch (error) {
-        
+
         throw error
     }
 }
 
-    
+
 
 
 export const getUserBasicInfo = async (userId: string): Promise<ChatUser> => {
@@ -431,47 +431,47 @@ export const getUserBasicInfo = async (userId: string): Promise<ChatUser> => {
     try {
         const response = await axiosInstanceDoctor.get(`/user-info/${userId}`);
 
-       
+
         return response.data.data;
-        
+
     } catch (error) {
 
         console.error("❌ getUserBasicInfo failed", error);
 
         throw error
-        
+
     }
 
 }
 
 
-export const getWalletSummary = async ():Promise<WalletSummaryDTO>=>{
+export const getWalletSummary = async (): Promise<WalletSummaryDTO> => {
     try {
 
         const response = await axiosInstance.get("/wallet");
 
         return response.data.data
-        
+
     } catch (error) {
 
         throw error
-        
+
     }
 }
 
-export const getWalletTransactions = async (params:TransactionQueryParams):Promise<PaginatedTransactionResponseDTO>=>{
+export const getWalletTransactions = async (params: TransactionQueryParams): Promise<PaginatedTransactionResponseDTO> => {
     try {
 
-        const response = await axiosInstance.get("/wallet/transactions",{
-            params:{
-                page:params.page||1,
-                limit:params.limit||10,
-                sort:params.sort || "desc",
+        const response = await axiosInstance.get("/wallet/transactions", {
+            params: {
+                page: params.page || 1,
+                limit: params.limit || 10,
+                sort: params.sort || "desc",
             }
         })
 
         return response.data.data
-        
+
     } catch (error) {
         throw error;
     }
@@ -481,16 +481,25 @@ export const getWalletTransactions = async (params:TransactionQueryParams):Promi
 export const fetchNotifications = async () => {
     try {
 
-        console.log("heloooo");
-        
+
+
         const response = await axiosInstance.get("/get-notifications",);
 
-        console.log("==>",response.data.data);
-        
+
 
         return response.data.data as NotificationDTO[];
 
     } catch (error) {
         throw error
     }
+};
+
+
+export const fetchPrescriptionFile = async (filename: string): Promise<Blob> => {
+    const response = await axiosInstance.get("/download-prescription", {
+        params: { filename },
+        responseType: "blob",
+    });
+
+    return response.data;
 };

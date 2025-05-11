@@ -63,10 +63,10 @@ export const verifyDoctorApplication = async (_id: string, isVerified: boolean, 
 
 }
 
-export const fetchAllPatients = async (currentPage: number, limit: number) => {
+export const fetchAllPatients = async (currentPage: number, limit: number, searchTerm: string) => {
     try {
 
-        const response = await axiosInstanceAdmin.get(`/api/admin/users?page=${currentPage}&limit=${limit}`)
+        const response = await axiosInstanceAdmin.get(`/api/admin/users?page=${currentPage}&limit=${limit}&search=${searchTerm}`)
 
         return response.data
 
@@ -199,8 +199,8 @@ export const fetchPlanDistribution = async (startDate?: string, endDate?: string
             params: { startDate, endDate }
         })
 
-        console.log("data : ",response.data.data);
-        
+        console.log("data : ", response.data.data);
+
 
         return response.data.data as PlanDistributionDTO[];
 
@@ -218,72 +218,94 @@ export const downloadSubscriptionReport = async (
     startDate: string,
     endDate: string,
     format: "pdf" | "excel"
-  )=> {
+) => {
     try {
-      const response = await axiosInstanceAdmin.get("/api/admin/subscription/report/download", {
-        params: { startDate, endDate, format },
-        
-      });
+        const response = await axiosInstanceAdmin.get("/api/admin/subscription/report/download", {
+            params: { startDate, endDate, format },
 
-      console.log("link : ",response.data.data);
-      
-  
-      return response.data.data;
+        });
+
+        console.log("link : ", response.data.data);
+
+
+        return response.data.data;
     } catch (error) {
-      console.error("Error downloading subscription report:", error);
-      throw error;
+        console.error("Error downloading subscription report:", error);
+        throw error;
     }
-  };
-  
+};
 
 
-  export const fetchDoctorAnalyticsSummary = async (): Promise<DoctorAnalyticsSummaryDTO[]> => {
+
+export const fetchDoctorAnalyticsSummary = async (): Promise<DoctorAnalyticsSummaryDTO[]> => {
     try {
-      const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/summary");
-      return response.data.data as DoctorAnalyticsSummaryDTO[];
+        const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/summary");
+        return response.data.data as DoctorAnalyticsSummaryDTO[];
     } catch (error) {
-      console.error("Error fetching doctor analytics summary:", error);
-      throw error;
+        console.error("Error fetching doctor analytics summary:", error);
+        throw error;
     }
-  };
+};
 
 
 
-  export const fetchDoctorRevenueTrend = async (
+export const fetchDoctorRevenueTrend = async (
     startDate: string,
     endDate: string,
     interval: "day" | "month"
-  ) => {
+) => {
     try {
-      const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/revenue-trend", {
-        params: { startDate, endDate, interval },
-      });
-  
-      return response.data.data as RevenueDoctorTrendDTO[];
+        const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/revenue-trend", {
+            params: { startDate, endDate, interval },
+        });
+
+        return response.data.data as RevenueDoctorTrendDTO[];
     } catch (error) {
-      console.error("Error fetching doctor revenue trend:", error);
-      throw error;
+        console.error("Error fetching doctor revenue trend:", error);
+        throw error;
     }
-  };
+};
 
 
-  export const fetchServiceRevenue = async (): Promise<ServiceRevenueDTO[]> => {
+export const fetchServiceRevenue = async (): Promise<ServiceRevenueDTO[]> => {
     try {
-      const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/service-revenue");
-      return response.data.data as ServiceRevenueDTO[];
+        const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/service-revenue");
+        return response.data.data as ServiceRevenueDTO[];
     } catch (error) {
-      console.error("Error fetching service revenue:", error);
-      throw error;
+        console.error("Error fetching service revenue:", error);
+        throw error;
     }
-  };
+};
 
 
-  export const fetchTopPerformingDoctors = async (): Promise<TopDoctorDTO[]> => {
+export const fetchTopPerformingDoctors = async (): Promise<TopDoctorDTO[]> => {
     try {
-      const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/top-performing");
-      return response.data.data as TopDoctorDTO[];
+        const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/top-performing");
+        return response.data.data as TopDoctorDTO[];
     } catch (error) {
-      console.error("Error fetching top-performing doctors:", error);
-      throw error;
+        console.error("Error fetching top-performing doctors:", error);
+        throw error;
     }
-  };
+};
+
+
+export const fetchDoctorDocument = async (
+    type: "license" | "idproof",
+    doctorId: string
+): Promise<void> => {
+    try {
+        const response = await axiosInstanceAdmin.get(
+            `/api/admin/view-document/${type}/${doctorId}`,
+            {
+                responseType: "blob", // 🆕 so we receive binary PDF, not HTML
+            }
+        );
+        const blob = new Blob([response.data], { type: "application/pdf" });
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, "_blank");
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+    } catch (error) {
+        console.error(`Error fetching ${type} document for doctor ${doctorId}:`, error);
+        throw error;
+    }
+};

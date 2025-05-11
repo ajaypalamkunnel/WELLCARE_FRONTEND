@@ -15,7 +15,11 @@ import {
   Loader2,
   Stethoscope,
 } from "lucide-react";
-import { CancelAppointment, getAppoinmentsDetails } from "@/services/user/auth/authService";
+import {
+  CancelAppointment,
+  fetchPrescriptionFile,
+  getAppoinmentsDetails,
+} from "@/services/user/auth/authService";
 import { AppointmentDetailDTO } from "@/types/slotBooking";
 import { formatDisplayDate, formatTime2 } from "../../utils/dateutilities";
 import { useSearchParams } from "next/navigation";
@@ -31,18 +35,17 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
     null
   );
 
-  console.log("==>",appointment);
-  
+  console.log("==>", appointment);
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
 
-  const appoinmentStatusCancelled = appointment?.status === 'cancelled'
-  const appoinmentStatusCompleted = appointment?.status === 'completed'
+  const appoinmentStatusCancelled = appointment?.status === "cancelled";
+  const appoinmentStatusCompleted = appointment?.status === "completed";
   console.log(appoinmentStatusCancelled);
-  
 
   useEffect(() => {
     const fetchAppointmentDetails = async () => {
@@ -78,38 +81,58 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
     }
   }, [appointmentId]);
 
-  const handleCancelAppointment = async () => {
+  const extractFileName = (url: string) => {
+    return url.substring(url.lastIndexOf("/") + 1);
+  };
 
+  const downloadPrescription = async (fileName: string) => {
     try {
+      const fileNameExtracted = extractFileName(fileName);
+
+
+      const fileBlob = await fetchPrescriptionFile(fileNameExtracted);
+
       
-   
-    setIsCancelling(true)
+      const customDownloadName = `Prescription_${Date.now()}.pdf`;
+  
+      const blobUrl = window.URL.createObjectURL(fileBlob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", customDownloadName); // optional: custom name
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+  
+      // Clean up the blob after use
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Download failed", err);
+      toast.error("Failed to download prescription.");
+    }
+  };
+  
+  const handleCancelAppointment = async () => {
+    try {
+      setIsCancelling(true);
 
-    console.log(appointment?._id!,cancelReason);
-    
+      const result = await CancelAppointment(appointment?._id!, cancelReason);
 
-    const result = await CancelAppointment(appointment?._id!,cancelReason)
+      
 
-    console.log("==>",result)
+      toast.success(result.message);
 
-    toast.success(result.message);
+      setAppointment((prev) => ({
+        ...prev!,
+        status: "cancelled",
+      }));
 
-    setAppointment((prev)=>({
-      ...prev!,
-      status:"cancelled"
-    }))
-
-    setShowCancelModal(false);
-    setCancelReason("");
-
-  } catch (error:any) {
-    toast.error(error.message || "Failed to cancel appointment");
-  }finally {
-    setIsCancelling(false);
-  }
-
-
-    
+      setShowCancelModal(false);
+      setCancelReason("");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to cancel appointment");
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -339,36 +362,35 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
             </p>
 
             {appointment.prescriptionUrl && (
-              <a
-                href={appointment?.prescriptionUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => downloadPrescription(appointment.prescriptionUrl!)}
                 className="inline-flex items-center text-medical-green hover:text-medical-green-light transition-colors"
               >
                 <FileText size={16} className="mr-1" />
-                View Prescription File
-              </a>
+                Download Prescription File
+              </button>
             )}
           </div>
         </div>
       )}
-      
 
       {/* Action Buttons */}
-      {(!appoinmentStatusCancelled && !appoinmentStatusCompleted)&&<div className="flex flex-col md:flex-row gap-3 mt-6">
-        <button className="flex-1 bg-medical-green text-white py-3 px-4 rounded-md hover:bg-medical-green-light transition-colors font-medium flex items-center justify-center">
-          <MessageCircle size={18} className="mr-2" />
-          Message Doctor
-        </button>
+      {!appoinmentStatusCancelled && !appoinmentStatusCompleted && (
+        <div className="flex flex-col md:flex-row gap-3 mt-6">
+          <button className="flex-1 bg-medical-green text-white py-3 px-4 rounded-md hover:bg-medical-green-light transition-colors font-medium flex items-center justify-center">
+            <MessageCircle size={18} className="mr-2" />
+            Message Doctor
+          </button>
 
-       <button
-          onClick={()=>setShowCancelModal(true)}
-          className="flex-1 bg-red-500 text-white py-3 px-4 rounded-md hover:bg-red-600 transition-colors font-medium flex items-center justify-center"
-        >
-          <XCircle size={18} className="mr-2" />
-          Cancel Appointment
-        </button>
-      </div>}
+          <button
+            onClick={() => setShowCancelModal(true)}
+            className="flex-1 bg-red-500 text-white py-3 px-4 rounded-md hover:bg-red-600 transition-colors font-medium flex items-center justify-center"
+          >
+            <XCircle size={18} className="mr-2" />
+            Cancel Appointment
+          </button>
+        </div>
+      )}
 
       {/* Disclaimer */}
       <div className="mt-4 p-3 bg-yellow-50 rounded-md flex items-start">
@@ -432,3 +454,4 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
 };
 
 export default AppointmentDetail;
+

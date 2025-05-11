@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
+import { fetchDoctorDocument } from "@/services/admin/adminServices";
 
 interface DoctorDetailsModalProps {
   doctor: IDoctorProfileDataType;
@@ -239,7 +240,7 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {doctor.licenseDocument && (
                 <button
-                  onClick={() => openDocument(doctor?.licenseDocument!)}
+                  onClick={() => fetchDoctorDocument("license",doctor._id!)}
                   className="flex items-center bg-gray-700 hover:bg-gray-600 p-4 rounded-md transition-colors"
                 >
                   <FileText size={20} className="mr-2 text-blue-400" />
@@ -249,7 +250,7 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
               
               {doctor.IDProofDocument && (
                 <button
-                  onClick={() => openDocument(doctor?.IDProofDocument!)}
+                  onClick={() => fetchDoctorDocument("idproof",doctor._id!)}
                   className="flex items-center bg-gray-700 hover:bg-gray-600 p-4 rounded-md transition-colors"
                 >
                   <FileText size={20} className="mr-2 text-blue-400" />

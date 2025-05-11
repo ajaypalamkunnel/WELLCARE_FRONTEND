@@ -49,7 +49,7 @@ const DoctorServiceListing: React.FC = () => {
   // Fetch services on component mount
   useEffect(() => {
     fetchServices();
-  }, []);
+  }, [doctorId]);
 
   // Fetch services from API
   const fetchServices = async () => {
