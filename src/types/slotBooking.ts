@@ -130,6 +130,7 @@ export interface AppointmentDetailDTO {
     end_time: Date;
   };
   doctor: {
+    _id?:string;
     fullName: string;
     specialization: string;
     experience: number;

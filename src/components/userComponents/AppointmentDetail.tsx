@@ -24,6 +24,7 @@ import { AppointmentDetailDTO } from "@/types/slotBooking";
 import { formatDisplayDate, formatTime2 } from "../../utils/dateutilities";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import DoctorReviewForm, { ReviewFormData } from "../commonUIElements/DoctorReviewForm";
 
 interface Props {
   appointmentId: string;
@@ -174,6 +175,14 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
       default:
         return "📋";
     }
+  };
+
+  const handleSuccess  = (data:ReviewFormData) =>{
+   toast.success('Review submitted successfully!');
+  }
+   const handleError = (error: unknown) => {
+    toast.error('Failed to submit review. Please try again.');
+    console.error('Review submission error:', error);
   };
 
   if (isLoading) {
@@ -370,9 +379,18 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
                 Download Prescription File
               </button>
             )}
+            
           </div>
         </div>
       )}
+
+       
+      <DoctorReviewForm 
+      doctorId={appointment.doctor._id!}
+       onSuccess={handleSuccess}
+        onError={handleError}
+      />
+    
 
       {/* Action Buttons */}
       {!appoinmentStatusCancelled && !appoinmentStatusCompleted && (

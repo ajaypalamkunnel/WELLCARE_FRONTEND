@@ -443,12 +443,14 @@ const DoctorListing = () => {
                   >
                     <div className="relative">
                       {/* Doctor Profile Image */}
-                      <img
-                        src={doctor.profileImage || "/default-doctor.jpg"}
-                        alt={doctor.fullName || "Doctor"}
-                        className="w-full h-48 object-cover object-top"
-                      />
-
+                      <div className="aspect-square w-full bg-gray-100 overflow-hidden">
+                        <img
+                          src={doctor.profileImage || "/default-doctor.jpg"}
+                          alt={doctor.fullName || "Doctor"}
+                          className="w-full h-full object-cover"
+                         
+                        />
+                      </div>
                       {/* Availability Badge */}
                       <div
                         className={`absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-medium ${

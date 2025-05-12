@@ -16,6 +16,7 @@ import { promises } from "dns";
 import { ChatUser } from "@/types/chat";
 import { PaginatedTransactionResponseDTO, TransactionQueryParams, WalletSummaryDTO } from "@/types/wallet";
 import { NotificationDTO } from "@/types/notificationDto";
+import { ReviewFormData } from "@/components/commonUIElements/DoctorReviewForm";
 
 export const registerBasicDetails = async (data: Partial<IUser>) => {
 
@@ -503,3 +504,26 @@ export const fetchPrescriptionFile = async (filename: string): Promise<Blob> => 
 
     return response.data;
 };
+
+
+
+export const addDoctorReview = async (
+    data: ReviewFormData
+): Promise<void> => {
+    console.log("===>",data.doctorId);
+    
+    try {
+
+        const response = await axiosInstance.post(`/doctors/${data.doctorId}/review`, {
+            rating: data.rating,
+            reviewText: data.reviewText
+        })
+
+        return response.data.data
+
+    } catch (error) {
+        console.error("addDoctorReview error:", error);
+        throw error;
+    }
+
+}
