@@ -17,6 +17,7 @@ import { AxiosError } from "axios";
 import { useAuthStore } from "@/store/user/authStore";
 import { RazorpayPaymentResponse } from "@/components/doctorComponents/Subscription";
 import { RazorpayOptions } from "@/types/razorpayType";
+import Image from "next/image";
 
 declare global {
   interface Window {
@@ -289,11 +290,14 @@ const DoctorSchedule: React.FC = () => {
         {/* Doctor Info and Date Selection */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <div className="flex items-center mb-4 md:mb-0">
-            <img
-              src={doctor?.profileImage}
-              alt={doctor?.fullName}
-              className="w-16 h-16 rounded-full object-cover mr-4"
-            />
+            <div className="w-16 h-16 relative rounded-full overflow-hidden mr-4">
+              <Image
+                src={doctor?.profileImage || "/default-profile.png"}
+                alt={doctor?.fullName || "Doctor profile"}
+                fill
+                className="object-cover"
+              />
+            </div>
             <div>
               <h1 className="text-xl font-bold">{doctor?.fullName}</h1>
               <p className="text-gray-600">{doctor?.specialization}</p>

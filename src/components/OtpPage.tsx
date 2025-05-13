@@ -13,7 +13,7 @@ import { useAuthStoreDoctor } from "../store/doctor/authStore";
 import toast from "react-hot-toast";
 import { Timer } from "lucide-react";
 import { AxiosError } from "axios";
-import { error } from "console";
+
 
 const OTPVerificationComponent: React.FC<role> = ({ role }) => {
   const [otp, setOtp] = useState("");

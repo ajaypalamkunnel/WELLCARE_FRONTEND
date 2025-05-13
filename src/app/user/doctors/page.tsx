@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Star,
   Search,
@@ -24,6 +24,8 @@ import { IDepartment } from "@/types/doctorFullDataType";
 import IDoctor from "@/types/IDoctor";
 import Header from "@/components/homeComponents/Header";
 import { useRouter } from "next/navigation";
+import useDebounce from "@/hooks/useDebounce";
+import Image from "next/image";
 const DoctorListing = () => {
   // State for doctors & departments
   const [doctors, setDoctors] = useState<IDoctor[]>([]);
@@ -45,11 +47,22 @@ const DoctorListing = () => {
   const [totalDoctors, setTotalDoctors] = useState<number>(0);
   const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
   const itemsPerPage = 6;
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Count active filters
   const activeFilterCount = Object.values(filters).filter(
     (value) => value !== ""
   ).length;
+
+  useEffect(() => {
+    if (!loading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [loading]);
+
+  //debounce effect
+  const debouncedSearchTerm = useDebounce<string>(searchTerm, 500);
+  console.log("====>", debouncedSearchTerm);
 
   //  Fetch Doctors & Departments from API
   useEffect(() => {
@@ -59,7 +72,7 @@ const DoctorListing = () => {
 
         // Fetch doctors
         const doctorResponse = await getAllSubscribedDoctors({
-          search: searchTerm,
+          search: debouncedSearchTerm.trim(),
           gender: filters.gender,
           departmentId: filters.department,
           availability: filters.availability,
@@ -84,13 +97,16 @@ const DoctorListing = () => {
     };
 
     fetchDoctorsAndDepartments();
-  }, [searchTerm, filters, sortBy, currentPage]);
+  }, [debouncedSearchTerm, filters, sortBy, currentPage]);
 
   //  Handlers for Filters & Sorting
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page on search
-  };
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(e.target.value);
+      setCurrentPage(1); // Reset to first page on search
+    },
+    []
+  );
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters({ ...filters, [name]: value });
@@ -314,6 +330,7 @@ const DoctorListing = () => {
                   size={20}
                 />
                 <input
+                  ref={inputRef}
                   type="text"
                   placeholder="Search doctors by name"
                   className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-medical-green focus:border-transparent"
@@ -444,11 +461,13 @@ const DoctorListing = () => {
                     <div className="relative">
                       {/* Doctor Profile Image */}
                       <div className="aspect-square w-full bg-gray-100 overflow-hidden">
-                        <img
+                        <Image
                           src={doctor.profileImage || "/default-doctor.jpg"}
                           alt={doctor.fullName || "Doctor"}
-                          className="w-full h-full object-cover"
-                         
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          priority={false}
                         />
                       </div>
                       {/* Availability Badge */}

@@ -23,6 +23,7 @@ import SubscriptionDetailsModal from "@/components/doctorComponents/Subscription
 import AppointmentScheduler from "@/components/doctorComponents/AppoinmentSchedules";
 import DoctorWallet from "@/components/doctorComponents/DoctorWallet";
 import DashboardDoctor from "@/components/doctorComponents/dashboard/DashboardDoctor";
+import Image from "next/image";
 interface DoctorProfile {
   fullName: string;
   department?: string;
@@ -179,10 +180,13 @@ const DoctorProfileDashboard: React.FC = () => {
       <div className="p-6 bg-white rounded-lg shadow-md w-full max-w-3xl mx-auto">
         <div className="flex flex-col items-center mb-6">
           <div className="w-24 h-24 rounded-full bg-yellow-400 overflow-hidden mb-4">
-            <img
+            <Image
               src={doctorData.profileImage || "/images/profiledummy.jpg"}
-              alt={doctorData.fullName}
+              alt={doctorData.fullName || "Doctor Profile"}
+              width={300} // or the appropriate width of your layout
+              height={300} // or the appropriate height of your layout
               className="w-full h-full object-cover"
+              priority // Optional: if it's above the fold and should load fast
             />
           </div>
           <h1 className="text-2xl font-bold text-gray-800">
