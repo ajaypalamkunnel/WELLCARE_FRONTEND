@@ -48,26 +48,26 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
   }, [messages]);
 
   // Group messages by date for better organization
-  const groupMessagesByDate = () => {
-    const groups: { date: string; messages: Message[] }[] = [];
-    let currentDate = "";
+  // const groupMessagesByDate = () => {
+  //   const groups: { date: string; messages: Message[] }[] = [];
+  //   let currentDate = "";
 
-    messages.forEach((message) => {
-      const messageDate = message.time.split(" ")[0]; // Extract date part
+  //   messages.forEach((message) => {
+  //     const messageDate = message.time.split(" ")[0]; // Extract date part
 
-      if (messageDate !== currentDate) {
-        currentDate = messageDate;
-        groups.push({ date: currentDate, messages: [message] });
-      } else {
-        groups[groups.length - 1].messages.push(message);
-      }
-    });
+  //     if (messageDate !== currentDate) {
+  //       currentDate = messageDate;
+  //       groups.push({ date: currentDate, messages: [message] });
+  //     } else {
+  //       groups[groups.length - 1].messages.push(message);
+  //     }
+  //   });
 
-    return groups;
-  };
+  //   return groups;
+  // };
 
   const handleDeleteMessage = (messageId: string) => {
-    console.log("--->doc", messageId, "=======", userId ? userId : doctorId);
+   
 
     const socket = getSocket();
 

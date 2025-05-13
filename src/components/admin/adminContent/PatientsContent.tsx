@@ -27,6 +27,7 @@ const [searchTerm, setSearchTerm] = useState("");
         setPatients(response?.data.users);
         setTotalPages(response.data.totalPages||0);
       } catch (error) {
+        console.error("Error fetching patients:", error);
         setError("Failed to fetch patients");
         toast.error("Failed to load patients. Please try again.");
       } finally {

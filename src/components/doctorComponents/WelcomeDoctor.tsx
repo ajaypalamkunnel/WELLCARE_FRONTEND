@@ -1,4 +1,4 @@
-import { Stethoscope, WatchIcon } from "lucide-react";
+import { Stethoscope } from "lucide-react";
 import React from "react";
 import { useRouter } from "next/navigation";
 interface WelcomeDoctorProps {
@@ -33,8 +33,8 @@ const WelcomeDoctor: React.FC<WelcomeDoctorProps> = ({
 
         {/* Subtitle */}
         <p className="text-gray-600 mb-8 text-sm md:text-base">
-          We're excited to have you on board. Complete your registration to
-          start providing quality care.
+         {`We're excited to have you on board. Complete your registration to
+          start providing quality care.`}
         </p>
 
         {/* Button */}

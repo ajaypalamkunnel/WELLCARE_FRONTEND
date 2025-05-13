@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Edit, Trash2, Check, Ban, Loader } from "lucide-react";
-import { PlanFormData } from "./NewPlanModalForm";
+import { Edit, Check, Ban, Loader } from "lucide-react";
 import { Plan } from "../adminContent/PlansContent";
 import { updateSubscriptionPlanStatus } from "@/services/admin/adminServices";
 import toast from "react-hot-toast";

@@ -8,14 +8,14 @@ import toast from "react-hot-toast";
 interface LogoutModalProps {
   isOpen?: boolean;
   onClose?: () => void;
-  onConfirm?: () => void;
+  // onConfirm?: () => void;
   userType: "doctor" | "patient";
 }
 
 const LogoutConfirmationModal: React.FC<LogoutModalProps> = ({
   isOpen = false,
   onClose,
-  onConfirm,
+  // onConfirm,
   userType = "patient",
 }) => {
   const router = useRouter();
@@ -45,7 +45,7 @@ const LogoutConfirmationModal: React.FC<LogoutModalProps> = ({
       ? "text-[#02045e] border-[#02045e] bg-[#02045e] ring-[#02045e]/30 bg-[#02045e]/10"
       : "text-[#04bf3e] border-[#04bf3e] bg-[#04bf3e] ring-[#04bf3e]/30 bg-[#04bf3e]/10";
 
-  const [colorText, colorBorder, colorBg, colorRing, colorBgLight] =
+  const [colorText, colorBg, colorRing, colorBgLight] =
     themeColorClasses.split(" ");
 
   return (

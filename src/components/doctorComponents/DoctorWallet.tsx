@@ -39,6 +39,7 @@ const DoctorWallet: React.FC = () => {
           currentPage
         });
       } catch (error) {
+        console.log('Failed to load wallet data:',error);
         toast.error('Failed to load wallet data');
       } finally {
         setLoading(false);
@@ -77,6 +78,7 @@ const DoctorWallet: React.FC = () => {
         setWithdrawAmount('');
         fetchWalletData(); // Refresh data
       } catch (error) {
+        console.log('Withdrawal failed : ',error);
         toast.error('Withdrawal failed');
       } finally {
         setWithdrawLoading(false);

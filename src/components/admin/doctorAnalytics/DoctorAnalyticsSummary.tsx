@@ -15,6 +15,7 @@ const DoctorAnalyticsSummary = () => {
         const summary = await fetchDoctorAnalyticsSummary();
         setData(summary);
       } catch (error) {
+        console.error("Error summary data fetching error:", error);
         toast.error("Doctor summary data fetching error")
       } finally {
         setLoading(false);

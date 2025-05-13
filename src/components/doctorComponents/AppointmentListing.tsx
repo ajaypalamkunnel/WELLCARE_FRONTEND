@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { 
   Calendar, Clock, User, Stethoscope, ChevronLeft, ChevronRight, 
-  ArrowRight, Search, Filter, X, ExternalLink, RefreshCw, Eye
+  Filter, X, RefreshCw, Eye
 } from "lucide-react";
 import { getDoctorAppointments } from "@/services/doctor/doctorService";
 // import { formatDisplayDate, formatTime2 } from "@/utils/dateutilities";

@@ -1,5 +1,5 @@
 import { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
-import { CertificationData, CertificationFormData, EducationFormData } from "@/components/doctorComponents/forms/qualification/QualificationManagement";
+import { CertificationFormData, EducationFormData } from "@/components/doctorComponents/forms/qualification/QualificationManagement";
 import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/ScheduleModal";
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import { ChatUser } from "@/types/chat";
@@ -12,7 +12,6 @@ import axiosInstancePatinet from "@/utils/axiosInstance";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 import { getErrorMessage } from "@/utils/handleError";
 import axios, { AxiosError } from "axios";
-import { log } from "console";
 
 export const featchAllDepartments = async () => {
     try {

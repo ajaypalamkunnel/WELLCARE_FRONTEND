@@ -6,7 +6,6 @@ import {
   
   WalletSummaryDTO,
   WalletTransactionDTO,
-  PaginatedTransactionResponseDTO,
   TransactionQueryParams
 } from '../../types/wallet';
 import { getWalletSummary, getWalletTransactions } from '@/services/user/auth/authService';

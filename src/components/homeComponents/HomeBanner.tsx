@@ -1,7 +1,6 @@
 "use client"; // This ensures Framer Motion runs only on the client
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import React from "react";
 
 const MotionImage = () => {

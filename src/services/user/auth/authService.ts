@@ -1,18 +1,13 @@
 import axiosInstance from "@/utils/axiosInstance"
 import { IUser } from "../../../types/userTypes"
-import OTPInput from "@/components/otpPage/OTPInput";
 import axios, { AxiosError } from "axios";
 import { getErrorMessage } from "@/utils/handleError";
-import { NewPasswordFormValues } from "@/components/NewPassword";
-
 import IUserFullData from "@/types/user";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 import IDoctor from "@/types/IDoctor";
 import { IUserDetails } from "@/components/admin/ui/UserRegistrationForm";
-import { threadId } from "worker_threads";
-import { UserProfileData, UserProfileFormData } from "@/types/userProfileData";
+import { UserProfileData } from "@/types/userProfileData";
 import { ApiResponse, AppointmentDetailDTO, AppointmentListItemDTO, CancelAppointmentResponseDTO, formatDate, IInitiateBookingResponse, InitiateBookingPayload, IVerifyBookingResponse, VerifyBookingPayload } from "@/types/slotBooking";
-import { promises } from "dns";
 import { ChatUser } from "@/types/chat";
 import { PaginatedTransactionResponseDTO, TransactionQueryParams, WalletSummaryDTO } from "@/types/wallet";
 import { NotificationDTO } from "@/types/notificationDto";

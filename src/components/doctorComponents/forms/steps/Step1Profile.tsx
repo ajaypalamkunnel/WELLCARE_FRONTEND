@@ -18,14 +18,7 @@ interface Department {
   name: string;
   icon: string;
 }
-interface ClinicAddress {
-  clinicName: string;
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
+
 const Step1Profile: React.FC<Step1ProfileProps> = ({ register, errors, watch, setValue }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -71,6 +64,7 @@ const Step1Profile: React.FC<Step1ProfileProps> = ({ register, errors, watch, se
         setDepartments(respose.data)
 
       } catch (error) {
+        console.log("Failed to fetch departments",error)
         toast.error("Failed to fetch departments")
       }
     }

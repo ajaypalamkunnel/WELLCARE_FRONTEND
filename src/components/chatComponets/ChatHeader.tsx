@@ -1,5 +1,5 @@
 "use client"
-import { ArrowLeft, MoreVertical, Phone, Video } from "lucide-react";
+import { ArrowLeft} from "lucide-react";
 import { ChatTheme } from "./chatTheme"; // Adjust path as needed
 import { ChatUser } from "@/types/chat";
 
@@ -18,7 +18,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   if (!selectedUser) return null;
 
-  console.log("🏵️vanna user==>", selectedUser);
+  
 
   return (
     <div className="bg-white border-b border-gray-50 p-4 flex items-center shadow-sm sticky top-0 z-10">

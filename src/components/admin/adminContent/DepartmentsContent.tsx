@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { X, Plus, ImagePlus, Axis3D, icons } from "lucide-react";
+import { X, Plus, ImagePlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -30,10 +30,10 @@ const DepartmentsContent: React.FC = () => {
       try {
         const respose = await featchAllDepartments();
 
-        console.log("===>", respose.data);
-
         setDepartments(respose.data);
       } catch (error) {
+        console.log(error);
+
         toast.error("Failed to fetch departments");
       }
     };
@@ -158,32 +158,36 @@ const DepartmentsContent: React.FC = () => {
 
         {/* Departments Listing */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-  {departments.map((dept) => (
-    <div
-      key={dept._id}
-      className="bg-[#1f2937] rounded-lg p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0"
-    >
-      <div className="flex items-center space-x-3 w-full sm:w-auto overflow-hidden">
-        <img
-          src={dept.icon}
-          alt={`${dept.name} icon`}
-          className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex-shrink-0"
-        />
-        <span className="font-semibold text-sm lg:text-base truncate">{capitalizeWords(dept.name)}</span>
-      </div>
-      <button
-        onClick={() => handleBlockDepartment(dept._id, dept?.status)}
-        className={`flex items-center px-2 py-1 md:px-3 md:py-2 rounded-md text-xs md:text-sm whitespace-nowrap transition-colors duration-200 
-          ${dept.status
-            ? "bg-red-600 text-white hover:bg-red-700" // Block Button
-            : "bg-green-600 text-white hover:bg-green-700"}`} // Unblock Button
-      >
-        <X className="mr-1 md:mr-2" size={14} />
-        {dept.status ? "Block" : "Unblock"}
-      </button>
-    </div>
-  ))}
-</div>
+          {departments.map((dept) => (
+            <div
+              key={dept._id}
+              className="bg-[#1f2937] rounded-lg p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0"
+            >
+              <div className="flex items-center space-x-3 w-full sm:w-auto overflow-hidden">
+                <img
+                  src={dept.icon}
+                  alt={`${dept.name} icon`}
+                  className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex-shrink-0"
+                />
+                <span className="font-semibold text-sm lg:text-base truncate">
+                  {capitalizeWords(dept.name)}
+                </span>
+              </div>
+              <button
+                onClick={() => handleBlockDepartment(dept._id, dept?.status)}
+                className={`flex items-center px-2 py-1 md:px-3 md:py-2 rounded-md text-xs md:text-sm whitespace-nowrap transition-colors duration-200 
+          ${
+            dept.status
+              ? "bg-red-600 text-white hover:bg-red-700" // Block Button
+              : "bg-green-600 text-white hover:bg-green-700"
+          }`} // Unblock Button
+              >
+                <X className="mr-1 md:mr-2" size={14} />
+                {dept.status ? "Block" : "Unblock"}
+              </button>
+            </div>
+          ))}
+        </div>
 
         {/* Add New Department Button */}
         <div className="mt-6">

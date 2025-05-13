@@ -1,4 +1,3 @@
-import { set } from "react-hook-form";
 import {IUser} from "../../types/userTypes"
 import {create} from 'zustand'
 import { persist, devtools } from "zustand/middleware";

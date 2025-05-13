@@ -11,7 +11,6 @@ import {
   Home,
   Activity,
   AlertCircle,
-  DollarSign,
   Tag,
   MapPin,
   AlertTriangle,

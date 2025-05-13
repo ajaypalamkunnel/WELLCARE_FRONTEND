@@ -9,7 +9,6 @@ import {
   Home,
   X,
   LogIn,
-  Section,
   Hospital,
   MessageCircle,
   BellIcon,
@@ -77,9 +76,9 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
           {/* Logo and Name */}
           <div className="flex items-center">
             <div className="h-10 w-10 mr-2 hover:">
-              <a href="/">
+              <Link href="/">
                 <img src="/images/cropedLogo.png" alt="willcarelogo" />
-              </a>
+              </Link>
             </div>
             <h1
               className="text-2xl font-bold"
@@ -95,31 +94,34 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6 text-gray-600">
-            <a href="/" className="flex items-center hover:text-gray-900">
+            <Link href="/" className="flex items-center hover:text-gray-900">
               <Home size={18} className="mr-1" />
               <span>Home</span>
-            </a>
-            <a
+            </Link>
+
+            <Link
               href="/user/doctors"
               className="flex items-center hover:text-gray-900"
             >
               <Search size={18} className="mr-1" />
               <span>Find Doctor</span>
-            </a>
-            <a
+            </Link>
+
+            <Link
               href="/user/departments"
               className="flex items-center hover:text-gray-900"
             >
               <Hospital size={18} className="mr-1" />
               <span>Departments</span>
-            </a>
-            <a
+            </Link>
+
+            <Link
               href="/user/chat"
               className="flex items-center hover:text-gray-900"
             >
               <MessageCircle size={18} className="mr-1" />
               <span>Messages</span>
-            </a>
+            </Link>
             <>
               <button
                 onClick={() => setOpen(true)}
@@ -159,12 +161,12 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
               {/* Profile Dropdown */}
               {isProfileDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                  <a
+                  <Link
                     href="/user/profile"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Profile
-                  </a>
+                  </Link>
 
                   <button
                     onClick={handleLogout}
@@ -197,7 +199,7 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 py-2 border-t border-gray-200">
-            <a
+            <Link
               href="/"
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
             >
@@ -205,8 +207,8 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
                 <Home size={18} className="mr-2" />
                 <span>Home</span>
               </div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/user/doctors"
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
             >
@@ -214,8 +216,8 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
                 <Search size={18} className="mr-2" />
                 <span>Find Doctor</span>
               </div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="/user/departments"
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
             >
@@ -223,8 +225,8 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
                 <Hospital size={18} className="mr-1" />
                 <span>Departments</span>
               </div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="#"
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
             >
@@ -232,8 +234,8 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
                 <Video size={18} className="mr-2" />
                 <span>Video Consultation</span>
               </div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="#"
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
             >
@@ -241,7 +243,7 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
                 <Info size={18} className="mr-2" />
                 <span>About Us</span>
               </div>
-            </a>
+            </Link>
           </div>
         )}
       </div>

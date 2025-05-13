@@ -2,7 +2,7 @@
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { X } from 'lucide-react';
-import { CertificationData, CertificationFormData } from '../qualification/QualificationManagement'
+import {CertificationFormData } from '../qualification/QualificationManagement'
 import { ICertificate } from '@/types/doctorFullDataType';
 
 interface CertificationModalProps {

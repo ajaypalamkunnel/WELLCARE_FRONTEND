@@ -1,7 +1,6 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import {
-  Check,
   Search,
   SlidersHorizontal,
   ChevronDown,
@@ -9,8 +8,6 @@ import {
   Calendar,
   Users,
   Award,
-  Tag,
-  Contact,
 } from "lucide-react";
 import DoctorPlanCard from "./PlanCard";
 import {
@@ -66,7 +63,7 @@ const Subscription = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
   const [durationFilter, setDurationFilter] = useState<number[]>([]);
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]); // Kept for future use if needed
+  
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({
     min: 0,
     max: 1000,
@@ -178,6 +175,8 @@ const Subscription = () => {
         setPlans(response.data);
         setFilteredPlans(response.data);
       } catch (err) {
+
+        console.log("Failed to fetch subscription plans. Please try again.",err);
         setError("Failed to fetch subscription plans. Please try again.");
       } finally {
         setLoading(false);

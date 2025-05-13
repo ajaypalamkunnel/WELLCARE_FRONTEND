@@ -4,7 +4,6 @@ import axiosInstance from "@/utils/axiosInstance";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 import { getErrorMessage } from "@/utils/handleError";
 import axios from "axios";
-import { emitWarning } from "process";
 
 
 export const registerBasicDetailsDoctor = async (data: Partial<IUser>) => {

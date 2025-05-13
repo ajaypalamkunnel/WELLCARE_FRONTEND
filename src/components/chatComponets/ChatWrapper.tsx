@@ -6,7 +6,7 @@ import ChatInbox from "@/components/chatComponets/ChatInbox";
 import ChatInput from "@/components/chatComponets/ChatInput";
 import ChatMessageList from "@/components/chatComponets/ChatMessageList";
 import { userChatTheme } from "@/components/chatComponets/chatTheme";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { getSocket } from "@/utils/socket";
 import { useAuthStore } from "@/store/user/authStore";
 import {

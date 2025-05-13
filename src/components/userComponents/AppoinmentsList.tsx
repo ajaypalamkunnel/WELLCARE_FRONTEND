@@ -4,12 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Calendar, Clock, User, Filter, ChevronRight } from "lucide-react";
 import { getAppoinments } from "@/services/user/auth/authService";
 import { AppointmentListItemDTO } from "@/types/slotBooking";
-import {
-  formatTime,
-  formatDisplayDate,
-  formatTime2,
-} from "@/utils/dateutilities";
-import { useRouter } from "next/navigation";
+import { formatDisplayDate, formatTime2 } from "@/utils/dateutilities";
 import AppointmentDetail from "./AppointmentDetail";
 const UserAppointmentsList: React.FC = () => {
   const [appointments, setAppointments] = useState<AppointmentListItemDTO[]>(
@@ -18,9 +13,9 @@ const UserAppointmentsList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("upcoming");
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null) 
-
-  const router = useRouter()
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -57,23 +52,19 @@ const UserAppointmentsList: React.FC = () => {
     setStatusFilter(e.target.value);
   };
 
-  const handleViewDetails = (appointmentId:string)=>{
-    console.log("====>",appointmentId);
-    setSelectedAppointmentId(appointmentId)
-    
-  }
+  const handleViewDetails = (appointmentId: string) => {
+    console.log("====>", appointmentId);
+    setSelectedAppointmentId(appointmentId);
+  };
 
-
-  if(selectedAppointmentId){
-    return(
+  if (selectedAppointmentId) {
+    return (
       <AppointmentDetail
-      appointmentId={selectedAppointmentId}
-      onBack={()=>setSelectedAppointmentId(null)}
+        appointmentId={selectedAppointmentId}
+        onBack={() => setSelectedAppointmentId(null)}
       />
-    )
+    );
   }
-
-
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
@@ -120,7 +111,11 @@ const UserAppointmentsList: React.FC = () => {
                 <div className="flex items-start">
                   <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-3 flex-shrink-0">
                     {appointment.doctor.profileImage ? (
-                      <img className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-3 flex-shrink-0" src={appointment.doctor.profileImage} alt="" />
+                      <img
+                        className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-3 flex-shrink-0"
+                        src={appointment.doctor.profileImage}
+                        alt=""
+                      />
                     ) : (
                       <User size={20} className="text-green-600" />
                     )}
@@ -162,7 +157,7 @@ const UserAppointmentsList: React.FC = () => {
                 <button
                   className="flex w-full items-center justify-between px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors"
                   style={{ backgroundColor: "#03C03C" }}
-                  onClick={()=>handleViewDetails(appointment._id)}
+                  onClick={() => handleViewDetails(appointment._id)}
                 >
                   <span>View Details</span>
                   <ChevronRight size={18} />

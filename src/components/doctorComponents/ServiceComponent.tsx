@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Users, ChevronLeft, Edit, PlayCircle, StopCircle, X, Plus } from 'lucide-react';
+import { Edit, PlayCircle, StopCircle, X, Plus } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import { createService, getServices, updateService } from '@/services/doctor/doctorService';
 import { useAuthStoreDoctor } from '@/store/doctor/authStore';
@@ -217,7 +217,7 @@ const DoctorServiceListing: React.FC = () => {
         ) : services.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-8 text-center">
             <h3 className="text-lg font-medium text-gray-600">No services available</h3>
-            <p className="text-gray-500 mt-2">Click 'Add Service' to create your first service</p>
+            <p className="text-gray-500 mt-2">{"Click 'Add Service' to create your first service"}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">

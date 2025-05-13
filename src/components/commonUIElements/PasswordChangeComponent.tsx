@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Lock, Check, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Lock,} from "lucide-react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { changePassword } from "@/services/doctor/doctorService";
@@ -13,15 +13,15 @@ interface PasswordChangeFormData {
 interface PasswordChangeComponentProps {
   id: string;
   userType: "doctor" | "patient";
-  onSuccess?: () => void;
-  onError?: (error: string) => void;
+  // onSuccess?: () => void;
+  // onError?: (error: string) => void;
 }
 
 const PasswordChangeComponent: React.FC<PasswordChangeComponentProps> = ({
   id,
   userType = "patient",
-  onSuccess,
-  onError,
+  // onSuccess,
+  // onError,
 }) => {
   // Define color classes based on user type
   const themeColorClasses =

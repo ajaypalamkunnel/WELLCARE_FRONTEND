@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -13,7 +13,6 @@ import { DatePicker, Select, Button } from "antd";
 import dayjs from "dayjs";
 import { RevenueDoctorTrendDTO } from "@/types/adminDashboardDoctoryAnlyticsDto";
 import { fetchDoctorRevenueTrend } from "@/services/admin/adminServices";
-import { Loader2 } from "lucide-react";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -26,7 +25,7 @@ const DoctorRevenueTrendChart = () => {
     dayjs(),
   ]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const data = await fetchDoctorRevenueTrend(
         dateRange[0].toISOString(),
@@ -35,13 +34,13 @@ const DoctorRevenueTrendChart = () => {
       );
       setTrendData(data);
     } catch (error) {
-      console.error("Failed to load revenue trend data");
+      console.error("Failed to load revenue trend data:", error);
     }
-  };
+  }, [dateRange, interval]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const groupedData: Record<string, Record<string, number>> = {};
   trendData.forEach((item) => {

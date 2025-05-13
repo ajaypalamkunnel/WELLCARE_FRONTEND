@@ -3,8 +3,7 @@
 import { useCallStore } from "@/store/call/callStore";
 import { getSocket } from "@/utils/socket";
 
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
 import { notify } from "../commonUIElements/NotificationContainer";
 
 const GlobalSocketListener = () => {

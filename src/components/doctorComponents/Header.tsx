@@ -19,7 +19,6 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
   const router = useRouter();
   const logoutstoreDoctor = useAuthStoreDoctor((state) => state.logout);
   const accessToken = useAuthStoreDoctor((state) => state.accessTokenDoctor);
-  const isVerified = useAuthStoreDoctor((state) => state.isVerified);
   const user = useAuthStoreDoctor((state) => state.user);
 console.log("====>",user?.isVerified);
 

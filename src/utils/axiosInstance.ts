@@ -1,8 +1,6 @@
 import axios from "axios";
-import { config } from "process";
 import { useAuthStore } from "@/store/user/authStore";
 import { jwtDecode } from 'jwt-decode'
-import { error } from "console";
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
 
 

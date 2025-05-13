@@ -57,7 +57,6 @@ export default function ScheduleModal({
   // React Hook Form setup
   const {
     control,
-    handleSubmit,
     watch,
     reset,
     formState: { errors, isValid },
@@ -240,10 +239,10 @@ export default function ScheduleModal({
       if (response.success) {
         console.log("generated slot : ", response.data);
 
-        const processedSlots = response.data.map((slot: Slot) => ({
-          ...slot,
-          is_break: Boolean(slot.is_break)
-        }));
+        // const processedSlots = response.data.map((slot: Slot) => ({
+        //   ...slot,
+        //   is_break: Boolean(slot.is_break)
+        // }));
 
         setSlots(response.data);
         toast.success("Slots generated successfully!");

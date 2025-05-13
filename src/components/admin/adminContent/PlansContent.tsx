@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import PlanCard from '../ui/PlanCard';
 import NewPlanModal from '../ui/NewPlanModalForm';
-import axiosInstanceAdmin from '@/utils/axiosInstanceAdmin';
 import { getAllSubscriptionPlans } from '@/services/admin/adminServices';
 import toast from 'react-hot-toast';
 

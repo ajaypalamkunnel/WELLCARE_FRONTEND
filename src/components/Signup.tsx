@@ -5,7 +5,10 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "@/store/user/authStore";
 import { useAuthStoreDoctor } from "../store/doctor/authStore";
-import { googleAuth, registerBasicDetails } from "@/services/user/auth/authService";
+import {
+  googleAuth,
+  registerBasicDetails,
+} from "@/services/user/auth/authService";
 import { registerBasicDetailsDoctor } from "@/services/doctor/authService";
 import { useRouter } from "next/navigation";
 
@@ -53,20 +56,22 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
         setEmailDoctor(response.email);
         router.push("/doctor/otppage");
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-const handleGoogleAuth = async () => {
+  const handleGoogleAuth = async () => {
     setIsLoading(true);
-    const response =googleAuth(role);
-    console.log("=======>>>",response);
-    
+    const response = googleAuth(role);
+    console.log("=======>>>", response);
   };
-
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const toggleConfirmPasswordVisibility = () =>

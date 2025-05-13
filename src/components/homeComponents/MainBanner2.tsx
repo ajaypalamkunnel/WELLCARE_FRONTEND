@@ -34,6 +34,7 @@ const DepartmentSection: React.FC = () => {
 
         setDepartments(response.data);
       } catch (error) {
+        console.log("Failed to load departments.Please try again");
         setError("Failed to load departments.Please try again");
       } finally {
         setLoading(false);

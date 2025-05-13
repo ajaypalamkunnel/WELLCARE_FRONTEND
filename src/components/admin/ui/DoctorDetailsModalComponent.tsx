@@ -1,23 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  X, 
-  Award, 
-  GraduationCap, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  FileText, 
-  User, 
-  Clock, 
+import {
+  X,
+  Award,
+  GraduationCap,
+  Phone,
+  Mail,
+  FileText,
+  User,
+  Clock,
   Briefcase,
-  Globe,
   Building,
   XCircle,
   CheckCircle,
-  SectionIcon,
-  Group
+  Group,
 } from "lucide-react";
 
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
@@ -29,7 +26,7 @@ interface DoctorDetailsModalProps {
   onClose: () => void;
   mode?: "view" | "verify"; // New prop to determine modal mode
   onAccept?: () => void; // New prop for accept action
-  onReject?: (reason:string) => void; // New prop for reject action
+  onReject?: (reason: string) => void; // New prop for reject action
 }
 
 const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
@@ -40,12 +37,12 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
   onAccept,
   onReject,
 }) => {
-  if (!isOpen) return null;
-
-
-  //State to handle rejection reason
   const [isRejectionModalOpen, setRejectionModalOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+
+  if (!isOpen) return null;
+
+  //State to handle rejection reason
 
   // 🆕 Function to handle rejection submission
   const handleRejectSubmission = () => {
@@ -56,18 +53,11 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
     }
   };
 
-  // Handle document opening in new window
-  const openDocument = (url: string | File) => {
-    if(url instanceof File){
-        return null
-    }
-    window.open(url, "_blank");
-  };
-
   // Check if doctor has offline availability
   const hasOfflineAvailability = doctor.availability?.includes("Offline");
 
-  const modalTitle = mode === "verify" ? "Doctor Application" : "Doctor Details";
+  const modalTitle =
+    mode === "verify" ? "Doctor Application" : "Doctor Details";
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
@@ -106,16 +96,19 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
 
             {/* Basic Info */}
             <div className="flex-1">
-              <h3 className="text-2xl font-bold text-white mb-2">{doctor.fullName}</h3>
-              <p className="text-gray-300 text-lg mb-4">{doctor.specialization}</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <h3 className="text-2xl font-bold text-white mb-2">
+                {doctor.fullName}
+              </h3>
+              <p className="text-gray-300 text-lg mb-4">
+                {doctor.specialization}
+              </p>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="flex items-center text-gray-300">
                   <User size={18} className="mr-2 text-gray-400" />
                   <span>{doctor.gender}</span>
                 </div>
-                
+
                 <div className="flex items-center text-gray-300">
                   <Mail size={18} className="mr-2 text-gray-400" />
                   <span>{doctor.email}</span>
@@ -124,23 +117,22 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
                   <Group size={18} className="mr-2 text-gray-400" />
                   <span>{doctor.departmentId?.name}</span>
                 </div>
-               
-                
+
                 <div className="flex items-center text-gray-300">
                   <Phone size={18} className="mr-2 text-gray-400" />
                   <span>{doctor.mobile}</span>
                 </div>
-                
+
                 <div className="flex items-center text-gray-300">
                   <Briefcase size={18} className="mr-2 text-gray-400" />
                   <span>{doctor.experience} years experience</span>
                 </div>
-                
+
                 <div className="flex items-center text-gray-300">
                   <FileText size={18} className="mr-2 text-gray-400" />
                   <span>License: {doctor.licenseNumber}</span>
                 </div>
-                
+
                 <div className="flex items-center text-gray-300">
                   <Clock size={18} className="mr-2 text-gray-400" />
                   <span>Available: {doctor.availability?.join(", ")}</span>
@@ -158,18 +150,25 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
               <GraduationCap size={20} className="mr-2" />
               Education
             </h4>
-            
+
             <div className="space-y-4 pl-2">
               {doctor.education && doctor.education.length > 0 ? (
                 doctor.education.map((edu, index) => (
-                  <div key={index} className="bg-gray-700 bg-opacity-30 p-4 rounded-md">
+                  <div
+                    key={index}
+                    className="bg-gray-700 bg-opacity-30 p-4 rounded-md"
+                  >
                     <p className="text-white font-medium">{edu.degree}</p>
                     <p className="text-gray-400">{edu.institution}</p>
-                    <p className="text-gray-400 text-sm">Graduated: {edu.yearOfCompletion}</p>
+                    <p className="text-gray-400 text-sm">
+                      Graduated: {edu.yearOfCompletion}
+                    </p>
                   </div>
                 ))
               ) : (
-                <p className="text-gray-400">No education information available</p>
+                <p className="text-gray-400">
+                  No education information available
+                </p>
               )}
             </div>
           </div>
@@ -180,18 +179,25 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
               <Award size={20} className="mr-2" />
               Certifications
             </h4>
-            
+
             <div className="space-y-4 pl-2">
               {doctor.certifications && doctor.certifications.length > 0 ? (
                 doctor.certifications.map((cert, index) => (
-                  <div key={index} className="bg-gray-700 bg-opacity-30 p-4 rounded-md">
+                  <div
+                    key={index}
+                    className="bg-gray-700 bg-opacity-30 p-4 rounded-md"
+                  >
                     <p className="text-white font-medium">{cert.name}</p>
                     <p className="text-gray-400">Issued by: {cert.issuedBy}</p>
-                    <p className="text-gray-400 text-sm">Year: {cert.yearOfIssue}</p>
+                    <p className="text-gray-400 text-sm">
+                      Year: {cert.yearOfIssue}
+                    </p>
                   </div>
                 ))
               ) : (
-                <p className="text-gray-400">No certification information available</p>
+                <p className="text-gray-400">
+                  No certification information available
+                </p>
               )}
             </div>
           </div>
@@ -203,12 +209,14 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
                 <Building size={20} className="mr-2" />
                 Clinic Address
               </h4>
-              
+
               <div className="bg-gray-700 bg-opacity-30 p-4 rounded-md">
                 {doctor.clinicAddress && (
                   <>
                     {doctor.clinicAddress.clinicName && (
-                      <p className="text-white font-medium">{doctor.clinicAddress.clinicName}</p>
+                      <p className="text-white font-medium">
+                        {doctor.clinicAddress.clinicName}
+                      </p>
                     )}
                     <p className="text-gray-300">
                       {[
@@ -223,8 +231,11 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
                     </p>
                   </>
                 )}
-                {(!doctor.clinicAddress || Object.values(doctor.clinicAddress).every(v => !v)) && (
-                  <p className="text-gray-400">No clinic address information available</p>
+                {(!doctor.clinicAddress ||
+                  Object.values(doctor.clinicAddress).every((v) => !v)) && (
+                  <p className="text-gray-400">
+                    No clinic address information available
+                  </p>
                 )}
               </div>
             </div>
@@ -236,21 +247,21 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
               <FileText size={20} className="mr-2" />
               Documents
             </h4>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {doctor.licenseDocument && (
                 <button
-                  onClick={() => fetchDoctorDocument("license",doctor._id!)}
+                  onClick={() => fetchDoctorDocument("license", doctor._id!)}
                   className="flex items-center bg-gray-700 hover:bg-gray-600 p-4 rounded-md transition-colors"
                 >
                   <FileText size={20} className="mr-2 text-blue-400" />
                   <span className="text-white">View License Document</span>
                 </button>
               )}
-              
+
               {doctor.IDProofDocument && (
                 <button
-                  onClick={() => fetchDoctorDocument("idproof",doctor._id!)}
+                  onClick={() => fetchDoctorDocument("idproof", doctor._id!)}
                   className="flex items-center bg-gray-700 hover:bg-gray-600 p-4 rounded-md transition-colors"
                 >
                   <FileText size={20} className="mr-2 text-blue-400" />
@@ -268,7 +279,7 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
           {mode === "verify" ? (
             <>
               <button
-                onClick={()=>setRejectionModalOpen(true)}
+                onClick={() => setRejectionModalOpen(true)}
                 className="flex items-center px-6 py-2 bg-red-800 hover:bg-red-700 text-white rounded-md transition-colors mr-4"
               >
                 <XCircle size={18} className="mr-2" />
@@ -293,11 +304,12 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
         </div>
       </div>
 
-
       {isRejectionModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg p-6 w-96">
-            <h2 className="text-xl font-bold text-white mb-4">Reason for Rejection</h2>
+            <h2 className="text-xl font-bold text-white mb-4">
+              Reason for Rejection
+            </h2>
             <textarea
               className="w-full bg-gray-700 text-white p-3 rounded-md focus:outline-none"
               rows={4}
@@ -305,14 +317,22 @@ const DoctorDetailsModal: React.FC<DoctorDetailsModalProps> = ({
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
             />
-             {rejectionReason.trim() === "" && (
-        <p className="text-red-500 text-sm mt-1">Rejection reason is required.</p>
-      )}
+            {rejectionReason.trim() === "" && (
+              <p className="text-red-500 text-sm mt-1">
+                Rejection reason is required.
+              </p>
+            )}
             <div className="flex justify-end space-x-3 mt-4">
-              <button onClick={() => setRejectionModalOpen(false)} className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+              <button
+                onClick={() => setRejectionModalOpen(false)}
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+              >
                 Cancel
               </button>
-              <button onClick={handleRejectSubmission} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+              <button
+                onClick={handleRejectSubmission}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
                 Reject
               </button>
             </div>

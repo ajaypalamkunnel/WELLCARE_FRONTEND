@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import DoctorCard from "../ui/Card";
 import { fetchAllDoctors } from "@/services/admin/authServices";
-import IUser from "@/types/user";
-import { ArrowLeft, ArrowRight, Loader2, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import DoctorDetailsModal from "../ui/DoctorDetailsModalComponent";
 import toast from "react-hot-toast";
@@ -72,6 +71,7 @@ const DoctorsList: React.FC = () => {
 
         setTotalDoctors(response.data.total || 0);
       } catch (error) {
+        console.error("Error fetching doctors:", error);
         setError("Failed to fetch doctors");
       } finally {
         setLoading(false);

@@ -22,7 +22,6 @@ import {
 } from "@/services/user/auth/authService";
 import { AppointmentDetailDTO } from "@/types/slotBooking";
 import { formatDisplayDate, formatTime2 } from "../../utils/dateutilities";
-import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import DoctorReviewForm, { ReviewFormData } from "../commonUIElements/DoctorReviewForm";
 

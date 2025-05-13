@@ -42,6 +42,7 @@ const SubscriptionReportDownload = () => {
 
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
+      console.log("Failed to download report :",error);
       toast.error("Failed to download report");
     } finally {
       setLoading(false);

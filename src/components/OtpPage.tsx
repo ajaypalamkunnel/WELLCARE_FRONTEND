@@ -119,7 +119,7 @@ const OTPVerificationComponent: React.FC<role> = ({ role }) => {
           Enter OTP to Verify Your Account
         </h2>
         <p className="text-gray-600 mt-2">
-          We've sent a verification code to your email
+         {"We've sent a verification code to your email"}
         </p>
 
         <div className="my-4">

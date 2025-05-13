@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import {
   Calendar,
   ChevronLeft,
   ChevronRight,
   Filter,
   Eye,
-  Search,
   X,
   Loader2,
   CalendarDaysIcon,
@@ -213,7 +212,7 @@ export default function DoctorScheduleManager() {
     }
 
     try {
-      const response = await cancelSchedule(cancelReason, selectedScheduleId);
+      cancelSchedule(cancelReason, selectedScheduleId);
 
       toast.success("Schedule cancelled successfully.");
       setCancelModalOpen(false);

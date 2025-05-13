@@ -31,7 +31,7 @@ const DoctorRegistrationForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     watch,
     setValue,
     getValues,
@@ -56,8 +56,7 @@ const DoctorRegistrationForm = () => {
       return null;
     }
 
-    const CLOUDINARY_UPLOAD_URL =
-      "https://api.cloudinary.com/v1_1/dy3yrxbmg/upload";
+    
     const CLOUDINARY_CLOUD_NAME = "dy3yrxbmg";
     const CLOUDINARY_UPLOAD_PRESET = "doctor-documents";
 
@@ -222,7 +221,7 @@ const DoctorRegistrationForm = () => {
 
   // Validate specific fields
   const validateFields = async (fields: string[]) => {
-    const result = await handleSubmit(() => {})();
+   await handleSubmit(() => {})();
     if (fields.length === 0) return true;
 
     const hasErrors = fields.some((field) => {

@@ -1,8 +1,5 @@
 "use client"
 import React from 'react';
-import { Search } from 'lucide-react';
-import { MapPin } from 'lucide-react';
-import { motion } from 'framer-motion';
 import MotionImage from './HomeBanner';
 import { useRouter } from 'next/navigation';
 

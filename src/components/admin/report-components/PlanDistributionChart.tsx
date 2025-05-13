@@ -1,7 +1,6 @@
 import { fetchPlanDistribution } from "@/services/admin/adminServices";
 import { PlanDistributionDTO } from "@/types/adminReportDto";
-import { Asap } from "next/font/google";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   PieChart,
@@ -26,22 +25,27 @@ const COLORS = [
 
 const PlanDistributionChart = () => {
   const [data, setData] = useState<PlanDistributionDTO[]>([]);
-  const [startDate, setStartDate] = useState<Dayjs >(dayjs().subtract(30,"days"));
-const [endDate, setEndDate] = useState<Dayjs>(dayjs());
+  const [startDate, setStartDate] = useState<Dayjs>(
+    dayjs().subtract(30, "days")
+  );
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs());
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
-      const result = await fetchPlanDistribution(startDate.toString(), endDate.toString());
-
+      const result = await fetchPlanDistribution(
+        startDate.toString(),
+        endDate.toString()
+      );
       setData(result);
     } catch (error) {
+      console.log("Plan distribution fetching error:", error);
       toast.error("Plan distribution fetching error");
     }
-  };
+  }, [startDate, endDate]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handleFilter = () => {
     loadData();
@@ -52,29 +56,32 @@ const [endDate, setEndDate] = useState<Dayjs>(dayjs());
       <h2 className="text-xl font-semibold mb-4">Plan Distribution</h2>
 
       <div className="flex items-center gap-4 mb-4">
-  <div>
-    <label className="block text-sm mb-1">Start Date</label>
-    <DatePicker
-      value={startDate}
-      onChange={(date) => setStartDate(date)}
-      className="bg-white rounded"
-      allowClear
-    />
-  </div>
-  <div>
-    <label className="block text-sm mb-1">End Date</label>
-    <DatePicker
-      value={endDate}
-      onChange={(date) => setEndDate(date)}
-      className="bg-white rounded"
-      allowClear
-    />
-  </div>
-  <Button onClick={handleFilter} type="primary" className="bg-white text-[#1e222d]">
-    Filter
-  </Button>
-</div>
-
+        <div>
+          <label className="block text-sm mb-1">Start Date</label>
+          <DatePicker
+            value={startDate}
+            onChange={(date) => setStartDate(date)}
+            className="bg-white rounded"
+            allowClear
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">End Date</label>
+          <DatePicker
+            value={endDate}
+            onChange={(date) => setEndDate(date)}
+            className="bg-white rounded"
+            allowClear
+          />
+        </div>
+        <Button
+          onClick={handleFilter}
+          type="primary"
+          className="bg-white text-[#1e222d]"
+        >
+          Filter
+        </Button>
+      </div>
 
       <div className="h-80 w-full">
         {data.length > 0 ? (

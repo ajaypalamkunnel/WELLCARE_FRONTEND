@@ -1,5 +1,5 @@
-import axios,{AxiosError} from "axios";
-import { error } from "console";
+import axios from "axios";
+
 
 
 export const getErrorMessage = (error:unknown):string =>{

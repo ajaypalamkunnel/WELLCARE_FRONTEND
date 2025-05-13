@@ -1,10 +1,6 @@
 "use client"
 import axios from "axios";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
-import { config } from "process";
-import { error } from "console";
-import { redirect } from "next/navigation"; 
-import { useRouter } from "next/navigation";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
 
