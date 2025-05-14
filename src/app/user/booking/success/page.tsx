@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { BookingDetails } from '@/types/slotBooking';
 import { getBookingDetails } from '@/services/user/auth/authService';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { formatTime, formatTime2 } from '@/utils/dateutilities';
+import { formatTime2 } from '@/utils/dateutilities';
 // Types
 
 
@@ -66,7 +66,7 @@ const BookingConfirmation = () => {
       <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-white">
         <AlertCircle className="w-16 h-16 text-red-500" />
         <h2 className="mt-4 text-xl font-bold text-gray-800">Booking Not Found</h2>
-        <p className="mt-2 text-gray-600">We couldn't find your booking details.</p>
+        <p className="mt-2 text-gray-600">{"We couldn't find your booking details."}</p>
         <button 
           onClick={handleGoHome}
           className="px-6 py-2 mt-6 text-white rounded-full bg-medical-green hover:bg-medical-green-light transition-all duration-300"

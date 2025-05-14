@@ -38,14 +38,13 @@ const TopServicesChart = () => {
       setLoading(true);
       const response = await getTopServices(startDate, endDate, interval);
       // Format for Pie Chart
-      console.log("top : ",response);
+      
       
       const chartData = response.map((item: any) => ({
         name: item.serviceName,
         value: item.totalAppointments, // OR item.totalRevenue depending on your goal
       }));
 
-      console.log("_---->",chartData);
       
       setData(chartData);
     } catch (error) {

@@ -74,6 +74,7 @@ const PrescriptionForm: React.FC = () => {
     setMedicines([{ name: '', dosage: '', duration: '', timesOfConsumption: '', consuptionMethod: '' }]);
     setShowModal(false);
     } catch (error) {
+      console.log("Failed to submit prescription.",error);
       toast.error("Failed to submit prescription.");
     }finally{
       setLoading(false)

@@ -112,10 +112,14 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
   };
   
   const handleCancelAppointment = async () => {
+    if (!appointment || !appointment._id) {
+    toast.error("Invalid appointment.");
+    return;
+  }
     try {
       setIsCancelling(true);
 
-      const result = await CancelAppointment(appointment?._id!, cancelReason);
+      const result = await CancelAppointment(appointment._id, cancelReason);
 
       
 
@@ -128,8 +132,10 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
 
       setShowCancelModal(false);
       setCancelReason("");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to cancel appointment");
+    } catch (error: unknown) {
+      const message =
+      error instanceof Error ? error.message : "Failed to cancel appointment";
+    toast.error(message);
     } finally {
       setIsCancelling(false);
     }
@@ -177,6 +183,8 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
   };
 
   const handleSuccess  = (data:ReviewFormData) =>{
+    console.log(data);
+    
    toast.success('Review submitted successfully!');
   }
    const handleError = (error: unknown) => {

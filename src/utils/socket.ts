@@ -1,12 +1,13 @@
 import {io,Socket} from 'socket.io-client'
 import { API_BASE_URL } from './axiosInstance';
+import { NotificationPayload } from '@/types/notificationDto';
 
 
 let socket: Socket | null = null;
 
 
 export const connectSocket = (userId:string,
-    onNotification?: (data: any) => void
+    onNotification?: (data: NotificationPayload) => void
 ) =>{
     if(!socket){
         socket = io(API_BASE_URL,{
@@ -29,6 +30,7 @@ export const connectSocket = (userId:string,
 
         // Notification Event
         socket.on("receive-notification",(notification)=>{
+             console.log(JSON.stringify(notification, null, 2))
             console.log("🔔 New Notification Received:", notification);
             if (onNotification) onNotification(notification);
 

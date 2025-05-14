@@ -3,7 +3,6 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Loader2, X } from "lucide-react";
 import {
-  EducationData,
   EducationFormData,
 } from "../qualification/QualificationManagement";
 import { IEducation } from "@/types/doctorFullDataType";

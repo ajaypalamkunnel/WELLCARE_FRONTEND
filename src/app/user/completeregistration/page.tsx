@@ -73,6 +73,7 @@ const PatientInformationForm: React.FC = () => {
                 
                 
             } catch (error) {
+                console.log("Error fetching country list",error)
                 setError("Error fetching country list")
             }finally{
                 setLoading(false)
@@ -90,7 +91,7 @@ const PatientInformationForm: React.FC = () => {
        try {
 
         setIsSubmitting(true)
-        let dataToSubmit = {
+        const dataToSubmit = {
             ...data,
             email
         }

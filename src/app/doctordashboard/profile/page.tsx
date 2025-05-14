@@ -2,7 +2,6 @@
 import LogoutConfirmationModal from "@/components/commonUIElements/LogoutConfirmationModal";
 import PasswordChangeComponent from "@/components/commonUIElements/PasswordChangeComponent";
 import EditProfileModal, {
-  DoctorProfileUpdateForm,
 } from "@/components/doctorComponents/forms/modals/EditProfileModal";
 import QualificationManagement from "@/components/doctorComponents/forms/qualification/QualificationManagement";
 import ProfileRenderNoDataMessage from "@/components/doctorComponents/ProfileNoData";
@@ -24,16 +23,7 @@ import AppointmentScheduler from "@/components/doctorComponents/AppoinmentSchedu
 import DoctorWallet from "@/components/doctorComponents/DoctorWallet";
 import DashboardDoctor from "@/components/doctorComponents/dashboard/DashboardDoctor";
 import Image from "next/image";
-interface DoctorProfile {
-  fullName: string;
-  department?: string;
-  specialization?: string;
-  experience?: string;
-  licenseNumber?: string;
-  email?: string;
-  mobile?: string;
-  avatar?: string;
-}
+
 
 const DoctorProfileDashboard: React.FC = () => {
   // Sample data, in real app this would come from API/backend
@@ -42,7 +32,6 @@ const DoctorProfileDashboard: React.FC = () => {
   const { isSubscribed } = useAuthStoreDoctor();
   //modal handling for updata profile
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [doctorProfile, setDoctorProfile] = useState(doctorData);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
   const [subscriptionData, setSubscriptionData] =
     useState<SubscriptionPlan | null>(null);

@@ -72,7 +72,7 @@ interface PaginationInfo {
   currentPage: number;
 }
 
-interface FilterParams {
+export interface FilterParams {
   doctorId?: string;
   service?: string;
   startDate?: Date | null;

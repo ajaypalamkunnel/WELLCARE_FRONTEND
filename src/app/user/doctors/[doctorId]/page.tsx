@@ -32,6 +32,7 @@ const DoctorProfile = () => {
         
         setDoctor(response);
       } catch (err) {
+        console.log("Failed to load doctor profile.",err);
         setError("Failed to load doctor profile.");
       } finally {
         setLoading(false);

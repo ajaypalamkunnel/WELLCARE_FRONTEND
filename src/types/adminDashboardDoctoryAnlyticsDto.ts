@@ -30,3 +30,13 @@ export interface TopDoctorDTO {
     totalRevenue: number;
     appointmentCount: number;
 }
+
+export interface DoctorFilterParams {
+  isVerified?: string;
+  status?: string;
+  departmentId?: string;
+  isSubscribed?: string;
+  availability?: string;
+  minExp?: string;
+  maxExp?: string;
+}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useEffect, useState } from "react";
 import { connectSocket } from "../socket";
 
@@ -11,6 +12,8 @@ export const NotificationProvider = ({
   children: React.ReactNode;
 }) => {
   const [notifications, setNotifications] = useState<any[]>([]);
+  console.log("==>",notifications);
+  
   useEffect(() => {
     if (userId) {
       connectSocket(userId, (notif) => {

@@ -1,4 +1,4 @@
-import { ChatInboxItemDTO, ChatUser, Message } from "@/types/chat";
+import {ChatUser, Message } from "@/types/chat";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 
 

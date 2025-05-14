@@ -28,7 +28,7 @@ export default function DoctorHome() {
     getDoctorProfile();
   }, []);
 
-  const fullName: string = capitalizeFirstLetter(user?.fullName!);
+  const fullName: string = capitalizeFirstLetter(user?.fullName|| "Doctor");
 
   return (
     <>
@@ -41,8 +41,8 @@ export default function DoctorHome() {
           ) : (
             <WelcomeDoctor
               doctorName={fullName}
-              isVerified={doctorData?.isVerified!}
-              status={doctorData?.status!}
+              isVerified={doctorData?.isVerified?? false}
+              status={doctorData?.status ?? 0}
             />
           )}
         </div>

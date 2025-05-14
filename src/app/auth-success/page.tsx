@@ -1,9 +1,7 @@
 "use client";
-import { use, useEffect } from "react";
+import {useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/user/authStore";
-import { useAuthStoreDoctor } from "@/store/doctor/authStore";
-import axios from "axios";
 import { IUser } from "@/types/userTypes";
 import toast from "react-hot-toast";
 
@@ -11,7 +9,7 @@ const AuthSuccess = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setAuth } = useAuthStore();
-  const { setAuthDoctor } = useAuthStoreDoctor();
+  
 
   useEffect(() => {
     const fetchTokens = async () => {

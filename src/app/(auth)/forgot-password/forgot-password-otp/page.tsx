@@ -13,7 +13,6 @@ import {
 import toast from "react-hot-toast";
 import { Timer } from "lucide-react";
 import { AxiosError } from "axios";
-import { error } from "console";
 
 const OTPVerificationComponent: React.FC = () => {
   const [otp, setOtp] = useState("");
@@ -132,7 +131,7 @@ const OTPVerificationComponent: React.FC = () => {
           Enter OTP to Verify Your Account
         </h2>
         <p className="text-gray-600 mt-2">
-          We've sent a verification code to your email
+          {"We've sent a verification code to your email"}
         </p>
 
         <div className="my-4">

@@ -110,7 +110,7 @@ const DepartmentsList: React.FC = () => {
       {/* Departments Grid */}
       {filteredDepartments.length === 0 ? (
         <div className="text-center py-10 text-gray-500">
-          <p>No departments found matching "{searchQuery}"</p>
+          <p>No departments found matching {searchQuery}</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">

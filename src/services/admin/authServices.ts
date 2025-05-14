@@ -1,3 +1,4 @@
+import { DoctorFilterParams } from "@/types/adminDashboardDoctoryAnlyticsDto"
 import axiosInstance from "@/utils/axiosInstance"
 import axiosInstanceAdmin from "@/utils/axiosInstanceAdmin"
 import axios from "axios"
@@ -38,11 +39,11 @@ export const logoutAdmin = async () => {
     }
 }
 
-export const fetchAllDoctors = async (page: number, limit: number, searchTerm: string = '', filters: Record<string, any> = {}) => {
+export const fetchAllDoctors = async (page: number, limit: number, searchTerm: string = '', filters: DoctorFilterParams = {}) => {
     try {
         console.log("frontend service==>",filters);
 
-        const params: Record<string, any> = {
+        const params: Record<string, string | number> = {
             page,
             limit,
             search: searchTerm,

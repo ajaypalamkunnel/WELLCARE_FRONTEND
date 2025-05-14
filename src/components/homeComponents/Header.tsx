@@ -20,6 +20,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { connectSocket, getSocket } from "@/utils/socket";
 import NotificationModal from "../commonUIElements/NotificationModal";
+import Image from "next/image";
 
 interface HeaderProps {
   profileImageUrl?: string;
@@ -43,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
     if (userId) {
       connectSocket(userId);
     }
-  }, [user]);
+  }, [userId]);
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
@@ -75,11 +76,16 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
         <nav className="flex items-center justify-between">
           {/* Logo and Name */}
           <div className="flex items-center">
-            <div className="h-10 w-10 mr-2 hover:">
-              <Link href="/">
-                <img src="/images/cropedLogo.png" alt="willcarelogo" />
-              </Link>
-            </div>
+            <Link href="/">
+              <Image
+                src="/images/cropedLogo.png"
+                alt="willcarelogo"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
+            </Link>
+
             <h1
               className="text-2xl font-bold"
               style={{

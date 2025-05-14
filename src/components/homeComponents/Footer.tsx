@@ -1,11 +1,10 @@
 import React from 'react';
-import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import Link from 'next/link';
+import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
 
-interface FooterProps {
-  isDarkMode?: boolean;
-}
 
-const Footer: React.FC<FooterProps> = ({ isDarkMode = false }) => {
+
+const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   
   return (
@@ -47,10 +46,10 @@ const Footer: React.FC<FooterProps> = ({ isDarkMode = false }) => {
             <div className="space-y-4">
               <h3 className="text-xl font-semibold mb-6">Quick Links</h3>
               <ul className="space-y-3">
-                <li><a href="/" className="hover:text-purple-800 transition-colors">Home</a></li>
-                <li><a href="/find-doctor" className="hover:text-purple-800 transition-colors">Find Doctor</a></li>
-                <li><a href="/video-consultation" className="hover:text-purple-800 transition-colors">Video Consultation</a></li>
-                <li><a href="/about-us" className="hover:text-purple-800 transition-colors">About Us</a></li>
+                <li><Link href="/" className="hover:text-purple-800 transition-colors">Home</Link></li>
+                <li><Link href="/find-doctor" className="hover:text-purple-800 transition-colors">Find Doctor</Link></li>
+                <li><Link href="/video-consultation" className="hover:text-purple-800 transition-colors">Video Consultation</Link></li>
+                <li><Link href="/about-us" className="hover:text-purple-800 transition-colors">About Us</Link></li>
               </ul>
             </div>
 
@@ -58,8 +57,8 @@ const Footer: React.FC<FooterProps> = ({ isDarkMode = false }) => {
             <div className="space-y-4">
               <h3 className="text-xl font-semibold mb-6">Legal</h3>
               <ul className="space-y-3">
-                <li><a href="/terms" className="hover:text-purple-800 transition-colors">Terms & Conditions</a></li>
-                <li><a href="/privacy" className="hover:text-purple-800 transition-colors">Privacy Policy</a></li>
+                <li><Link href="/terms" className="hover:text-purple-800 transition-colors">Terms & Conditions</Link></li>
+                <li><Link href="/privacy" className="hover:text-purple-800 transition-colors">Privacy Policy</Link></li>
               </ul>
             </div>
 
@@ -67,18 +66,18 @@ const Footer: React.FC<FooterProps> = ({ isDarkMode = false }) => {
             <div className="space-y-4">
               <h3 className="text-xl font-semibold mb-6">Follow Us</h3>
               <div className="flex space-x-4">
-                <a href="https://facebook.com" aria-label="Facebook" className="text-slate-900 hover:text-purple-800 transition-colors">
-                  <Facebook size={24} />
-                </a>
-                <a href="https://twitter.com" aria-label="Twitter" className="text-slate-900 hover:text-purple-800 transition-colors">
-                  <Twitter size={24} />
-                </a>
-                <a href="https://instagram.com" aria-label="Instagram" className="text-slate-900 hover:text-purple-800 transition-colors">
-                  <Instagram size={24} />
-                </a>
-                <a href="https://youtube.com" aria-label="YouTube" className="text-slate-900 hover:text-purple-800 transition-colors">
-                  <Youtube size={24} />
-                </a>
+                <Link href="https://facebook.com" aria-label="Facebook" className="text-slate-900 hover:text-purple-800 transition-colors">
+                  <FaFacebook size={24} />
+                </Link>
+                <Link href="https://twitter.com" aria-label="Twitter" className="text-slate-900 hover:text-purple-800 transition-colors">
+                  <FaTwitter size={24} />
+                </Link>
+                <Link href="https://instagram.com" aria-label="Instagram" className="text-slate-900 hover:text-purple-800 transition-colors">
+                  <FaInstagram size={24} />
+                </Link>
+                <Link href="https://youtube.com" aria-label="YouTube" className="text-slate-900 hover:text-purple-800 transition-colors">
+                  <FaYoutube size={24} />
+                </Link>
               </div>
             </div>
           </div>
@@ -93,12 +92,12 @@ const Footer: React.FC<FooterProps> = ({ isDarkMode = false }) => {
               <h3 className="text-xl font-semibold">Need immediate medical assistance?</h3>
               <p className="mt-2">Our medical professionals are available 24/7</p>
             </div>
-            <a 
+            <Link
               href="/contact" 
               className="px-6 py-3 bg-white text-[#553C9A] rounded-md font-medium hover:bg-gray-100 transition-colors"
             >
               Contact Us Now
-            </a>
+            </Link>
           </div>
         </div>
       </div>

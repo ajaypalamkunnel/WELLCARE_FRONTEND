@@ -1,7 +1,9 @@
+import { FilterParams } from "@/components/doctorComponents/AppoinmentSchedules";
 import { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
 import { CertificationFormData, EducationFormData } from "@/components/doctorComponents/forms/qualification/QualificationManagement";
 import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/ScheduleModal";
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
+import { RazorpayPaymentResponse } from "@/components/doctorComponents/Subscription";
 import { ChatUser } from "@/types/chat";
 import { AppointmentStatusSummary } from "@/types/dashboardDto";
 import IDoctorProfileDataType, { ICertificate } from "@/types/doctorFullDataType";
@@ -106,7 +108,7 @@ export const createSubscriptionOrder = async (doctorId: string, planId: string) 
 
 }
 
-export const verifyPayment = async (paymentData: any) => {
+export const verifyPayment = async (paymentData: RazorpayPaymentResponse) => {
     try {
         const response = await axiosInstanceDoctor.post("/api/doctor/verify-payment", paymentData);
         return response.data;
@@ -238,8 +240,11 @@ export const createSchedule = async (data: ScheduleCreationData) => {
     }
 }
 
-export const fetchSchedules = async (params: any) => {
+export const fetchSchedules = async (params: FilterParams) => {
     try {
+
+        
+        
 
 
         // Convert params object to URLSearchParams

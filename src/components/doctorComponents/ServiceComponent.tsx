@@ -151,7 +151,7 @@ const DoctorServiceListing: React.FC = () => {
       
       if (currentService?._id) {
         // Update existing service
-       let response = await updateService({
+       const response = await updateService({
           ...serviceData,
           _id: currentService._id,
           doctorId
@@ -168,10 +168,10 @@ const DoctorServiceListing: React.FC = () => {
         }
       } else {
         // Create new service
-        let newData = {...data,doctorId}
+        const newData = {...data,doctorId}
         console.log("----->",newData);
         
-       let response = await createService(newData);
+       const response = await createService(newData);
         
         if (response.success) {
           // Add new service to state

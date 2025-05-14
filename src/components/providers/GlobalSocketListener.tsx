@@ -3,11 +3,11 @@
 import { useCallStore } from "@/store/call/callStore";
 import { getSocket } from "@/utils/socket";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { notify } from "../commonUIElements/NotificationContainer";
 
 const GlobalSocketListener = () => {
-  const [initialized, setInitialized] = useState(false);
+  // const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const waitForSocket = async () => {
@@ -45,7 +45,7 @@ const GlobalSocketListener = () => {
         });
       });
 
-      setInitialized(true);
+      // setInitialized(true);
 
       return () => {
         socket?.off("call-request");

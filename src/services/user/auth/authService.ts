@@ -20,8 +20,13 @@ export const registerBasicDetails = async (data: Partial<IUser>) => {
 
         const response = await axiosInstance.post("/signup/basic_details", data)
         return response.data
-    } catch (error: any) {
-        throw new Error(error.response?.data?.error || "signup failed")
+    } catch (error: unknown) {
+         if (axios.isAxiosError(error)) {
+
+            throw new Error(error.response?.data?.error || "signup failed")
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
     }
 
 }
@@ -31,8 +36,13 @@ export const verifyOTP = async (email: string, otp: string) => {
     try {
         const response = await axiosInstance.post("/signup/verify_otp", { email, otp })
         return response.data
-    } catch (error: any) {
-        throw new Error(error.response?.data?.error || "OTP verification failed");
+    } catch (error: unknown) {
+         if (axios.isAxiosError(error)) {
+
+            throw new Error(error.response?.data?.error || "OTP verification failed")
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
     }
 }
 
@@ -43,8 +53,13 @@ export const resentOTP = async (email: string) => {
         console.log(response);
 
         return response.data
-    } catch (error: any) {
-        throw new Error(error.response?.data?.error || "Resend OTP failed");
+    } catch (error: unknown) {
+         if (axios.isAxiosError(error)) {
+
+            throw new Error(error.response?.data?.error || "Resend OTP failed")
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
     }
 }
 
@@ -390,7 +405,7 @@ export const CancelAppointment = async (appointmentId: string, reason?: string):
 
         return response.data
 
-    } catch (error: any) {
+    } catch (error: unknown) {
 
         const axiosError = error as AxiosError<{ error: string }>;
 

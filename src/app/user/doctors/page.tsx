@@ -3,10 +3,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Star,
   Search,
-  Filter,
   ChevronLeft,
   ChevronRight,
-  Calendar,
   Briefcase,
   MapPin,
   Award,
@@ -90,6 +88,7 @@ const DoctorListing = () => {
         const departmentResponse = await getAllActiveDepartments();
         setDepartments(departmentResponse.data);
       } catch (err) {
+        console.log("Failed to fetch data. Please try again.",err);
         setError("Failed to fetch data. Please try again.");
       } finally {
         setLoading(false);
@@ -125,7 +124,7 @@ const DoctorListing = () => {
     setCurrentPage(1);
   };
 
-  const handleProfile = (doctorId: string) => {};
+  
 
   const toggleFilterModal = () => setShowFilterModal(!showFilterModal);
 

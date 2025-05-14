@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 import React, { useState, useEffect } from "react";
 import { Calendar, Clock, User, AlertCircle } from "lucide-react";
@@ -56,6 +58,7 @@ const DoctorSchedule: React.FC = () => {
 
       setDoctor(response);
     } catch (error) {
+      console.log("Failed to load doctor profile.",error);
       setError("Failed to load doctor profile.");
     } finally {
       setLoading(false);
@@ -201,6 +204,7 @@ const DoctorSchedule: React.FC = () => {
               );
             }
           } catch (verifyError) {
+            console.log("Payment succeeded, but booking failed!:",verifyError);
             toast.error("Payment succeeded, but booking failed!");
           }
         },
@@ -220,6 +224,7 @@ const DoctorSchedule: React.FC = () => {
         toast.error("Razorpay SDK failed to load. Please try again later.");
       }
     } catch (error) {
+      console.log("Failed to initiate payment : ",error);
       toast.error("Failed to initiate payment");
     }
   };
@@ -262,12 +267,12 @@ const DoctorSchedule: React.FC = () => {
   };
 
   // Get total consultation fee
-  const getConsultationFee = () => {
-    if (schedules.length > 0) {
-      return schedules[0].serviceId.fee;
-    }
-    return 0;
-  };
+  // const getConsultationFee = () => {
+  //   if (schedules.length > 0) {
+  //     return schedules[0].serviceId.fee;
+  //   }
+  //   return 0;
+  // };
 
   if (loading)
     return (

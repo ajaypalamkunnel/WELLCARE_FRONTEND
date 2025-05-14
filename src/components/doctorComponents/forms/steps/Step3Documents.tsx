@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { FileText, Upload, Key, CreditCard } from 'lucide-react';
+import {Upload, Key, CreditCard } from 'lucide-react';
 
 interface Step3DocumentsProps {
   register: any;
