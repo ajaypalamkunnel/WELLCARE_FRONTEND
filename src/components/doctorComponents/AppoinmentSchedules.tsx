@@ -163,7 +163,9 @@ export default function DoctorScheduleManager() {
   };
 
   // Handle filter changes
-  const handleFilterChange = (name: string, value: any) => {
+  const handleFilterChange = (name: string, value: string|Date|number|null) => {
+    console.log("name==",name,"==",value);
+    
     setFilters((prev) => ({
       ...prev,
       [name]: value,

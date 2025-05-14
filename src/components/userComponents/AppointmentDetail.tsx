@@ -24,6 +24,7 @@ import { AppointmentDetailDTO } from "@/types/slotBooking";
 import { formatDisplayDate, formatTime2 } from "../../utils/dateutilities";
 import toast from "react-hot-toast";
 import DoctorReviewForm, { ReviewFormData } from "../commonUIElements/DoctorReviewForm";
+import Image from "next/image";
 
 interface Props {
   appointmentId: string;
@@ -317,7 +318,9 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
           <div className="flex-shrink-0">
             <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
               {appointment.doctor.profileImage ? (
-                <img
+                <Image
+                width={65}
+                height={65}
                   src={appointment.doctor.profileImage}
                   alt={appointment.doctor.fullName}
                   className="w-full h-full object-cover"

@@ -11,6 +11,7 @@ import {
 } from "@/services/user/auth/authService";
 import { registerBasicDetailsDoctor } from "@/services/doctor/authService";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface signupFormData {
   fullName: string;
@@ -84,7 +85,9 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
           <div className="md:flex">
             <div className="md:w-1/2 p-8">
               <div className="text-center mb-8">
-                <img
+                <Image
+                  width={100}
+                  height={100}
                   src="/images/logo.png"
                   alt="WellCare Logo"
                   className="h-24 mx-auto mb-4"
@@ -262,7 +265,9 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
               </form>
             </div>
             <div className="hidden md:flex md:flex-col md:w-1/2 cbg-medical-green/5 p-8 justify-center">
-              <img
+              <Image
+                width={400}
+                height={400}
                 src="/images/signupImg1.png"
                 alt="Medical Illustration"
                 className="w-full object-contain"
@@ -276,7 +281,9 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
                     onClick={handleGoogleAuth}
                     className="w-full border border-gray-300 py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition-colors duration-200"
                   >
-                    <img
+                    <Image
+                      width={90}
+                      height={90}
                       src="https://www.google.com/favicon.ico"
                       alt="Google"
                       className="w-5 h-5"

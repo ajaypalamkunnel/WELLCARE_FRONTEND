@@ -16,7 +16,7 @@ const ProfileRenderNoDataMessage = () => {
           />
         </svg>
         <h2 className="text-xl font-semibold text-gray-700 mb-2">No Profile Data Available</h2>
-        <p className="text-gray-500 mb-6">We couldn't find your profile information.</p>
+        <p className="text-gray-500 mb-6">{"We couldn't find your profile information."}</p>
         <button
           className="px-4 py-2 bg-blue-900 text-white rounded-md flex items-center hover:bg-blue-800 transition duration-200 mx-auto"
           style={{ backgroundColor: "#03045e" }}

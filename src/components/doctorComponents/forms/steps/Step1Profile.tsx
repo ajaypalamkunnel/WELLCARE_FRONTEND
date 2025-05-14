@@ -6,12 +6,14 @@ import { Camera, User, Mail, Phone, Briefcase, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { featchAllDepartments } from '@/services/doctor/doctorService';
 import { useAuthStoreDoctor } from '@/store/doctor/authStore';
+import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { DoctorFormValues } from '@/types/doctorRegistrationFormTypes';
 
 interface Step1ProfileProps {
-  register: any;
-  errors: any;
-  watch: any;
-  setValue: any;
+  register: UseFormRegister<DoctorFormValues>;
+  errors: FieldErrors<DoctorFormValues>;
+  watch: UseFormWatch<DoctorFormValues>;
+  setValue: UseFormSetValue<DoctorFormValues>;
 }
 interface Department {
   _id: string;

@@ -8,6 +8,7 @@ import { logoutDoctor } from "@/services/doctor/authService";
 import toast from "react-hot-toast";
 import { connectSocket, getSocket } from "@/utils/socket";
 import NotificationModal from "../commonUIElements/NotificationModal";
+import Image from "next/image";
 
 interface HeaderProps {
   userImage?: string;
@@ -20,21 +21,19 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
   const logoutstoreDoctor = useAuthStoreDoctor((state) => state.logout);
   const accessToken = useAuthStoreDoctor((state) => state.accessTokenDoctor);
   const user = useAuthStoreDoctor((state) => state.user);
-console.log("====>",user?.isVerified);
+  console.log("====>", user?.isVerified);
 
-  const profileRef = useRef<HTMLDivElement>(null)
+  const profileRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-
 
   const isLoggedIn = !!accessToken;
 
-  const doctorId = user?.id
-  useEffect(()=>{
-    if(doctorId){
-      connectSocket(doctorId)
+  const doctorId = user?.id;
+  useEffect(() => {
+    if (doctorId) {
+      connectSocket(doctorId);
     }
-  },[user])
-
+  }, [user]);
 
   const toggleProfileDropdown = () => {
     setIsProfileOpen(!isProfileOpen);
@@ -44,18 +43,13 @@ console.log("====>",user?.isVerified);
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  
-
-
   const handleLogout = async () => {
     try {
+      const socket = getSocket();
 
-      const socket = getSocket()
-
-      if(socket){
-        socket.disconnect()
+      if (socket) {
+        socket.disconnect();
       }
-
 
       await logoutDoctor();
 
@@ -69,17 +63,19 @@ console.log("====>",user?.isVerified);
     }
   };
 
-  useEffect(()=>{
-    const handleClickOutSide = (event:MouseEvent)=>{
-      if(profileRef.current && !profileRef.current.contains(event.target as Node)){
-        setIsProfileOpen(false)
+  useEffect(() => {
+    const handleClickOutSide = (event: MouseEvent) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown",handleClickOutSide)
-    return ()=> document.removeEventListener("mousedown",handleClickOutSide)
-
-  },[]);
+    document.addEventListener("mousedown", handleClickOutSide);
+    return () => document.removeEventListener("mousedown", handleClickOutSide);
+  }, []);
 
   return (
     <header className="bg-[#03045e] text-white w-full py-4 px-6">
@@ -89,7 +85,13 @@ console.log("====>",user?.isVerified);
           <div className="text-2xl font-bold">
             <div className="flex items-center">
               <div className="h-10 w-10 mr-2 hover:">
-                <img src="/images/cropedLogo.png" alt="wellcare logo" />
+                <Image
+                  src="/images/cropedLogo.png"
+                  alt="Wellcare logo"
+                  width={40}
+                  height={40}
+                  className="h-10 w-10"
+                />
               </div>
               <div className="ml-2">
                 <div className="text-lg font-bold text-white">WellCare</div>
@@ -101,7 +103,7 @@ console.log("====>",user?.isVerified);
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <a
+          <Link
             href="/doctordashboard/home"
             className="flex items-center hover:text-green-300 transition"
           >
@@ -120,7 +122,7 @@ console.log("====>",user?.isVerified);
               ></path>
             </svg>
             Home
-          </a>
+          </Link>
           {/* <a
             href="/appointments"
             className="flex items-center hover:text-green-300 transition"
@@ -141,7 +143,7 @@ console.log("====>",user?.isVerified);
             </svg>
             Appointments
           </a> */}
-          <a
+          <Link
             href="/doctordashboard/chat"
             className="flex items-center hover:text-green-300 transition"
           >
@@ -160,15 +162,19 @@ console.log("====>",user?.isVerified);
               ></path>
             </svg>
             Messages
-          </a>
+          </Link>
           <>
-      <button onClick={() => setOpen(true)} className="flex items-center">
-        <BellIcon size={18} className="mr-1"/>
-        <span className="ml-2">Notifications</span>
-      </button>
+            <button onClick={() => setOpen(true)} className="flex items-center">
+              <BellIcon size={18} className="mr-1" />
+              <span className="ml-2">Notifications</span>
+            </button>
 
-      <NotificationModal isOpen={open} onClose={() => setOpen(false)} isDoctor={true} />
-    </>
+            <NotificationModal
+              isOpen={open}
+              onClose={() => setOpen(false)}
+              isDoctor={true}
+            />
+          </>
         </nav>
 
         {/* Profile Dropdown */}
@@ -181,7 +187,7 @@ console.log("====>",user?.isVerified);
             >
               <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
                 {userImage ? (
-                  <img
+                  <Image
                     src={userImage}
                     alt="Profile"
                     className="w-full h-full object-cover"
@@ -195,11 +201,11 @@ console.log("====>",user?.isVerified);
 
             {/* Dropdown Menu */}
 
-          
-            
-              
             {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10" ref={profileRef}>
+              <div
+                className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10"
+                ref={profileRef}
+              >
                 {user?.isVerified ? (
                   <Link
                     href="/doctordashboard/profile"
@@ -208,7 +214,9 @@ console.log("====>",user?.isVerified);
                     <User className="w-4 h-4 mr-2" />
                     Profile
                   </Link>
-                ):<></>}
+                ) : (
+                  <></>
+                )}
                 <button
                   onClick={handleLogout}
                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -254,7 +262,7 @@ console.log("====>",user?.isVerified);
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <nav className="md:hidden mt-4 space-y-3">
-          <a
+          <Link
             href="/"
             className="flex items-center py-2 hover:text-green-300 transition"
           >
@@ -273,8 +281,8 @@ console.log("====>",user?.isVerified);
               ></path>
             </svg>
             Home
-          </a>
-          <a
+          </Link>
+          <Link
             href="/appointments"
             className="flex items-center py-2 hover:text-green-300 transition"
           >
@@ -293,8 +301,8 @@ console.log("====>",user?.isVerified);
               ></path>
             </svg>
             Appointments
-          </a>
-          <a
+          </Link>
+          <Link
             href="/messages"
             className="flex items-center py-2 hover:text-green-300 transition"
           >
@@ -313,8 +321,8 @@ console.log("====>",user?.isVerified);
               ></path>
             </svg>
             Messages
-          </a>
-          <a
+          </Link>
+          <Link
             href="/notifications"
             className="flex items-center py-2 hover:text-green-300 transition"
           >
@@ -333,7 +341,7 @@ console.log("====>",user?.isVerified);
               ></path>
             </svg>
             Notifications
-          </a>
+          </Link>
         </nav>
       )}
     </header>

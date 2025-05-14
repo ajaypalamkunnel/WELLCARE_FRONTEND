@@ -6,6 +6,7 @@ import { getAppoinments } from "@/services/user/auth/authService";
 import { AppointmentListItemDTO } from "@/types/slotBooking";
 import { formatDisplayDate, formatTime2 } from "@/utils/dateutilities";
 import AppointmentDetail from "./AppointmentDetail";
+import Image from "next/image";
 const UserAppointmentsList: React.FC = () => {
   const [appointments, setAppointments] = useState<AppointmentListItemDTO[]>(
     []
@@ -111,7 +112,9 @@ const UserAppointmentsList: React.FC = () => {
                 <div className="flex items-start">
                   <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-3 flex-shrink-0">
                     {appointment.doctor.profileImage ? (
-                      <img
+                      <Image
+                        height={45}
+                        width={45}
                         className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-3 flex-shrink-0"
                         src={appointment.doctor.profileImage}
                         alt=""

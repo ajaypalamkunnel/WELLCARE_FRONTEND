@@ -31,6 +31,7 @@ interface IDoctorProfileDataType {
     email?: string;
     mobile?: string;
     profileImage?: string
+    department?:string
     departmentId?: IDepartment;
     availability?:string[];
     gender?:string

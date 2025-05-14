@@ -62,7 +62,7 @@ const PasswordChangeComponent: React.FC<PasswordChangeComponentProps> = ({
   const onFormSubmit = async (data: PasswordChangeFormData) => {
     try {
       setIsSubmitting(true);
-      const { confirmPassword, ...passwordData } = data;
+      const {...passwordData } = data;
 
       if (userType === "doctor") {
         const response = await changePassword(

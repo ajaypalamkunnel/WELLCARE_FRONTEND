@@ -59,7 +59,7 @@ export default function ScheduleModal({
     control,
     watch,
     reset,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
       date: "",
@@ -88,7 +88,7 @@ export default function ScheduleModal({
     formValues.service &&
     formValues.start_time &&
     formValues.end_time &&
-    formValues?.duration! > 0;
+    formValues?.duration && formValues.duration > 0
 
   // Track if schedule is validated
   const [isScheduleValidated, setIsScheduleValidated] =
@@ -159,8 +159,12 @@ export default function ScheduleModal({
   ]);
 
   const fetchServices = async () => {
+     if (!doctorId) {
+    toast.error("Doctor ID not found");
+    return;
+  }
     try {
-      const response = await getServices(doctorId!);
+      const response = await getServices(doctorId);
 
       if (response.success) {
         setServices(response.data || []);
@@ -249,7 +253,7 @@ export default function ScheduleModal({
       } else {
         throw new Error(response.message || "Failed to generate slots");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "Unknown error occurred";
       setError(errorMessage);
@@ -307,7 +311,7 @@ export default function ScheduleModal({
       } else {
         throw new Error(response.message || "Failed to create schedule");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "Unknown error occurred";
       setError(errorMessage);

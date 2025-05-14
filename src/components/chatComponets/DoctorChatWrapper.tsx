@@ -1,5 +1,5 @@
-"use client";
 
+"use client";
 import ChatHeader from "@/components/chatComponets/ChatHeader";
 import ChatInbox from "@/components/chatComponets/ChatInbox";
 import ChatInput from "@/components/chatComponets/ChatInput";
@@ -36,7 +36,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
   const doctor = useAuthStoreDoctor();
   const doctorId = doctor.user?.id;
 
-  console.log(".....DoctorChatWrapper");
+  
 
   //----------------- Handle resize -----------------
   useEffect(() => {
@@ -54,7 +54,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
       try {
         //services/doctor/chatService.ts
         const data = await getChatInboxDoctor();
-        console.log("inbox api ", data);
+        
 
         const sorted = data.sort(
           (a, b) =>
@@ -73,7 +73,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
   // -------------------------- Load user by ID if not in inbox ------------------------------
   useEffect(() => {
     const fetchIfUserMissing = async () => {
-      console.log(">>>>>", userId);
+      
 
       if (!userId) return;
       console.log("Load user by ID if not in inbox");
@@ -258,7 +258,7 @@ const DoctorChatWrapper: React.FC<DoctorChatWrapperProps> = ({ userId }) => {
       return;
     }
 
-    console.log("===>", mediaUrl);
+   
 
     const isMedia = Boolean(mediaUrl);
     const tempId = Date.now().toString();

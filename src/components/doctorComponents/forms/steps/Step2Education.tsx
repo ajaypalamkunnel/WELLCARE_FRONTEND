@@ -1,19 +1,20 @@
 "use client"
 import React from 'react';
 import { GraduationCap, Award, Calendar, Building, Plus, Trash2 } from 'lucide-react';
-import { ICertificate, IEducation } from '@/types/doctorFullDataType';
+import { FieldErrors, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { DoctorFormValues, ICertificate, IEducation } from '@/types/doctorRegistrationFormTypes';
 
 interface Step2EducationProps {
-  register: any;
-  errors: any;
-  watch: any;
-  setValue: any;
-  getValues: any;
-  control: any;
+  register: UseFormRegister<DoctorFormValues>;
+  errors: FieldErrors<DoctorFormValues>;
+  watch: UseFormWatch<DoctorFormValues>;
+  setValue: UseFormSetValue<DoctorFormValues>;
+  getValues: UseFormGetValues<DoctorFormValues>;
+  
 }
 
 const Step2Education: React.FC<Step2EducationProps> = ({ 
-  register, errors, watch, setValue, getValues, control 
+  register, errors, watch, setValue, getValues,
 }) => {
   // Get education fields from form
   const educationFields = watch('education') || [];

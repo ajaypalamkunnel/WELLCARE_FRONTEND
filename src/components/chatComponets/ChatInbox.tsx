@@ -22,7 +22,7 @@ const ChatInbox: React.FC<ChatInboxProps> = ({
   const filteredUsers = users.filter((user) =>
     user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log("🚀==>", users);
+  
   return (
     <div className="flex flex-col h-full border-r bg-white shadow-sm">
       {/* Header */}

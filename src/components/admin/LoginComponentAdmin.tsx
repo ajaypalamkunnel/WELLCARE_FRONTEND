@@ -10,9 +10,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IAdmin } from "@/types/userTypes";
 import { getErrorMessage } from "@/utils/handleError";
-interface loginFormProps {
-  role: "patient" | "doctor";
-}
+
 
 interface loginFormData {
   email: string;

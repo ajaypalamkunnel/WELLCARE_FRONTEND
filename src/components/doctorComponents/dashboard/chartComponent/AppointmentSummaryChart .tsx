@@ -7,7 +7,7 @@ import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recha
 
 const COLORS = ["#03045e", "#00b4d8", "#90e0ef", "#caf0f8", "#0077b6"];
 const AppointmentSummaryChart = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<{ name: string; value: number }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -76,7 +76,7 @@ const AppointmentSummaryChart = () => {
             onChange={(e) => setStartDate(e.target.value)}
           />
         </div>
-        <div>
+        <div> 
           <label className="block text-sm text-gray-700 font-medium mb-1">
             End Date
           </label>

@@ -12,6 +12,7 @@ import {
 
 import dayjs from "dayjs";
 import { getTopServices } from "@/services/doctor/doctorService";
+import { TopServiceData } from "@/types/dashboardDto";
 
 const COLORS = [
   "#03045e",
@@ -23,7 +24,7 @@ const COLORS = [
 ];
 
 const TopServicesChart = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<TopServiceData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   // 🔽 Filter states
@@ -40,7 +41,7 @@ const TopServicesChart = () => {
       // Format for Pie Chart
       
       
-      const chartData = response.map((item: any) => ({
+      const chartData = response.map((item: TopServiceData) => ({
         name: item.serviceName,
         value: item.totalAppointments, // OR item.totalRevenue depending on your goal
       }));

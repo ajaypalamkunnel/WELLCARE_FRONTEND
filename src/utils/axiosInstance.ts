@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useAuthStore } from "@/store/user/authStore";
 import { jwtDecode } from 'jwt-decode'
+import { RefreshResponse } from "./axiosTypes";
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
 
 

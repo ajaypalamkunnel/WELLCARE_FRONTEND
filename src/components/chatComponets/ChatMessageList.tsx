@@ -31,11 +31,11 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
   const [showConfirmModal, setShowConfirmModal] = useState(false); // ⬅️ NEW
   const [pendingDeleteMessageId, setPendingDeleteMessageId] = useState<
     string | null
-  >(null); // ⬅️ NEW
+  >(null); 
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  console.log("===>", messages);
+  
 
   const user = useAuthStore();
   const userId = user.user?.id;
@@ -47,24 +47,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Group messages by date for better organization
-  // const groupMessagesByDate = () => {
-  //   const groups: { date: string; messages: Message[] }[] = [];
-  //   let currentDate = "";
-
-  //   messages.forEach((message) => {
-  //     const messageDate = message.time.split(" ")[0]; // Extract date part
-
-  //     if (messageDate !== currentDate) {
-  //       currentDate = messageDate;
-  //       groups.push({ date: currentDate, messages: [message] });
-  //     } else {
-  //       groups[groups.length - 1].messages.push(message);
-  //     }
-  //   });
-
-  //   return groups;
-  // };
 
   const handleDeleteMessage = (messageId: string) => {
    

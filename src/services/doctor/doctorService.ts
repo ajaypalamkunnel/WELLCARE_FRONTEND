@@ -6,7 +6,8 @@ import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import { RazorpayPaymentResponse } from "@/components/doctorComponents/Subscription";
 import { ChatUser } from "@/types/chat";
 import { AppointmentStatusSummary } from "@/types/dashboardDto";
-import IDoctorProfileDataType, { ICertificate } from "@/types/doctorFullDataType";
+import  { ICertificate } from "@/types/doctorFullDataType";
+import { DoctorFormValues } from "@/types/doctorRegistrationFormTypes";
 import { NotificationDTO } from "@/types/notificationDto";
 import { SubmitPrescriptionPayload } from "@/types/prescription";
 import { ApiResponseDoctorAppointmentListItemDTO, AppointmentFilters, DoctorAppointmentDetailDTO } from "@/types/slotBooking";
@@ -26,7 +27,7 @@ export const featchAllDepartments = async () => {
     }
 }
 
-export const doctorRegistration = async (doctorProfileData: IDoctorProfileDataType) => {
+export const doctorRegistration = async (doctorProfileData: DoctorFormValues) => {
 
     try {
 

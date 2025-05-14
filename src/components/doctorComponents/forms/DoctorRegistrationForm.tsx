@@ -11,10 +11,10 @@ import Step1Profile from "../forms/steps/Step1Profile";
 import Step2Education from "../forms/steps/Step2Education";
 import Step3Documents from "../forms/steps/Step3Documents";
 import Step4Review from "../forms/steps/Step4Review";
-import IDoctorProfileDataType from "@/types/doctorFullDataType";
 import axios from "axios";
 import { doctorRegistration } from "@/services/doctor/doctorService";
 import toast from "react-hot-toast";
+import { DoctorFormValues, ICertificate, IEducation } from "@/types/doctorRegistrationFormTypes";
 
 
 const steps = [
@@ -34,9 +34,10 @@ const DoctorRegistrationForm = () => {
     formState: { errors },
     watch,
     setValue,
+    setError,
     getValues,
     control,
-  } = useForm({
+  } = useForm<DoctorFormValues>({
     mode: "all", // Validate form on change
     defaultValues: {
       education: [{ degree: "", institution: "", yearOfCompletion: "" }],
@@ -83,11 +84,30 @@ const DoctorRegistrationForm = () => {
   };
   const router = useRouter();
   //--------------------------------- Handle form submission--------------------------------
-  const onSubmit = async (data: IDoctorProfileDataType) => {
+  const onSubmit = async (data: DoctorFormValues) => {
     
     
 
     setLoading(true);
+
+    if (!data.licenseDocument) {
+    setError("licenseDocument", {
+      type: "manual",
+      message: "Please upload license document",
+    });
+    setLoading(false);
+    return;
+  }
+
+  if (!data.IDProofDocument) {
+    setError("IDProofDocument", {
+      type: "manual",
+      message: "Please upload ID proof document",
+    });
+    setLoading(false);
+    return;
+  }
+
 
     // Extract the first file from FileList using type guard
     const isFileList = (value: unknown): value is FileList => {
@@ -221,21 +241,21 @@ const DoctorRegistrationForm = () => {
 
   // Validate specific fields
   const validateFields = async (fields: string[]) => {
-   await handleSubmit(() => {})();
+    handleSubmit(() => {})();
     if (fields.length === 0) return true;
 
     const hasErrors = fields.some((field) => {
       if (field === "education") {
         const education = watch("education");
         return education.some(
-          (edu: any, index: number) =>
+          (edu:IEducation, index: number) =>
             errors.education && errors.education[index]
         );
       }
       if (field === "certifications") {
         const certifications = watch("certifications");
         return certifications.some(
-          (cert: any, index: number) =>
+          (cert: ICertificate, index: number) =>
             errors.certifications && errors.certifications[index]
         );
       }
@@ -266,7 +286,7 @@ const DoctorRegistrationForm = () => {
             watch={watch}
             setValue={setValue}
             getValues={getValues}
-            control={control}
+            
           />
         );
       case 3:
@@ -274,7 +294,6 @@ const DoctorRegistrationForm = () => {
           <Step3Documents
             register={register}
             errors={errors}
-            watch={watch}
             setValue={setValue}
           />
         );

@@ -2,15 +2,17 @@
 
 import React, { useRef, useState } from 'react';
 import {Upload, Key, CreditCard } from 'lucide-react';
+import { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import { DoctorFormValues } from '@/types/doctorRegistrationFormTypes';
 
 interface Step3DocumentsProps {
-  register: any;
-  errors: any;
-  watch: any;
-  setValue: any;
+  register: UseFormRegister<DoctorFormValues>;
+  errors: FieldErrors<DoctorFormValues>;
+ 
+  setValue: UseFormSetValue<DoctorFormValues>;
 }
 
-const Step3Documents: React.FC<Step3DocumentsProps> = ({ register, errors, watch, setValue }) => {
+const Step3Documents: React.FC<Step3DocumentsProps> = ({ register, errors, setValue }) => {
   const licenseDocRef = useRef<HTMLInputElement>(null);
   const idProofRef = useRef<HTMLInputElement>(null);
   
@@ -88,7 +90,6 @@ const Step3Documents: React.FC<Step3DocumentsProps> = ({ register, errors, watch
                         ref={licenseDocRef}
                         accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg"
                         onChange={handleLicenseDocUpload}
-                        {...register('licenseDocument', { required: 'License document is required' })}
                       />
                     </label>
                     <p className="pl-1">or drag and drop</p>
@@ -128,7 +129,6 @@ const Step3Documents: React.FC<Step3DocumentsProps> = ({ register, errors, watch
                       ref={idProofRef}
                       accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg"
                       onChange={handleIdProofUpload}
-                      {...register('IDProofDocument', { required: 'ID proof is required' })}
                     />
                   </label>
                   <p className="pl-1">or drag and drop</p>
@@ -143,7 +143,7 @@ const Step3Documents: React.FC<Step3DocumentsProps> = ({ register, errors, watch
                 )}
               </div>
             </div>
-            {errors.idProof && <p className="error-text mt-2">{errors.idProof.message}</p>}
+            {errors.IDProofDocument && <p className="error-text mt-2">{errors.IDProofDocument.message}</p>}
           </div>
         </div>
       </div>

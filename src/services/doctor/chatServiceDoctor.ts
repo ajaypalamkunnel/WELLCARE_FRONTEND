@@ -19,7 +19,7 @@ export const getMessagesWithUserDoctor = async (patientId: string): Promise<Mess
     try {
         const response = await axiosInstanceDoctor.get(`/api/chat/history/${patientId}`);
 
-        console.log("history==>",response.data.data)
+        
         return response.data.data
         
     } catch (error) {

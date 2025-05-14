@@ -154,7 +154,9 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
                 onClick={toggleProfileDropdown}
               >
                 {profileImageUrl ? (
-                  <img
+                  <Image
+                    width={45}
+                    height={45}
                     src={profileImageUrl}
                     alt="Profile"
                     className="h-8 w-8 rounded-full object-cover"

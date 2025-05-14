@@ -19,7 +19,7 @@ interface EditProfileModalProps {
     isOpen: boolean;
     onClose: () => void;
     doctorData: IDoctorProfileDataType
-    onProfileUpdate: (updatedData: any) => void;
+    onProfileUpdate: (updatedData: IDoctorProfileDataType) => void;
   }
   
   

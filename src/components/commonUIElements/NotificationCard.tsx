@@ -35,6 +35,8 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     return () => clearTimeout(timer);
   }, [onClose]);
 
+  if (!visible) return null;
+
   return (
     <motion.div
       initial={{ x: 300, opacity: 0 }}

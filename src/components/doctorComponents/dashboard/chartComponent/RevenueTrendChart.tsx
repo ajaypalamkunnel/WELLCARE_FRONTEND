@@ -16,9 +16,10 @@ import {
 
 import dayjs from "dayjs";
 import { getRevenueTrend } from "@/services/doctor/doctorService";
+import { RevenueTrendData } from "@/types/dashboardDto";
 
 const RevenueTrendChart = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<RevenueTrendData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const [startDate, setStartDate] = useState<string>(

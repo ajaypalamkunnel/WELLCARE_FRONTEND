@@ -1,4 +1,4 @@
-interface RefreshResponse{
+export interface RefreshResponse{
 
     success:boolean;
     accessToken:string
