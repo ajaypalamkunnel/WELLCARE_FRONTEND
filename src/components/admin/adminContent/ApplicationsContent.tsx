@@ -6,15 +6,16 @@ import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import DoctorDetailsModal from "../ui/DoctorDetailsModalComponent";
 import { verifyDoctorApplication } from "@/services/admin/adminServices";
 import toast from "react-hot-toast";
-
+import useDebounce from "@/hooks/useDebounce";
 const ApplicationsContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"applications" | "allDoctors">(
     "applications"
   );
 
   const [doctors, setDoctors] = useState<IDoctorProfileDataType[]>([]);
-  const [totalDoctors, setTotalDoctors] = useState(0); // 🆕 total count from backend
-  const [searchTerm, setSearchTerm] = useState(""); // 🆕 search input
+  const [totalDoctors, setTotalDoctors] = useState(0); // total count from backend
+  const [searchTerm, setSearchTerm] = useState(""); //  search input
+  const debouncedSearchTerm = useDebounce(searchTerm,500)
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +49,7 @@ const ApplicationsContent: React.FC = () => {
         const response = await fetchAllDoctors(
           currentPage,
           doctorsPerPage,
-          searchTerm,
+          debouncedSearchTerm ,
           filters
         );
 
@@ -63,7 +64,7 @@ const ApplicationsContent: React.FC = () => {
     };
 
     getDoctors();
-  }, [currentPage, activeTab, searchTerm]);
+  }, [currentPage, activeTab, debouncedSearchTerm ]);
 
 
   const totalPages = Math.ceil(totalDoctors / doctorsPerPage);

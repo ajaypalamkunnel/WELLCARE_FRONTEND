@@ -11,6 +11,7 @@ import {
   updateDoctorStatus,
 } from "@/services/admin/adminServices";
 import { IDepartment } from "@/types/IDoctor";
+import useDebounce from "@/hooks/useDebounce";
 
 const DoctorsList: React.FC = () => {
   const [doctors, setDoctors] = useState<IDoctorProfileDataType[]>([]);
@@ -20,6 +21,7 @@ const DoctorsList: React.FC = () => {
   const [totalDoctors, setTotalDoctors] = useState(0);
   const doctorsPerPage = 6;
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm,500)
 
   //fiter states
   const [departments, setDepartments] = useState([]);
@@ -44,7 +46,7 @@ const DoctorsList: React.FC = () => {
         const response = await fetchAllDoctors(
           currentPage,
           doctorsPerPage,
-          searchTerm,
+          debouncedSearchTerm,
           {
             isVerified,
             status,
@@ -82,7 +84,7 @@ const DoctorsList: React.FC = () => {
     getDoctors();
   }, [
     currentPage,
-    searchTerm,
+    debouncedSearchTerm,
     isVerified,
     status,
     availability,

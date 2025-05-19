@@ -7,6 +7,7 @@ import {
   fetchAllPatients,
   updateUserStatus,
 } from "@/services/admin/adminServices";
+import useDebounce from "@/hooks/useDebounce";
 
 const PatientsContent = () => {
   const [patients, setPatients] = useState<IUser[]>([]);
@@ -15,13 +16,14 @@ const PatientsContent = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 const [searchTerm, setSearchTerm] = useState("");
+const debouncedSearchTerm = useDebounce(searchTerm,500)
   useEffect(() => {
    
 
     const getPatients = async () => {
       try {
         setLoading(true);
-        const response = await fetchAllPatients(currentPage, 6,searchTerm);
+        const response = await fetchAllPatients(currentPage, 6,debouncedSearchTerm);
         console.log(response);
 
         setPatients(response?.data.users);
@@ -36,7 +38,7 @@ const [searchTerm, setSearchTerm] = useState("");
     };
 
     getPatients();
-  }, [currentPage,searchTerm]);
+  }, [currentPage,debouncedSearchTerm]);
 
   //--------------------------------pagination Handler functions----------------------------
   const handleNextPage = () => {
