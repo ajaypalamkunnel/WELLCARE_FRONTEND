@@ -5,6 +5,7 @@ import { getAllActiveDepartments } from "@/services/user/auth/authService";
 import { IDepartment } from "@/components/homeComponents/MainBanner2";
 import Header from "@/components/homeComponents/Header";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const DepartmentsList: React.FC = () => {
   const [departments, setDepartments] = useState<IDepartment[]>([]);
@@ -14,6 +15,8 @@ const DepartmentsList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter()
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -49,9 +52,7 @@ const DepartmentsList: React.FC = () => {
 
   const handleDepartmentClick = (departmentId: string | undefined) => {
     if (departmentId) {
-      console.log("Department clicked:", departmentId);
-      // Add your navigation logic here, e.g.:
-      // router.push(`/departments/${departmentId}`);
+      router.push(`/user/doctors?department=${departmentId}`)
     }
   };
 

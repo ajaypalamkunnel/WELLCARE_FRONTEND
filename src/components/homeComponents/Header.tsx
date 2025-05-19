@@ -12,6 +12,7 @@ import {
   Hospital,
   MessageCircle,
   BellIcon,
+  BadgeInfo,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/user/authStore";
@@ -143,6 +144,13 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
                 isDoctor={false}
               />
             </>
+           <Link
+           href="user/chat"
+           className="flex items-center hover:text-gray-900"
+           >
+            <BadgeInfo size={18} className="mr-1"/>
+            <span>About us</span>
+           </Link>
           </div>
 
           {/* Profile Section */}

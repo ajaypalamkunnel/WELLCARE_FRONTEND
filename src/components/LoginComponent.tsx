@@ -49,7 +49,7 @@ const LoginComponent: React.FC = () => {
         const { accessToken, user }: { accessToken: string; user: IUser } =
           await login(data.email, data.password);
 
-        setAuth(user.email, accessToken, user.isVerified!, user);
+        setAuth(user.email, accessToken, user.isVerified!, user,user.profileUrl);
 
         toast.success("Login successfull!");
         router.replace("/");

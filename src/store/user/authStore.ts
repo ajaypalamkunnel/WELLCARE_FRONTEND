@@ -8,8 +8,9 @@ interface AuthState {
   accessToken: string | null;
   user: IUser | null
   isVerified?:boolean|null
+  profileUrl?:string|null
   setEmail: (email: string) => void
-  setAuth: (email: string, accessToken: string,isVerified:boolean, user: IUser) => void
+  setAuth: (email: string, accessToken: string,isVerified:boolean, user: IUser,profileUrl?:string) => void
   logout: () => void
   logoutByAdmin: () => void
 }
@@ -23,9 +24,10 @@ export const useAuthStore = create<AuthState>()(
         accessToken: null,
         user: null,
         isverified:null,
+        profileUrl:null,
         setEmail: (email) => set({ email }),
-        setAuth: (email, accessToken, isVerified, user) =>
-          set({ email, accessToken,isVerified, user }, false, "setAuth"),
+        setAuth: (email, accessToken, isVerified, user,profileUrl) =>
+          set({ email, accessToken,isVerified, user,profileUrl }, false, "setAuth"),
         logout: () => set({ email: null, accessToken: null,isVerified:null, user: null }, false, "logout"),
         logoutByAdmin: () => {
           set({ email: null, accessToken: null,isVerified:null, user: null }, false, "logout")
