@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { User, Phone, Droplet, Loader2 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { userCompleteRegistration } from "@/services/user/auth/authService";
+import { AxiosError } from "axios";
 // Adjust the import path as needed
 
 // Existing interfaces (kept the same)
@@ -77,15 +78,20 @@ const PatientInformationForm: React.FC = () => {
       reset();
     } catch (error: unknown) {
       // Error Handling
+
       let errorMessage = "Submission Failed. Please try again.";
+
       if (
         typeof error === "object" &&
         error !== null &&
-        "response" in error &&
-        typeof (error as any).response?.data?.message === "string"
+        (error as AxiosError).isAxiosError
       ) {
-        errorMessage = (error as any).response.data.message;
+        const axiosError = error as AxiosError<{ message: string }>;
+        if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        }
       }
+
       toast.error(errorMessage, {
         duration: 4000,
         position: "top-right",

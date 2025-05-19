@@ -1,7 +1,8 @@
-"use client"
-import React, { useState, useRef } from 'react';
-import { Upload, X, Check, AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+"use client";
+import React, { useState, useRef } from "react";
+import { Upload, X, Check, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface FileUploadProps {
   accept?: string;
@@ -11,18 +12,18 @@ interface FileUploadProps {
   error?: string;
   value?: File | null;
   onChange: (file: File | null) => void;
-  previewType?: 'image' | 'document';
+  previewType?: "image" | "document";
 }
 
 const FileUpload = ({
-  accept = 'image/jpeg,application/pdf',
+  accept = "image/jpeg,application/pdf",
   maxSize = 5, // Default 5MB
   id,
   label,
   error,
   value,
   onChange,
-  previewType = 'document'
+  previewType = "document",
 }: FileUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -40,11 +41,13 @@ const FileUpload = ({
 
     // Validate file type
     const fileType = file.type;
-    const acceptedTypes = accept.split(',');
-    const isValidType = acceptedTypes.some(type => fileType === type);
+    const acceptedTypes = accept.split(",");
+    const isValidType = acceptedTypes.some((type) => fileType === type);
 
     if (!isValidType) {
-      setFileError(`Invalid file type. Please upload ${accept.replace(/,/g, ' or ')}`);
+      setFileError(
+        `Invalid file type. Please upload ${accept.replace(/,/g, " or ")}`
+      );
       return;
     }
 
@@ -96,13 +99,15 @@ const FileUpload = ({
   const renderPreview = () => {
     if (!value) return null;
 
-    if (previewType === 'image' && value.type.startsWith('image/')) {
+    if (previewType === "image" && value.type.startsWith("image/")) {
       return (
-        <div className="relative w-full h-32 mb-3">
-          <img
+        <div className="relative w-full h-32 mb-3 rounded-lg overflow-hidden">
+          <Image
             src={URL.createObjectURL(value)}
             alt="Preview"
-            className="w-full h-full object-cover rounded-lg"
+            fill
+            className="object-cover rounded-lg"
+            sizes="100vw"
           />
           <button
             type="button"
@@ -137,9 +142,9 @@ const FileUpload = ({
       <label htmlFor={id} className="form-label">
         {label}
       </label>
-      
+
       {renderPreview()}
-      
+
       <div
         onClick={handleClick}
         onDragOver={handleDragOver}
@@ -147,8 +152,8 @@ const FileUpload = ({
         onDrop={handleDrop}
         className={cn(
           "border-2 border-dashed rounded-lg p-6 transition-all duration-200 cursor-pointer text-center",
-          isDragging 
-            ? "border-medical-lightBlue bg-blue-50 dark:bg-blue-900/20" 
+          isDragging
+            ? "border-medical-lightBlue bg-blue-50 dark:bg-blue-900/20"
             : "border-gray-300 hover:border-medical-lightBlue dark:border-gray-700",
           error || fileError ? "border-medical-error" : ""
         )}
@@ -161,23 +166,24 @@ const FileUpload = ({
           onChange={handleInputChange}
           className="hidden"
         />
-        
+
         <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Drag and drop your file here or <span className="text-medical-lightBlue">browse</span>
+          Drag and drop your file here or{" "}
+          <span className="text-medical-lightBlue">browse</span>
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-          {accept.includes('image/jpeg') && accept.includes('application/pdf') 
-            ? 'JPG or PDF' 
-            : accept.includes('image/jpeg') 
-              ? 'JPG only' 
-              : 'PDF only'}
+          {accept.includes("image/jpeg") && accept.includes("application/pdf")
+            ? "JPG or PDF"
+            : accept.includes("image/jpeg")
+            ? "JPG only"
+            : "PDF only"}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-500">
           Max size: {maxSize}MB
         </p>
       </div>
-      
+
       {(error || fileError) && (
         <div className="form-error flex items-center mt-2">
           <AlertCircle className="w-4 h-4 mr-1" />

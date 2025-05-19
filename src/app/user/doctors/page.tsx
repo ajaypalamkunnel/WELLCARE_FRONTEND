@@ -64,7 +64,7 @@ const DoctorListing = () => {
 
   //  Fetch Doctors & Departments from API
   useEffect(() => {
-    const fetchDoctorsAndDepartments = async () => {
+    const fetchDoctorsAndDepartments = async ():Promise<void> => {
       try {
         setLoading(true);
 

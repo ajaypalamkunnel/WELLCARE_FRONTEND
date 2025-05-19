@@ -5,6 +5,10 @@ import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { logoutDoctor } from "@/services/doctor/authService";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { getSocket } from "@/utils/socket";
+import { logout } from "@/services/user/auth/authService";
+import { useAuthStore } from "@/store/user/authStore";
+
 interface LogoutModalProps {
   isOpen?: boolean;
   onClose?: () => void;
@@ -16,37 +20,51 @@ const LogoutConfirmationModal: React.FC<LogoutModalProps> = ({
   isOpen = false,
   onClose,
   // onConfirm,
-  userType = "patient",
+  userType,
 }) => {
   const router = useRouter();
   const logoutstoreDoctor = useAuthStoreDoctor((state) => state.logout);
+  const logoutstore = useAuthStore((state) => state.logout);
   // Return null if modal is not open
   // if (!isOpen) return null;
   const handleLogout = async () => {
     try {
-      await logoutDoctor();
+      if (userType === "doctor") {
+        await logoutDoctor();
 
-      toast.success("Logging out...");
-      logoutstoreDoctor();
+        toast.success("Logging out...");
+        logoutstoreDoctor();
+      } else {
+        const socket = getSocket();
+        if (socket) {
+          socket.disconnect();
+        }
+        await logout();
+        logoutstore();
+      }
 
       router.push("/login");
 
       if (onClose) onClose();
     } catch (error) {
-      toast.error("Logour failed");
-      console.error("Logout failed:", error);
+      toast.error("Logout failed");
+      console.error("Logout faled:", error);
     }
   };
 
-  if (!isOpen) return null; 
+  if (!isOpen) return null;
   // Define color classes based on user type
   const themeColorClasses =
     userType === "doctor"
-      ? "text-[#02045e] border-[#02045e] bg-[#02045e] ring-[#02045e]/30 bg-[#02045e]/10"
-      : "text-[#04bf3e] border-[#04bf3e] bg-[#04bf3e] ring-[#04bf3e]/30 bg-[#04bf3e]/10";
+      ? "text-[#02045e] border-[#02045e] bg-[#02045e] ring-[#02045e]/30 bg-[#02045e]/10 focus:ring-[#02045e]/30"
+      : "text-[#04bf3e] border-[#04bf3e] bg-[#04bf3e] ring-[#04bf3e]/30 bg-[#04bf3e]/10 focus:ring-[#04bf3e]/30";
 
-  const [colorText, colorBg, colorRing, colorBgLight] =
-    themeColorClasses.split(" ");
+  const [
+    colorText,
+    colorBg,
+    colorBgLight,
+    colorFocusRing,
+  ] = themeColorClasses.split(" ");
 
   return (
     // Modal backdrop
@@ -95,7 +113,7 @@ const LogoutConfirmationModal: React.FC<LogoutModalProps> = ({
 
           <button
             onClick={handleLogout}
-            className={`px-4 py-2 rounded-md text-white flex items-center transition-colors focus:outline-none focus:ring-2 ${colorBg} hover:opacity-90 focus:${colorRing}`}
+            className={`px-4 py-2 rounded-md text-white flex items-center transition-colors focus:outline-none focus:ring-2 ${colorBg} ${colorFocusRing} hover:opacity-90`}
           >
             <LogOut size={16} className="mr-2" />
             Logout

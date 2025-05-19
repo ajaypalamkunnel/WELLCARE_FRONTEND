@@ -1,8 +1,7 @@
 "use client";
 import LogoutConfirmationModal from "@/components/commonUIElements/LogoutConfirmationModal";
 import PasswordChangeComponent from "@/components/commonUIElements/PasswordChangeComponent";
-import EditProfileModal, {
-} from "@/components/doctorComponents/forms/modals/EditProfileModal";
+import EditProfileModal from "@/components/doctorComponents/forms/modals/EditProfileModal";
 import QualificationManagement from "@/components/doctorComponents/forms/qualification/QualificationManagement";
 import ProfileRenderNoDataMessage from "@/components/doctorComponents/ProfileNoData";
 import RenderProfileSkeleton from "@/components/doctorComponents/RenderProfileSkelton";
@@ -23,7 +22,6 @@ import AppointmentScheduler from "@/components/doctorComponents/AppoinmentSchedu
 import DoctorWallet from "@/components/doctorComponents/DoctorWallet";
 import DashboardDoctor from "@/components/doctorComponents/dashboard/DashboardDoctor";
 import Image from "next/image";
-
 
 const DoctorProfileDashboard: React.FC = () => {
   // Sample data, in real app this would come from API/backend
@@ -77,7 +75,7 @@ const DoctorProfileDashboard: React.FC = () => {
   }, []);
 
   const handleLogoutClick = () => {
-    console.log("Opening Logout Modal"); // Debugging log
+   
     setIsLogoutModalOpen(false); // Reset the state first
     setTimeout(() => setIsLogoutModalOpen(true), 0); // Ensure re-evaluation
   };
@@ -395,11 +393,13 @@ const DoctorProfileDashboard: React.FC = () => {
           renderSidebarSkeleton()
         ) : (
           <div className="p-4 border-b border-gray-200 flex flex-col items-center">
-            <div className="w-16 h-16 rounded-full overflow-hidden mb-2">
-              <img
+            <div className="w-16 h-16 rounded-full overflow-hidden mb-2 relative">
+              <Image
                 src={doctorData.profileImage || "/images/profiledummy.jpg"}
-                alt={doctorData.fullName}
-                className="w-full h-full object-cover"
+                alt={"doctor Profile Image"}
+                fill
+                className="object-cover"
+                sizes="64px"
               />
             </div>
             <h2 className="text-base font-semibold text-gray-800">
@@ -469,11 +469,14 @@ const DoctorProfileDashboard: React.FC = () => {
           </div>
         ) : (
           <div className="flex items-center">
-            <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
-              <img
+            <div className="w-10 h-10 rounded-full overflow-hidden mr-3 relative">
+              <Image
                 src={doctorData.profileImage || "/images/profiledummy.jpg"}
-                alt={doctorData.fullName}
-                className="w-full h-full object-cover"
+                alt={"Doctor profile image"}
+                fill
+                className="object-cover"
+                sizes="40px"
+                priority
               />
             </div>
             <div>

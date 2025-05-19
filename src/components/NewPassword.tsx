@@ -23,7 +23,6 @@ interface NewPasswordProps {
 }
 
 const NewPassword: React.FC<NewPasswordProps> = ({
-  isLoading = false,
   title = "Create New Password",
   description = "Enter your new password below to reset your account",
   buttonText = "Update Password",

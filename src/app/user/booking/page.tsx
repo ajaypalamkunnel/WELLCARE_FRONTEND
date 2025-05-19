@@ -20,6 +20,7 @@ import { useAuthStore } from "@/store/user/authStore";
 import { RazorpayPaymentResponse } from "@/components/doctorComponents/Subscription";
 import { RazorpayOptions } from "@/types/razorpayType";
 import Image from "next/image";
+import RazorpayScript from "@/Script/RazorpayScript";
 
 declare global {
   interface Window {
@@ -47,23 +48,22 @@ const DoctorSchedule: React.FC = () => {
 
   useEffect(() => {
     if (!doctorId) return;
+    const fetchDoctorProfile = async () => {
+      try {
+        setLoading(true);
+
+        const response = await getDoctorById(doctorId as string);
+
+        setDoctor(response);
+      } catch (error) {
+        console.log("Failed to load doctor profile.", error);
+        setError("Failed to load doctor profile.");
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchDoctorProfile();
   }, [doctorId]);
-
-  const fetchDoctorProfile = async () => {
-    try {
-      setLoading(true);
-
-      const response = await getDoctorById(doctorId as string);
-
-      setDoctor(response);
-    } catch (error) {
-      console.log("Failed to load doctor profile.",error);
-      setError("Failed to load doctor profile.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Fetch doctor schedules on component mount and when date changes
   useEffect(() => {
@@ -204,7 +204,7 @@ const DoctorSchedule: React.FC = () => {
               );
             }
           } catch (verifyError) {
-            console.log("Payment succeeded, but booking failed!:",verifyError);
+            console.log("Payment succeeded, but booking failed!:", verifyError);
             toast.error("Payment succeeded, but booking failed!");
           }
         },
@@ -224,7 +224,7 @@ const DoctorSchedule: React.FC = () => {
         toast.error("Razorpay SDK failed to load. Please try again later.");
       }
     } catch (error) {
-      console.log("Failed to initiate payment : ",error);
+      console.log("Failed to initiate payment : ", error);
       toast.error("Failed to initiate payment");
     }
   };
@@ -585,7 +585,8 @@ const DoctorSchedule: React.FC = () => {
                   >
                     Pay Now
                   </button>
-                  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                  <RazorpayScript/>
+                  {/* <script src="https://checkout.razorpay.com/v1/checkout.js"></script> */}
                 </div>
               </div>
             ))}

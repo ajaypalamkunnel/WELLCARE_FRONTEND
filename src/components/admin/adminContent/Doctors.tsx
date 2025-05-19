@@ -10,6 +10,7 @@ import {
   featchAllDepartments,
   updateDoctorStatus,
 } from "@/services/admin/adminServices";
+import { IDepartment } from "@/types/IDoctor";
 
 const DoctorsList: React.FC = () => {
   const [doctors, setDoctors] = useState<IDoctorProfileDataType[]>([]);
@@ -301,7 +302,7 @@ const DoctorsList: React.FC = () => {
             className="w-full px-3 py-2 rounded-md bg-gray-800 text-white"
           >
             <option value="">All Departments</option>
-            {departments.map((dept: any) => (
+            {departments.map((dept: IDepartment) => (
               <option key={dept._id} value={dept._id}>
                 {dept.name}
               </option>
@@ -379,10 +380,10 @@ const DoctorsList: React.FC = () => {
             fullName={doctor?.fullName || "NA"}
             specialty={doctor?.specialization || "NA"}
             avatarUrl={doctor?.profileImage}
-            phone={doctor?.mobile || "NA"}
+            phone={doctor.mobile || "NA"}
             status={doctor.status}
-            email={doctor?.email || "NA"}
-            onViewDetails={() => handleViewDetails(doctor?._id!)}
+            email={doctor.email || "NA"}
+            onViewDetails={() => handleViewDetails(doctor._id!)}
             onBlock={() => handleBlock(doctor._id!, doctor.status!)}
           />
         ))}

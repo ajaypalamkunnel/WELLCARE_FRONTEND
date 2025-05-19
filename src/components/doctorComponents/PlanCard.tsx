@@ -39,7 +39,7 @@ const DoctorPlanCard: React.FC<PlanProps> = ({ plan, onSubscribe }) => {
     }
   };
 
-  console.log(">>>>",plan.features);
+  
   
 
   const isActive = plan.status === "active";

@@ -81,8 +81,7 @@ export const fetchAllPatients = async (currentPage: number, limit: number, searc
 
 export const updateUserStatus = async (userId: string, status: number) => {
     try {
-        console.log(">>>>", userId, ">>>", status);
-
+        
         const response = await axiosInstanceAdmin.put("/api/admin/updateStatus", { userId, status })
         return response
     } catch (error) {

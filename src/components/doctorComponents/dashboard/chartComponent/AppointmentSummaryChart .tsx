@@ -2,7 +2,7 @@
 
 import { getAppointmentSummary } from "@/services/doctor/doctorService";
 import { Loader2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 
 const COLORS = ["#03045e", "#00b4d8", "#90e0ef", "#caf0f8", "#0077b6"];
@@ -13,7 +13,7 @@ const AppointmentSummaryChart = () => {
   const [endDate, setEndDate] = useState<string>("");
 
 
-  const fetchSummary = async ()=>{
+  const fetchSummary = useCallback(async ()=>{
     try {
 
         const summary = await getAppointmentSummary(
@@ -34,11 +34,11 @@ const AppointmentSummaryChart = () => {
     }finally {
         setLoading(false);
       }
-}
+},[startDate,endDate])
 
   useEffect(()=>{
    fetchSummary()
-  },[])
+  },[fetchSummary])
 
 
   const handleFilter = (e:React.FormEvent) =>{

@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import ChatHeader from "@/components/chatComponets/ChatHeader";
 import ChatInbox from "@/components/chatComponets/ChatInbox";

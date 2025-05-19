@@ -30,7 +30,7 @@ const ApplicationsContent: React.FC = () => {
       try {
         setLoading(true);
 
-        const filters: Record<string, any> = {};
+        const filters: Record<string, string|number> = {};
 
         if (activeTab === "applications") {
           filters.status = "2";
@@ -55,6 +55,7 @@ const ApplicationsContent: React.FC = () => {
         setDoctors(response.data.data);
         setTotalDoctors(response.data.total || 0);
       } catch (error) {
+        console.log("Failed to fetch doctors:",error);
         setError("Failed to fetch doctors");
       } finally {
         setLoading(false);
@@ -116,7 +117,7 @@ const ApplicationsContent: React.FC = () => {
         setDoctors((prevDoctors) =>
           prevDoctors.filter((doc) => doc._id !== doctorId && doc.status !== -2)
         );
-        console.log(">>>>>>>>>", doctors);
+        
 
         toast.success(
           `Doctor application ${

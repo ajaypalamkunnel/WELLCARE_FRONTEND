@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   PieChart,
   Pie,
@@ -34,7 +34,7 @@ const TopServicesChart = () => {
   const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
   const [interval, setInterval] = useState<"day" | "week" | "month">("day");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getTopServices(startDate, endDate, interval);
@@ -53,11 +53,11 @@ const TopServicesChart = () => {
     }finally{
         setLoading(false)
     }
-  };
+  },[startDate, endDate, interval])
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const handleFilter = (e: React.FormEvent) => {
     e.preventDefault();

@@ -36,7 +36,6 @@ const DoctorRegistrationForm = () => {
     setValue,
     setError,
     getValues,
-    control,
   } = useForm<DoctorFormValues>({
     mode: "all", // Validate form on change
     defaultValues: {

@@ -246,7 +246,8 @@ export const fetchSchedules = async (params: FilterParams) => {
 
         
         
-
+        console.log("...",params);
+        
 
         // Convert params object to URLSearchParams
         const queryParams = new URLSearchParams();

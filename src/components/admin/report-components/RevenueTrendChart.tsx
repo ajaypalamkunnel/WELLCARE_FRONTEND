@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { DatePicker, Button } from "antd";
+import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 
@@ -37,6 +37,7 @@ const RevenueTrendChart = () => {
       );
       setData(trendData);
     } catch (error) {
+      console.log("failed to fetch revenue data",error);
       toast.error("failed to fetch revenue data");
     } finally {
       setLoading(false);

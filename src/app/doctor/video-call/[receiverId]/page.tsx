@@ -112,7 +112,7 @@ const DoctorVideoCallPage = () => {
       socket?.off("webrtc-answer");
       socket?.off("webrtc-candidate");
     };
-  }, [receiverId]);
+  }, [receiverId,doctorId,doctorName]);//updated added 'doctorId' and 'doctorName' in dependency array eslint error
 
   const handleEndCall = () => {
     const socket = getSocket();

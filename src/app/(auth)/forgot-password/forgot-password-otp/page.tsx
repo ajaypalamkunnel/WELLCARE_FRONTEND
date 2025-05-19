@@ -31,7 +31,7 @@ const OTPVerificationComponent: React.FC = () => {
     }
     setEmail(storedEmail);
     setRole(storedRole);
-  },[])
+  },[router])
   
 
   

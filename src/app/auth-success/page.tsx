@@ -46,7 +46,7 @@ const AuthSuccess = () => {
     };
 
     fetchTokens();
-  }, []);
+  }, [router]);
 
   return <p>Processing login...</p>;
 };

@@ -45,29 +45,29 @@ const DoctorServiceListing: React.FC = () => {
       isActive: true
     }
   });
-
+  
   // Fetch services on component mount
   useEffect(() => {
+    const fetchServices = async () => {
+      setFetchLoading(true);
+      try {
+        const response = await getServices(doctorId!);
+        if (response.success) {
+          setServices(response.data || []);
+        } else {
+          toast.error(response.message || 'Failed to fetch services');
+        }
+      } catch (error) {
+        toast.error('An error occurred while fetching services');
+        console.error('Error fetching services:', error);
+      } finally {
+        setFetchLoading(false);
+      }
+    };
     fetchServices();
   }, [doctorId]);
 
   // Fetch services from API
-  const fetchServices = async () => {
-    setFetchLoading(true);
-    try {
-      const response = await getServices(doctorId!);
-      if (response.success) {
-        setServices(response.data || []);
-      } else {
-        toast.error(response.message || 'Failed to fetch services');
-      }
-    } catch (error) {
-      toast.error('An error occurred while fetching services');
-      console.error('Error fetching services:', error);
-    } finally {
-      setFetchLoading(false);
-    }
-  };
 
   // Handlers
   const handleViewDetails = (service: ServiceData) => {

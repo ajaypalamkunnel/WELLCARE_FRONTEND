@@ -8,6 +8,7 @@ import { featchAllDepartments } from '@/services/doctor/doctorService';
 import { useAuthStoreDoctor } from '@/store/doctor/authStore';
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import { DoctorFormValues } from '@/types/doctorRegistrationFormTypes';
+import Image from 'next/image';
 
 interface Step1ProfileProps {
   register: UseFormRegister<DoctorFormValues>;
@@ -81,7 +82,7 @@ const Step1Profile: React.FC<Step1ProfileProps> = ({ register, errors, watch, se
         <div className="relative">
           <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-gray-200 dark:bg-gray-800 dark:border-gray-700">
             {previewImage ? (
-              <img src={previewImage} alt="Profile" className="w-full h-full object-cover" />
+              <Image width={65} height={65}  src={previewImage} alt="Profile" className="w-full h-full object-cover" />
             ) : (
               <User className="w-16 h-16 text-gray-400" />
             )}

@@ -25,15 +25,16 @@ import { MapPin, Mail, Phone, Edit, X, Heart } from "lucide-react";
 import { UserProfileData, UserProfileFormData } from "@/types/userProfileData";
 import UserAppointmentsList from "@/components/userComponents/AppoinmentsList";
 import Wallet from "@/components/userComponents/Wallet";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import LogoutConfirmationModal from "@/components/commonUIElements/LogoutConfirmationModal";
 // Define the main layout component
 const PatientPortal: React.FC = () => {
   // State to track the active section
   const [activeSection, setActiveSection] = useState<string>("profile");
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const router = useRouter()
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     // ----------------
@@ -66,8 +67,6 @@ const PatientPortal: React.FC = () => {
     }
   }, [activeSection, router]);
 
-
-
   // Define navigation items
   const navItems = [
     { id: "home", label: "Home", icon: <Home size={20} /> },
@@ -89,7 +88,11 @@ const PatientPortal: React.FC = () => {
 
   // Function to handle navigation item click
   const handleNavClick = (id: string) => {
-    setActiveSection(id);
+    if (id === "logout") {
+      setShowLogoutModal(true);
+    } else {
+      setActiveSection(id);
+    }
   };
   if (loading) {
     return (
@@ -135,7 +138,6 @@ const PatientPortal: React.FC = () => {
       {/* Right Content Area */}
 
       <div className="flex-grow bg-white p-6 rounded-lg shadow-md">
-        
         {activeSection === "profile" && <ProfileSection user={user!} />}
 
         {activeSection === "appointments" && <UserAppointmentsList />}
@@ -143,18 +145,24 @@ const PatientPortal: React.FC = () => {
           <SectionContent title="Medical Records" />
         )}
         {activeSection === "Change-Password" && (
-          <PasswordChangeComponent id={user?._id!} userType="patient" />
+          <>
+            {user?._id && (
+              <PasswordChangeComponent id={user._id} userType="patient" />
+            )}
+          </>
         )}
         {activeSection === "wallet" && <Wallet />}
+        {showLogoutModal && (
+          <LogoutConfirmationModal
+            userType="patient"
+            isOpen={showLogoutModal}
+            onClose={() => setShowLogoutModal(false)}
+          />
+        )}
       </div>
     </div>
   );
 };
-
-interface ProfileSectionProps {
-  user: UserProfileData | IUser;
-  onEditProfile: (updatedUser: IUser) => void;
-}
 
 const ProfileSection: React.FC<UserProfileData> = ({ user, onEditProfile }) => {
   const [showDetails, setShowDetails] = useState(false);

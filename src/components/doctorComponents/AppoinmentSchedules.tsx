@@ -306,7 +306,9 @@ export default function DoctorScheduleManager() {
   };
 
   const handleNewScheduleAdded = (newSchedule: Schedule) => {
-    setSchedules((prevSchedules) => [newSchedule, ...prevSchedules]); // Add new schedule at the beginning
+    console.log("new : ",newSchedule);
+    
+      setSchedules(prev => [newSchedule, ...prev]); // Add new schedule at the beginning
   };
 
   return (

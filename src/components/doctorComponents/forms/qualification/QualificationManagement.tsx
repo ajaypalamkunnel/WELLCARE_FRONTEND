@@ -68,13 +68,13 @@ const QualificationManagement: React.FC<QualificationsProp> = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("I am usestate ");
+    
 
     setEducations(education);
     setCertifications(certification);
   }, [education, certification]);
 
-  console.log("-------->", education);
+  
   // Modal states
   const [showEducationModal, setShowEducationModal] = useState(false);
   const [showCertificationModal, setShowCertificationModal] = useState(false);

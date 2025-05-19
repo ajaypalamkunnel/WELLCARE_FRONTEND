@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { getSocket } from "@/utils/socket";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { useCallStore } from "@/store/call/callStore";
+import Image from "next/image";
 
 interface DoctorAppointmentDetailProps {
   appointmentId: string;
@@ -188,13 +189,21 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({
               <User size={20} className="mr-2" /> Patient Information
             </h2>
 
+              
             <div className="flex items-center mb-4">
               {appointment.patient.profileUrl ? (
-                <img
-                  src={appointment.patient.profileUrl}
-                  alt={appointment.patient.fullName}
-                  className="w-16 h-16 rounded-full object-cover mr-4"
-                />
+                <div className="w-16 h-16 rounded-full overflow-hidden relative mr-4">
+                  <Image
+                    src={
+                      appointment.patient.profileUrl ||
+                      "/images/profiledummy.jpg"
+                    }
+                    alt={appointment.patient.fullName}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                  />
+                </div>
               ) : (
                 <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-900 mr-4">
                   <User size={24} />
@@ -343,7 +352,7 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({
 
           {/* Action Button */}
           <div className="mt-6">
-            {isOnlineAppointment && (appointment.status !== "completed") ? (
+            {isOnlineAppointment && appointment.status !== "completed" ? (
               <button
                 onClick={() => handleStartConsultation(appointment.patient._id)}
                 className="w-full inline-flex justify-center items-center px-4 py-3 bg-indigo-900 text-white text-sm font-medium rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
@@ -359,7 +368,8 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({
                 <Upload size={20} className="mr-2" />
                 Upload Prescription
               </button>
-            )}+
+            )}
+            +
             <button
               onClick={() => router.push(`/doctordashboard/chat/${userId}`)}
               className="w-full inline-flex justify-center items-center mt-4 px-4 py-3 bg-indigo-900 text-white text-sm font-medium rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"

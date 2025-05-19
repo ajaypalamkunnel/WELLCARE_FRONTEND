@@ -85,7 +85,7 @@ const Subscription = () => {
 
     try {
       const orderResponse = await createSubscriptionOrder(doctorId!, planId);
-      console.log("Order Response:", orderResponse);
+      
 
       if (!orderResponse.success) {
         toast.error(`${orderResponse.message}`);
@@ -108,8 +108,7 @@ const Subscription = () => {
           description: "Subscribe to a plan",
           order_id: orderId,
           handler: async (response: RazorpayPaymentResponse) => {
-            console.log("Payment Success:", response);
-
+         
             try {
               const verifyResponse = await verifyPayment(response);
 
@@ -171,7 +170,7 @@ const Subscription = () => {
       try {
         setLoading(true);
         const response = await getAllSubscriptionPlans(); // API call
-        console.log(response.data);
+       
 
         setPlans(response.data);
         setFilteredPlans(response.data);

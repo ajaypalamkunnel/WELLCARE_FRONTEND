@@ -232,7 +232,7 @@ export const changeUserPassword = async (userId: string, oldPassword: string, ne
 export const userCompleteRegistration = async (data: IUserDetails) => {
     try {
 
-        console.log("--->", data);
+        
 
 
         const response = await axiosInstance.put("/complete-registration", data)
@@ -247,7 +247,7 @@ export const userCompleteRegistration = async (data: IUserDetails) => {
 
 export const userProfileEdit = async (data: Partial<UserProfileData>) => {
 
-    console.log("=======>>>>", data.user);
+    
 
 
 

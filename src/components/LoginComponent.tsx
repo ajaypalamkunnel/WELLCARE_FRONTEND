@@ -15,9 +15,6 @@ import { IUser } from "../types/userTypes";
 import { googleAuth, login } from "@/services/user/auth/authService";
 import { getErrorMessage } from "@/utils/handleError";
 import { login_doctor } from "@/services/doctor/authService";
-interface loginFormProps {
-  role: "patient" | "doctor";
-}
 
 interface loginFormData {
   email: string;
@@ -52,7 +49,7 @@ const LoginComponent: React.FC = () => {
         const { accessToken, user }: { accessToken: string; user: IUser } =
           await login(data.email, data.password);
 
-        setAuth(user.email, accessToken,user?.isVerified!, user);
+        setAuth(user.email, accessToken, user.isVerified!, user);
 
         toast.success("Login successfull!");
         router.replace("/");
@@ -65,16 +62,22 @@ const LoginComponent: React.FC = () => {
           data.password
         );
 
-        console.log("=====>",doctor);
-        
+        console.log("=====>", doctor);
 
         const isSubscribed = doctor.isSubscribed ?? false;
         const subscriptionExpiryDate = doctor.subscriptionExpiryDate ?? "";
-        const isVerified = doctor.isVerified
+        const isVerified = doctor.isVerified;
 
-        setAuthDoctor(doctor.email, doctorAccessToken,doctor,isSubscribed,isVerified!,subscriptionExpiryDate);
+        setAuthDoctor(
+          doctor.email,
+          doctorAccessToken,
+          doctor,
+          isSubscribed,
+          isVerified!,
+          subscriptionExpiryDate
+        );
         // console.log("********>",doctor);
-        
+
         setVerification(doctor?.isVerified);
         setTimeout(() => {
           router.replace("/doctordashboard/home");
@@ -92,7 +95,7 @@ const LoginComponent: React.FC = () => {
 
   const handleGoogleAuth = async () => {
     setIsLoading(true);
-    const response = googleAuth(role);
+    googleAuth(role);
   };
 
   return (
@@ -237,7 +240,7 @@ const LoginComponent: React.FC = () => {
 
           {/* Create Account Link */}
           <p className="mt-8 text-gray-700">
-            Don't have an account?{" "}
+            {"Don't have an account? "}
             <Link
               href="/selectrole"
               className="text-[#27c958] hover:text-[#246738] font-medium"

@@ -95,70 +95,7 @@ export default function ScheduleModal({
     useState<boolean>(false);
 
   useEffect(() => {
-    fetchServices();
-  }, []);
-
-  //  New validation for start time
-  useEffect(() => {
-    validateStartTime();
-  }, [formValues.start_time, formValues.date]);
-
-  const validateStartTime = () => {
-    if (!formValues.date || !formValues.start_time) {
-      setTimeError("");
-      return;
-    }
-
-    const currentDate = new Date();
-    const selectedDate = new Date(formValues.date);
-    const [hours, minutes] = formValues.start_time.split(":").map(Number);
-
-    // Set the selected time on the selected date
-    selectedDate.setHours(hours, minutes, 0, 0);
-
-    const today = new Date()
-    today.setHours(0,0,0,0)
-
-
-    if(selectedDate < today){
-      setTimeError("Cannot select past dates");
-      return
-    }
-
-    if (
-      selectedDate.getDate() === currentDate.getDate() &&
-      selectedDate.getMonth() === currentDate.getMonth() &&
-      selectedDate.getFullYear() === currentDate.getFullYear()
-    ) {
-      // Calculate minimum start time (current time + 3 hours)
-      const minStartTime = new Date(currentDate);
-      minStartTime.setHours(currentDate.getHours() + 3);
-
-      
-
-      if (selectedDate < minStartTime) {
-        setTimeError("Start time must be at least 3 hours from current time");
-        return;
-      }
-    }
-    setTimeError("");
-  };
-
-  useEffect(() => {
-    if (isFormComplete) {
-      validateScheduleData();
-    } else {
-      setIsScheduleValidated(false);
-    }
-  }, [
-    formValues.date,
-    formValues.service,
-    formValues.start_time,
-    formValues.end_time,
-    formValues.duration,
-  ]);
-
-  const fetchServices = async () => {
+     const fetchServices = async () => {
      if (!doctorId) {
     toast.error("Doctor ID not found");
     return;
@@ -177,6 +114,72 @@ export default function ScheduleModal({
     }
   };
 
+    fetchServices();
+  }, [doctorId]);
+
+  //  New validation for start time
+  
+  useEffect(() => {
+    const validateStartTime = () => {
+      if (!formValues.date || !formValues.start_time) {
+        setTimeError("");
+        return;
+      }
+  
+      const currentDate = new Date();
+      const selectedDate = new Date(formValues.date);
+      const [hours, minutes] = formValues.start_time.split(":").map(Number);
+  
+      // Set the selected time on the selected date
+      selectedDate.setHours(hours, minutes, 0, 0);
+  
+      const today = new Date()
+      today.setHours(0,0,0,0)
+  
+  
+      if(selectedDate < today){
+        setTimeError("Cannot select past dates");
+        return
+      }
+  
+      if (
+        selectedDate.getDate() === currentDate.getDate() &&
+        selectedDate.getMonth() === currentDate.getMonth() &&
+        selectedDate.getFullYear() === currentDate.getFullYear()
+      ) {
+        // Calculate minimum start time (current time + 3 hours)
+        const minStartTime = new Date(currentDate);
+        minStartTime.setHours(currentDate.getHours() + 3);
+        
+        
+        
+        if (selectedDate < minStartTime) {
+          setTimeError("Start time must be at least 3 hours from current time");
+          return;
+        }
+      }
+      setTimeError("");
+    };
+    
+    validateStartTime();
+  }, [formValues.start_time, formValues.date]);
+
+  useEffect(() => {
+    if (isFormComplete) {
+      validateScheduleData();
+    } else {
+      setIsScheduleValidated(false);
+    }
+  }, [
+    isFormComplete,
+    formValues.date,
+    formValues.service,
+    formValues.start_time,
+    formValues.end_time,
+    formValues.duration,
+  ]);
+
+ 
   // Reset the form when modal closes
   useEffect(() => {
     if (!isOpen) {
@@ -296,15 +299,18 @@ export default function ScheduleModal({
         slots: slots,
       };
 
-      console.log("final----", scheduleData);
+      
 
       const response = await createSchedule(scheduleData);
 
-      console.log("^^^^^^", response);
+     
 
       if (response.success) {
+
+        
+
         toast.success("Schedule created successfully!");
-        console.log("ith aatooo response data.==>",response);
+       
         
         onSubmit(response?.schedule);
         onClose();

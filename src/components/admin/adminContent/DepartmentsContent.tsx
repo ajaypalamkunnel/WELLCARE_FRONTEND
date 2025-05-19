@@ -45,7 +45,6 @@ const DepartmentsContent: React.FC = () => {
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
   } = useForm<{ name: string; icon: File }>({
     defaultValues: {
       name: "",
@@ -144,6 +143,7 @@ const DepartmentsContent: React.FC = () => {
 
       handleCloseModal();
     } catch (error) {
+      console.log("Failed to add department.:",error);
       toast.error("Failed to add department.");
     } finally {
       setLoading(false);

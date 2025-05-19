@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // ChatWrapper.tsx
 "use client";
 
@@ -247,15 +248,15 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ doctorId }) => {
     mediaType?: string
   ) => {
     const socket = getSocket();
-    console.log(
-      ">>>> handleSendMessage",
-      text,
-      selectedUser,
-      "---",
-      userId,
-      "___",
-      socket
-    );
+    // console.log(
+    //   ">>>> handleSendMessage",
+    //   text,
+    //   selectedUser,
+    //   "---",
+    //   userId,
+    //   "___",
+    //   socket
+    // );
     if (!selectedUser || !socket || !userId) return;
 
     if (!text.trim() && !mediaUrl) {
