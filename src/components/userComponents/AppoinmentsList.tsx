@@ -54,7 +54,7 @@ const UserAppointmentsList: React.FC = () => {
   };
 
   const handleViewDetails = (appointmentId: string) => {
-    console.log("====>", appointmentId);
+    
     setSelectedAppointmentId(appointmentId);
   };
 

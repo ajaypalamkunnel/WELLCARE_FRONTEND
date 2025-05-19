@@ -71,7 +71,8 @@ const SignupComponent: React.FC<signupFormProps> = ({ role }) => {
   const handleGoogleAuth = async () => {
     setIsLoading(true);
     const response = googleAuth(role);
-    console.log("=======>>>", response);
+    console.log(response);
+    
   };
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);

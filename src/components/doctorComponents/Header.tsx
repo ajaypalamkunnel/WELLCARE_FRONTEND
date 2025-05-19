@@ -21,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({ userImage }) => {
   const logoutstoreDoctor = useAuthStoreDoctor((state) => state.logout);
   const accessToken = useAuthStoreDoctor((state) => state.accessTokenDoctor);
   const user = useAuthStoreDoctor((state) => state.user);
-  console.log("====>", user?.isVerified);
+ 
 
   const profileRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);

@@ -60,7 +60,7 @@ const DoctorListing = () => {
 
   //debounce effect
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 500);
-  console.log("====>", debouncedSearchTerm);
+ 
 
   //  Fetch Doctors & Departments from API
   useEffect(() => {

@@ -62,7 +62,7 @@ const LoginComponent: React.FC = () => {
           data.password
         );
 
-        console.log("=====>", doctor);
+        
 
         const isSubscribed = doctor.isSubscribed ?? false;
         const subscriptionExpiryDate = doctor.subscriptionExpiryDate ?? "";

@@ -63,7 +63,7 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
           throw new Error("No data returned from the API");
         }
 
-        console.log("vannathaaneee=====>", data);
+        
 
         setAppointment(data);
         setError(null);

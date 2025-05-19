@@ -1,4 +1,5 @@
 "use client";
+
 import { forgotPasswordDoctor } from "@/services/doctor/authService";
 import { forgotPassword } from "@/services/user/auth/authService";
 import { getErrorMessage } from "@/utils/handleError";
@@ -45,7 +46,7 @@ const ForgotPasswordComponent: React.FC<ForgotPasswordProps> = ({
   const handleFormSubmit = async (data: ForgotPasswordFormValues) => {
     console.log("Form submitted with email:", data.email);
     setLoading(true);
-    console.log("====>", data);
+    
 
     try {
       let response;

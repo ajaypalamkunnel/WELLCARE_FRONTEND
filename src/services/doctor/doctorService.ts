@@ -32,7 +32,8 @@ export const doctorRegistration = async (doctorProfileData: DoctorFormValues) =>
     try {
 
 
-
+        console.log("==>",doctorProfileData);
+        
         const response = await axiosInstanceDoctor.post("/api/doctor/doctorregistration", doctorProfileData)
         setTimeout(() => {
 
