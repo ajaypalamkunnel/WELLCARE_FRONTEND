@@ -1,3 +1,6 @@
+// File: src/app/doctor/video-call/[receiverId]/page.tsx
+// Purpose: Doctor initiates video call using Agora SDK
+
 "use client";
 
 import PrescriptionForm from "@/components/doctorComponents/videoCall/PrescriptionForm";
@@ -5,17 +8,11 @@ import VideoCallLayout from "@/components/doctorComponents/videoCall/VideoCallLa
 import { useCallStore } from "@/store/call/callStore";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { getSocket } from "@/utils/socket";
-import {
-  addIceCandidate,
-  addLocalTrack,
-  closeConnection,
-  createOffer,
-  createPeerConnection,
-  setRemoteDescription,
-} from "@/utils/webrtc";
+import { joinCall, leaveCall } from "@/utils/agora";
 import { Dialog } from "@headlessui/react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import { API_BASE_URL } from "@/app/user/video-call/[callerId]/page";
 
 const DoctorVideoCallPage = () => {
   const { receiverId } = useParams(); // Patient ID
@@ -38,111 +35,92 @@ const DoctorVideoCallPage = () => {
     console.log("✅ [Doctor] Connected to socket:", socket?.id);
     console.log("🧑‍⚕️ Receiver (Patient) ID:", receiverId);
 
-    let localStream: MediaStream;
+    const uid = `doctor-${doctorId}`;
+    const channelName = `doctor-${doctorId}-patient`;
 
-    // Register all socket listeners first
-    socket?.on("webrtc-answer", async ({ answer }) => {
-      console.log("📩 [Doctor] Received WebRTC answer from patient");
-      await setRemoteDescription(answer);
-    });
-
-    socket?.on("webrtc-candidate", async ({ candidate }) => {
-      console.log("📥 [Doctor] Received ICE candidate:", candidate);
-      await addIceCandidate(candidate);
-    });
-
-    const startCall = async () => {
+    const startAgoraCall = async () => {
       try {
-        // Get local stream
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
-
-        console.log("🎤 [Doctor] Got local stream tracks:", localStream.getTracks());
-
-        if (localStreamRef.current) {
-          localStreamRef.current.srcObject = localStream;
-        }
-
-        // Create peer connection
-        createPeerConnection({
-          onIceCandidate: (candidate) => {
-            console.log("📡 [Doctor] Sending ICE candidate:", candidate);
-            socket?.emit("webrtc-candidate", {
-              targetId: receiverId,
-              candidate,
-            });
-          },
-          onTrack: (remoteStream) => {
-            console.log("👀 [Doctor] Got remote stream:", remoteStream.getTracks());
-            if (remoteStreamRef.current) {
-              remoteStreamRef.current.srcObject = remoteStream;
-            } else {
-              console.warn("⚠️ remoteStreamRef is null");
-            }
-          },
-        });
-
-        // Add local tracks before creating offer
-        addLocalTrack(localStream);
-
-        const offer = await createOffer();
-        console.log("🎥 [Doctor] Created offer:", offer);
-
-        // Notify the backend about the call
+        // Step 1: Notify backend of call request
         socket?.emit("start-call", {
           callerId: doctorId,
           receiverId,
           callerName: doctorName,
         });
 
-        socket?.emit("webrtc-offer", {
-          targetId: receiverId,
-          offer,
+        // Step 2: Wait for patient to accept, then proceed
+        socket?.on("call-accepted", async () => {
+          console.log("✅ Patient accepted call, proceeding with Agora join");
+
+          // Step 3: Get Agora token from backend
+          const tokenRes = await fetch(`${API_BASE_URL}/api/agora/token`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              channelName,
+              uid,
+              role: "host",
+            }),
+          });
+
+          const { token } = await tokenRes.json();
+
+          // Step 4: Join Agora and publish local tracks
+          await joinCall({
+            channelName,
+            uid,
+            token,
+            localVideoEl: localStreamRef.current!,
+            onRemoteTrack: (user) => {
+              if (user.videoTrack) {
+                user.videoTrack.play(remoteStreamRef.current!);
+              }
+            },
+          });
+
+          console.log("📡 Doctor published local tracks and joined Agora");
+        });
+
+        // Listen for patient hang-up
+        socket?.on("end-call", () => {
+          console.log("📴 Patient ended the call");
+          handleEndCall(true);
         });
       } catch (error) {
-        console.error("❌ [Doctor] Failed to start call:", error);
+        console.error("❌ Failed to start call:", error);
       }
     };
 
-    startCall();
+    startAgoraCall();
 
     return () => {
-      socket?.off("webrtc-answer");
-      socket?.off("webrtc-candidate");
+      socket?.off("call-accepted");
+      socket?.off("end-call");
     };
-  }, [receiverId,doctorId,doctorName]);//updated added 'doctorId' and 'doctorName' in dependency array eslint error
+  }, [receiverId, doctorId, doctorName]);
 
-  const handleEndCall = () => {
+  const handleEndCall = async (remoteEnded = false) => {
     const socket = getSocket();
 
-    if (!prescriptionSubmitted) {
-      setShowEndCallWarning(true);
-      return;
+    if (!remoteEnded) {
+      if (!prescriptionSubmitted) {
+        setShowEndCallWarning(true);
+        return;
+      }
+
+      socket?.emit("end-call", {
+        to: receiverId,
+      });
     }
 
-    socket?.emit("end-call", {
-      to: receiverId,
-    });
+    await leaveCall();
 
-    const stream = localStreamRef.current?.srcObject as MediaStream;
-    if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-    }
-    if (localStreamRef.current) {
-        localStreamRef.current.srcObject = null;
-    }
-    if (remoteStreamRef.current) {
-        const remoteStream = remoteStreamRef.current.srcObject as MediaStream;
-        if (remoteStream) {
-            remoteStream.getTracks().forEach((track) => track.stop());
-        }
-        remoteStreamRef.current.srcObject = null;
-    }
-    closeConnection();
+    // Clean up video elements
+    if (localStreamRef.current) localStreamRef.current.srcObject = null;
+    if (remoteStreamRef.current) remoteStreamRef.current.srcObject = null;
+
     useCallStore.getState().clearCall();
-
     router.push("/doctordashboard/home");
   };
 
@@ -206,5 +184,3 @@ const DoctorVideoCallPage = () => {
 };
 
 export default DoctorVideoCallPage;
-
-// ---------------------------------------------------------------
