@@ -18,6 +18,9 @@ let client: IAgoraRTCClient | null = null;
 let localAudioTrack: IMicrophoneAudioTrack | null = null;
 let localVideoTrack: ICameraVideoTrack | null = null;
 
+let joined = false; // 🛠️ UPDATED: Guard against multiple joins
+let joining = false; // 🛠️ UPDATED: Guard against race condition
+const subscribedUsers = new Set<string | number>(); // 🛠️ UPDATED: Prevent duplicate subscriptions
 
 //Initializes the Agora RTC client
 
@@ -75,17 +78,37 @@ export const joinCall = async ({
 }) => {
   if (!APP_ID) throw new Error("Agora APP_ID is missing");
 
+  if (joined || joining) {
+    console.warn("🚫 Already joined or joining Agora");
+    return null;
+  }
+joining = true;
   client = createAgoraClient();
 
   // Register remote track handler
-  client.on("user-published", async (user, mediaType) => {
-    await client?.subscribe(user, mediaType);
-    onRemoteTrack(user);
+ client.on("user-published", async (user, mediaType) => {
+    if (subscribedUsers.has(user.uid)) return;
+
+    const MAX_RETRIES = 3;
+    for (let i = 0; i < MAX_RETRIES; i++) {
+      try {
+        await client?.subscribe(user, mediaType);
+        subscribedUsers.add(user.uid);
+        onRemoteTrack(user);
+        console.log("✅ Subscribed to", user.uid);
+        break;
+      } catch (error) {
+        console.warn(`❗ Retry ${i + 1} to subscribe ${user.uid} failed`, error);
+        await new Promise((res) => setTimeout(res, 300));
+      }
+    }
   });
 
-  client.on("user-unpublished", (user) => {
+ client.on("user-unpublished", (user) => {
     console.log("🔌 Remote user unpublished:", user.uid);
+    subscribedUsers.delete(user.uid);
   });
+
 
   await client.join(APP_ID, channelName, token, uid);
 
@@ -93,11 +116,14 @@ export const joinCall = async ({
 
   // Play local video
   videoTrack.play(localVideoEl);
-
   // Publish local tracks to Agora
-  await client.publish([audioTrack, videoTrack]);
+  if (client.localTracks.length === 0) {
+    await client.publish([audioTrack, videoTrack]);
+    console.log("📡 Published local tracks to Agora channel");
+  }
 
-  console.log("📡 Published local tracks to Agora channel");
+  joined = true; // 🛠️ UPDATED
+  joining = false; // 🛠️ UPDATED
 
   return { audioTrack, videoTrack };
 };
@@ -105,6 +131,7 @@ export const joinCall = async ({
 
 export const leaveCall = async () => {
   if (client) {
+     await client.unpublish(client.localTracks);
     await client.leave();
     client.removeAllListeners();
     client = null;
@@ -121,6 +148,10 @@ export const leaveCall = async () => {
     localVideoTrack.close();
     localVideoTrack = null;
   }
+
+   joined = false; // 🛠️ UPDATED
+  joining = false; // 🛠️ UPDATED
+  subscribedUsers.clear(); // 🛠️ UPDATED
 
   console.log("👋 Left Agora channel and cleaned up tracks");
 };

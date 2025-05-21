@@ -13,7 +13,8 @@ import { getSocket } from "@/utils/socket";
 // } from "@/utils/webrtc";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
 
 const UserVideoCallPage = () => {
   const { callerId } = useParams(); // Doctor ID
@@ -22,6 +23,7 @@ const UserVideoCallPage = () => {
   const [micEnabled, setMicEnabled] = useState(true);
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const router = useRouter();
+  const hasJoined = useRef(false);
 
   useEffect(() => {
     const socket = getSocket();
@@ -32,6 +34,11 @@ const UserVideoCallPage = () => {
     let uid = `patient-${Math.floor(Math.random() * 100000)}`;
 
     const handleIncommingCall = async () => {
+      if (hasJoined.current) {
+        console.warn("⏳ Patient already joined — skipping");
+        return;
+      }
+
       try {
         const tokenResponse = await fetch(`${API_BASE_URL}/api/agora/token`, {
           method: "POST",
@@ -63,6 +70,7 @@ const UserVideoCallPage = () => {
           callerId,
           receiverId: uid,
         });
+        hasJoined.current = true;
         console.log("📞 Patient joined the Agora channel");
       } catch (error) {
         console.error("❌ Failed to join call:", error);
@@ -94,7 +102,7 @@ const UserVideoCallPage = () => {
     if (!remoteEnded) {
       socket?.emit("end-call", { to: callerId });
     }
-
+    hasJoined.current = false;
     await leaveCall();
 
     // Clean up video elements
@@ -104,8 +112,6 @@ const UserVideoCallPage = () => {
     router.push("/");
   };
 
-
-
   const handleToggleMic = () => {
     const video = localStreamRef.current?.srcObject as MediaStream;
     if (video) {
@@ -114,11 +120,12 @@ const UserVideoCallPage = () => {
     }
   };
 
-
-   const handleToggleCamera = () => {
+  const handleToggleCamera = () => {
     const video = localStreamRef.current?.srcObject as MediaStream;
     if (video) {
-      video.getVideoTracks().forEach((track) => (track.enabled = !cameraEnabled));
+      video
+        .getVideoTracks()
+        .forEach((track) => (track.enabled = !cameraEnabled));
       setCameraEnabled((prev) => !prev);
     }
   };

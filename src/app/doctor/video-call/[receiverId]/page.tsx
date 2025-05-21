@@ -21,6 +21,7 @@ const DoctorVideoCallPage = () => {
   const [micEnabled, setMicEnabled] = useState(true);
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const [showEndCallWarning, setShowEndCallWarning] = useState(false);
+  const hasJoined = useRef(false);
 
   const router = useRouter();
   const { user } = useAuthStoreDoctor();
@@ -49,6 +50,12 @@ const DoctorVideoCallPage = () => {
 
         // Step 2: Wait for patient to accept, then proceed
         socket?.on("call-accepted", async () => {
+           if (hasJoined.current) {
+          console.warn("⏳ Doctor already joined — skipping");
+          return;
+        }
+
+
           console.log("✅ Patient accepted call, proceeding with Agora join");
 
           // Step 3: Get Agora token from backend
@@ -78,7 +85,7 @@ const DoctorVideoCallPage = () => {
               }
             },
           });
-
+          hasJoined.current = true;
           console.log("📡 Doctor published local tracks and joined Agora");
         });
 
@@ -119,7 +126,7 @@ const DoctorVideoCallPage = () => {
     // Clean up video elements
     if (localStreamRef.current) localStreamRef.current.srcObject = null;
     if (remoteStreamRef.current) remoteStreamRef.current.srcObject = null;
-
+    hasJoined.current = false;
     useCallStore.getState().clearCall();
     router.push("/doctordashboard/home");
   };
