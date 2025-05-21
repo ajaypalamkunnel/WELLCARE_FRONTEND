@@ -14,6 +14,7 @@ interface VideoCallLayoutProps {
   micEnabled: boolean;
   cameraEnabled: boolean;
   callDuration?: string;
+  networkQuality?: number;
 }
 
 const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
@@ -28,6 +29,7 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
   micEnabled,
   cameraEnabled,
   callDuration,
+  networkQuality,
 }) => {
   const [remoteConnected, setRemoteConnected] = useState(false);
 
@@ -40,6 +42,25 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
 
     return () => clearInterval(interval);
   }, [remoteStreamRef]);
+
+  const getNetworkQualityLabel = (quality: number | undefined) => {
+    switch (quality) {
+      case 1:
+        return "🟢 Excellent";
+      case 2:
+        return "🟢 Good";
+      case 3:
+        return "🟡 Poor";
+      case 4:
+        return "🔴 Bad";
+      case 5:
+        return "🔴 Very Bad";
+      case 6:
+        return "❌ Disconnected";
+      default:
+        return "⚪ Unknown";
+    }
+  };
 
   console.log("--->", remoteConnected);
 
@@ -94,6 +115,12 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
           {callDuration && (
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 px-4 py-1 rounded-md text-white text-sm z-20">
               ⏱️ {callDuration}
+            </div>
+          )}
+
+          {networkQuality !== undefined && (
+            <div className="absolute top-4 right-4 bg-black bg-opacity-60 px-3 py-1 rounded-md text-white text-sm z-20">
+              {getNetworkQualityLabel(networkQuality)}
             </div>
           )}
 

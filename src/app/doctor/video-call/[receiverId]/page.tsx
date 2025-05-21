@@ -24,6 +24,7 @@ const DoctorVideoCallPage = () => {
   const [showEndCallWarning, setShowEndCallWarning] = useState(false);
   const hasJoined = useRef(false);
   const { formatted: callDuration, start, stop, reset } = useCallerTimer();
+  const [networkQuality, setNetworkQuality] = useState<number | null>(null);
 
   const router = useRouter();
   const { user } = useAuthStoreDoctor();
@@ -31,7 +32,9 @@ const DoctorVideoCallPage = () => {
   const doctorName = user?.fullName;
 
   const remoteUserName = useCallStore((state) => state.remoteUserName);
-  const prescriptionSubmitted = useCallStore((state) => state.prescriptionSubmitted);
+  const prescriptionSubmitted = useCallStore(
+    (state) => state.prescriptionSubmitted
+  );
 
   useEffect(() => {
     const socket = getSocket();
@@ -52,11 +55,10 @@ const DoctorVideoCallPage = () => {
 
         // Step 2: Wait for patient to accept, then proceed
         socket?.on("call-accepted", async () => {
-           if (hasJoined.current) {
-          console.warn("⏳ Doctor already joined — skipping");
-          return;
-        }
-
+          if (hasJoined.current) {
+            console.warn("⏳ Doctor already joined — skipping");
+            return;
+          }
 
           console.log("✅ Patient accepted call, proceeding with Agora join");
 
@@ -86,8 +88,12 @@ const DoctorVideoCallPage = () => {
                 user.videoTrack.play(remoteStreamRef.current!);
               }
             },
+            onNetworkQuality: (uplink, downlink) => {
+              const avg = Math.max(uplink, downlink); // 🛠️ pick worst for safety
+              setNetworkQuality(avg);
+            },
           });
-          start()
+          start();
           hasJoined.current = true;
           console.log("📡 Doctor published local tracks and joined Agora");
         });
@@ -124,8 +130,8 @@ const DoctorVideoCallPage = () => {
       });
     }
 
-    stop()
-    reset()
+    stop();
+    reset();
     await leaveCall();
 
     // Clean up video elements
@@ -166,6 +172,7 @@ const DoctorVideoCallPage = () => {
         onToggleMic={handleToggleMic}
         onToggleCamera={handleToggleCamera}
         callDuration={callDuration}
+        networkQuality={networkQuality!}
       />
 
       <Dialog

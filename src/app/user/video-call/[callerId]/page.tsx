@@ -26,6 +26,7 @@ const UserVideoCallPage = () => {
   const router = useRouter();
   const hasJoined = useRef(false);
   const { formatted: callDuration, start, stop, reset } = useCallerTimer();
+  const [networkQuality, setNetworkQuality] = useState<number | null>(null);
 
   useEffect(() => {
     const socket = getSocket();
@@ -66,6 +67,10 @@ const UserVideoCallPage = () => {
               user.videoTrack.play(remoteStreamRef.current!);
             }
           },
+          onNetworkQuality:(uplink,downlink) =>{
+            const avg = Math.max(uplink,downlink)
+            setNetworkQuality(avg)
+          }
         });
 
         socket?.emit("accept-call", {
@@ -146,6 +151,7 @@ const UserVideoCallPage = () => {
       onToggleMic={handleToggleMic}
       onToggleCamera={handleToggleCamera}
       callDuration={callDuration}
+      networkQuality={networkQuality!}
     />
   );
 };
