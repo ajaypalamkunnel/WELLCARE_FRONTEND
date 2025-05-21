@@ -13,6 +13,7 @@ import { Dialog } from "@headlessui/react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "@/app/user/video-call/[callerId]/page";
+import { useCallerTimer } from "@/hooks/useCallTimer";
 
 const DoctorVideoCallPage = () => {
   const { receiverId } = useParams(); // Patient ID
@@ -22,6 +23,7 @@ const DoctorVideoCallPage = () => {
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const [showEndCallWarning, setShowEndCallWarning] = useState(false);
   const hasJoined = useRef(false);
+  const { formatted: callDuration, start, stop, reset } = useCallerTimer();
 
   const router = useRouter();
   const { user } = useAuthStoreDoctor();
@@ -85,6 +87,7 @@ const DoctorVideoCallPage = () => {
               }
             },
           });
+          start()
           hasJoined.current = true;
           console.log("📡 Doctor published local tracks and joined Agora");
         });
@@ -121,6 +124,8 @@ const DoctorVideoCallPage = () => {
       });
     }
 
+    stop()
+    reset()
     await leaveCall();
 
     // Clean up video elements
@@ -160,6 +165,7 @@ const DoctorVideoCallPage = () => {
         onEndCall={handleEndCall}
         onToggleMic={handleToggleMic}
         onToggleCamera={handleToggleCamera}
+        callDuration={callDuration}
       />
 
       <Dialog

@@ -1,6 +1,7 @@
 "use client";
 
 import VideoCallLayout from "@/components/doctorComponents/videoCall/VideoCallLayout";
+import { useCallerTimer } from "@/hooks/useCallTimer";
 import { joinCall, leaveCall } from "@/utils/agora";
 import { getSocket } from "@/utils/socket";
 // import {
@@ -24,6 +25,7 @@ const UserVideoCallPage = () => {
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const router = useRouter();
   const hasJoined = useRef(false);
+  const { formatted: callDuration, start, stop, reset } = useCallerTimer();
 
   useEffect(() => {
     const socket = getSocket();
@@ -70,6 +72,7 @@ const UserVideoCallPage = () => {
           callerId,
           receiverId: uid,
         });
+        start()
         hasJoined.current = true;
         console.log("📞 Patient joined the Agora channel");
       } catch (error) {
@@ -103,6 +106,8 @@ const UserVideoCallPage = () => {
       socket?.emit("end-call", { to: callerId });
     }
     hasJoined.current = false;
+    stop()
+    reset()
     await leaveCall();
 
     // Clean up video elements
@@ -140,6 +145,7 @@ const UserVideoCallPage = () => {
       onEndCall={handleEndCall}
       onToggleMic={handleToggleMic}
       onToggleCamera={handleToggleCamera}
+      callDuration={callDuration}
     />
   );
 };

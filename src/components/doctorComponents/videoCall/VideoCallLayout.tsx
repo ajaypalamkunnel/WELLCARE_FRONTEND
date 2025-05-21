@@ -13,6 +13,7 @@ interface VideoCallLayoutProps {
   onToggleCamera: () => void;
   micEnabled: boolean;
   cameraEnabled: boolean;
+  callDuration?: string;
 }
 
 const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
@@ -26,25 +27,30 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
   onToggleCamera,
   micEnabled,
   cameraEnabled,
+  callDuration,
 }) => {
   const [remoteConnected, setRemoteConnected] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const hasStream = remoteStreamRef.current?.srcObject instanceof MediaStream;
+      const hasStream =
+        remoteStreamRef.current?.srcObject instanceof MediaStream;
       setRemoteConnected(hasStream);
     }, 500);
 
     return () => clearInterval(interval);
   }, [remoteStreamRef]);
 
-  console.log("--->",remoteConnected);
-  
+  console.log("--->", remoteConnected);
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-900 text-white">
       {/* Video Area */}
-      <div className={`relative h-full ${isDoctor ? "md:w-7/10" : "w-full"} bg-black`}>
+      <div
+        className={`relative h-full ${
+          isDoctor ? "md:w-7/10" : "w-full"
+        } bg-black`}
+      >
         <div className="h-full w-full relative">
           {/* Remote video */}
           <video
@@ -75,7 +81,9 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
               muted
               className="h-full w-full object-cover"
             />
-            <div className="absolute bottom-1 left-1 text-xs text-white">You</div>
+            <div className="absolute bottom-1 left-1 text-xs text-white">
+              You
+            </div>
           </div>
 
           {/* Remote name overlay */}
@@ -83,11 +91,19 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
             {remoteUserName}
           </div>
 
+          {callDuration && (
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 px-4 py-1 rounded-md text-white text-sm z-20">
+              ⏱️ {callDuration}
+            </div>
+          )}
+
           {/* Controls */}
           <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 z-20">
             <button
               onClick={onToggleMic}
-              className={`rounded-full p-3 ${micEnabled ? "bg-gray-700" : "bg-red-500"}`}
+              className={`rounded-full p-3 ${
+                micEnabled ? "bg-gray-700" : "bg-red-500"
+              }`}
               aria-label={micEnabled ? "Mute microphone" : "Unmute microphone"}
             >
               {micEnabled ? <Mic size={24} /> : <MicOff size={24} />}
@@ -95,7 +111,9 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
 
             <button
               onClick={onToggleCamera}
-              className={`rounded-full p-3 ${cameraEnabled ? "bg-gray-700" : "bg-red-500"}`}
+              className={`rounded-full p-3 ${
+                cameraEnabled ? "bg-gray-700" : "bg-red-500"
+              }`}
               aria-label={cameraEnabled ? "Turn off camera" : "Turn on camera"}
             >
               {cameraEnabled ? <Camera size={24} /> : <CameraOff size={24} />}
@@ -123,8 +141,5 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
 };
 
 export default VideoCallLayout;
-
-
-
 
 // -------------------------------------------
