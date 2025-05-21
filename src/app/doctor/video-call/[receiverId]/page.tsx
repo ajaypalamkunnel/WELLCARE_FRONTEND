@@ -8,12 +8,13 @@ import VideoCallLayout from "@/components/doctorComponents/videoCall/VideoCallLa
 import { useCallStore } from "@/store/call/callStore";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { getSocket } from "@/utils/socket";
-import { joinCall, leaveCall } from "@/utils/agora";
+import { getAgoraClient, joinCall, leaveCall } from "@/utils/agora";
 import { Dialog } from "@headlessui/react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "@/app/user/video-call/[callerId]/page";
 import { useCallerTimer } from "@/hooks/useCallTimer";
+import { IMicrophoneAudioTrack } from "agora-rtc-sdk-ng";
 
 const DoctorVideoCallPage = () => {
   const { receiverId } = useParams(); // Patient ID
@@ -87,6 +88,10 @@ const DoctorVideoCallPage = () => {
               if (user.videoTrack) {
                 user.videoTrack.play(remoteStreamRef.current!);
               }
+
+              if (user.audioTrack) {
+                user.audioTrack.play();
+              }
             },
             onNetworkQuality: (uplink, downlink) => {
               const avg = Math.max(uplink, downlink); // 🛠️ pick worst for safety
@@ -143,11 +148,17 @@ const DoctorVideoCallPage = () => {
   };
 
   const handleToggleMic = () => {
-    const stream = localStreamRef.current?.srcObject as MediaStream;
-    stream?.getAudioTracks().forEach((track) => {
-      track.enabled = !micEnabled;
-    });
-    setMicEnabled((prev) => !prev);
+    const client = getAgoraClient();
+
+    const localAudio = client?.localTracks?.find(
+      (track) => track?.trackMediaType === "audio"
+    );
+
+    if (localAudio) {
+      const isEnabled = (localAudio as IMicrophoneAudioTrack).enabled;
+      (localAudio as IMicrophoneAudioTrack).setEnabled(!isEnabled);
+      setMicEnabled(!isEnabled);
+    }
   };
 
   const handleToggleCamera = () => {

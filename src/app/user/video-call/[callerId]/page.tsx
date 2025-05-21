@@ -2,8 +2,9 @@
 
 import VideoCallLayout from "@/components/doctorComponents/videoCall/VideoCallLayout";
 import { useCallerTimer } from "@/hooks/useCallTimer";
-import { joinCall, leaveCall } from "@/utils/agora";
+import { getAgoraClient, joinCall, leaveCall } from "@/utils/agora";
 import { getSocket } from "@/utils/socket";
+import { IMicrophoneAudioTrack } from "agora-rtc-sdk-ng";
 // import {
 //   addIceCandidate,
 //   addLocalTrack,
@@ -66,18 +67,22 @@ const UserVideoCallPage = () => {
             if (user.videoTrack) {
               user.videoTrack.play(remoteStreamRef.current!);
             }
+
+            if (user.audioTrack) {
+              user.audioTrack.play();
+            }
           },
-          onNetworkQuality:(uplink,downlink) =>{
-            const avg = Math.max(uplink,downlink)
-            setNetworkQuality(avg)
-          }
+          onNetworkQuality: (uplink, downlink) => {
+            const avg = Math.max(uplink, downlink);
+            setNetworkQuality(avg);
+          },
         });
 
         socket?.emit("accept-call", {
           callerId,
           receiverId: uid,
         });
-        start()
+        start();
         hasJoined.current = true;
         console.log("📞 Patient joined the Agora channel");
       } catch (error) {
@@ -111,8 +116,8 @@ const UserVideoCallPage = () => {
       socket?.emit("end-call", { to: callerId });
     }
     hasJoined.current = false;
-    stop()
-    reset()
+    stop();
+    reset();
     await leaveCall();
 
     // Clean up video elements
@@ -123,10 +128,17 @@ const UserVideoCallPage = () => {
   };
 
   const handleToggleMic = () => {
-    const video = localStreamRef.current?.srcObject as MediaStream;
-    if (video) {
-      video.getAudioTracks().forEach((track) => (track.enabled = !micEnabled));
-      setMicEnabled((prev) => !prev);
+    const client = getAgoraClient();
+
+    const localAudio = client?.localTracks?.find(
+      (track) => track?.trackMediaType === "audio"
+    );
+
+    if (localAudio) {
+      const isEnabled = (localAudio as IMicrophoneAudioTrack).enabled;
+
+      (localAudio as IMicrophoneAudioTrack).setEnabled(!isEnabled);
+      setMicEnabled(!isEnabled);
     }
   };
 
