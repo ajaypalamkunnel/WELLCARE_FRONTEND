@@ -2,8 +2,6 @@ import AgoraRTC, {
     IAgoraRTCClient,
     ICameraVideoTrack,
     IMicrophoneAudioTrack,
-    IRemoteVideoTrack,
-    IRemoteAudioTrack,
     IAgoraRTCRemoteUser
 } from "agora-rtc-sdk-ng";
 

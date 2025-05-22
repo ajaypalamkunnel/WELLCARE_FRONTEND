@@ -12,9 +12,9 @@ import { getAgoraClient, joinCall, leaveCall } from "@/utils/agora";
 import { Dialog } from "@headlessui/react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { API_BASE_URL } from "@/app/user/video-call/[callerId]/page";
 import { useCallerTimer } from "@/hooks/useCallTimer";
 import { IMicrophoneAudioTrack } from "agora-rtc-sdk-ng";
+import { API_BASE_URL } from "@/utils/axiosInstance";
 
 const DoctorVideoCallPage = () => {
   const { receiverId } = useParams(); // Patient ID

@@ -3,6 +3,7 @@
 import VideoCallLayout from "@/components/doctorComponents/videoCall/VideoCallLayout";
 import { useCallerTimer } from "@/hooks/useCallTimer";
 import { getAgoraClient, joinCall, leaveCall } from "@/utils/agora";
+import { API_BASE_URL } from "@/utils/axiosInstance";
 import { getSocket } from "@/utils/socket";
 import { IMicrophoneAudioTrack } from "agora-rtc-sdk-ng";
 // import {
@@ -15,8 +16,7 @@ import { IMicrophoneAudioTrack } from "agora-rtc-sdk-ng";
 // } from "@/utils/webrtc";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
+
 
 const UserVideoCallPage = () => {
   const { callerId } = useParams(); // Doctor ID
@@ -34,8 +34,8 @@ const UserVideoCallPage = () => {
     console.log("✅ [Patient] Connected to socket:", socket?.id);
     console.log("🩺 Caller (Doctor) ID:", callerId);
 
-    let channelName = `doctor-${callerId}-patient`;
-    let uid = `patient-${Math.floor(Math.random() * 100000)}`;
+    const channelName = `doctor-${callerId}-patient`;
+    const uid = `patient-${Math.floor(Math.random() * 100000)}`;
 
     const handleIncommingCall = async () => {
       if (hasJoined.current) {
