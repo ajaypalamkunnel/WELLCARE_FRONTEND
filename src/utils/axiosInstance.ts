@@ -5,7 +5,7 @@ import { RefreshResponse } from "./axiosTypes";
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
 
 
-const isTokenExpired = (token: string): boolean => {
+export const isTokenExpired = (token: string): boolean => {
 
     try {
 
