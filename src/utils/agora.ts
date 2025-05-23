@@ -7,18 +7,16 @@ import AgoraRTC, {
 
 const APP_ID = process.env.NEXT_PUBLIC_AGORA_APP_ID || ""; // Set in .env.local'
 
-// if (!APP_ID) {
-//   console.warn("⚠️ Agora APP_ID is missing from environment variables.");
-// }
+
 
 
 let client: IAgoraRTCClient | null = null;
 let localAudioTrack: IMicrophoneAudioTrack | null = null;
 let localVideoTrack: ICameraVideoTrack | null = null;
 
-let joined = false; // 🛠️ UPDATED: Guard against multiple joins
-let joining = false; // 🛠️ UPDATED: Guard against race condition
-const subscribedUsers = new Set<string | number>(); // 🛠️ UPDATED: Prevent duplicate subscriptions
+let joined = false; //  UPDATED: Guard against multiple joins
+let joining = false; //  UPDATED: Guard against race condition
+const subscribedUsers = new Set<string | number>(); //  UPDATED: Prevent duplicate subscriptions
 
 //Initializes the Agora RTC client
 
@@ -103,7 +101,7 @@ export const joinCall = async ({
                 await client?.subscribe(user, mediaType);
                 subscribedUsers.add(user.uid);
                 onRemoteTrack(user);
-                console.log("✅ Subscribed to", user.uid);
+                console.log(" Subscribed to", user.uid);
                 break;
             } catch (error) {
                 console.warn(`❗ Retry ${i + 1} to subscribe ${user.uid} failed`, error);
@@ -127,11 +125,11 @@ export const joinCall = async ({
     // Publish local tracks to Agora
     if (client.localTracks.length === 0) {
         await client.publish([audioTrack, videoTrack]);
-        console.log("📡 Published local tracks to Agora channel");
+        console.log("Published local tracks to Agora channel");
     }
 
-    joined = true; // 🛠️ UPDATED
-    joining = false; // 🛠️ UPDATED
+    joined = true; // UPDATED
+    joining = false; // UPDATED
 
     return { audioTrack, videoTrack };
 };
@@ -157,11 +155,11 @@ export const leaveCall = async () => {
         localVideoTrack = null;
     }
 
-    joined = false; // 🛠️ UPDATED
-    joining = false; // 🛠️ UPDATED
-    subscribedUsers.clear(); // 🛠️ UPDATED
+    joined = false; //  UPDATED
+    joining = false; //  UPDATED
+    subscribedUsers.clear(); // UPDATED
 
-    console.log("👋 Left Agora channel and cleaned up tracks");
+    console.log("Left Agora channel and cleaned up tracks");
 };
 
 

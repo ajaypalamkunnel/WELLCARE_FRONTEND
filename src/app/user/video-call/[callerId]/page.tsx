@@ -6,14 +6,6 @@ import { getAgoraClient, joinCall, leaveCall } from "@/utils/agora";
 import { API_BASE_URL } from "@/utils/axiosInstance";
 import { getSocket } from "@/utils/socket";
 import { IMicrophoneAudioTrack } from "agora-rtc-sdk-ng";
-// import {
-//   addIceCandidate,
-//   addLocalTrack,
-//   closeConnection,
-//   createAnswer,
-//   createPeerConnection,
-//   setRemoteDescription,
-// } from "@/utils/webrtc";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -31,15 +23,15 @@ const UserVideoCallPage = () => {
 
   useEffect(() => {
     const socket = getSocket();
-    console.log("✅ [Patient] Connected to socket:", socket?.id);
-    console.log("🩺 Caller (Doctor) ID:", callerId);
+    console.log(" [Patient] Connected to socket:", socket?.id);
+    console.log(" Caller (Doctor) ID:", callerId);
 
     const channelName = `doctor-${callerId}-patient`;
     const uid = `patient-${Math.floor(Math.random() * 100000)}`;
 
     const handleIncommingCall = async () => {
       if (hasJoined.current) {
-        console.warn("⏳ Patient already joined — skipping");
+        console.warn(" Patient already joined — skipping");
         return;
       }
 
@@ -84,20 +76,20 @@ const UserVideoCallPage = () => {
         });
         start();
         hasJoined.current = true;
-        console.log("📞 Patient joined the Agora channel");
+        console.log(" Patient joined the Agora channel");
       } catch (error) {
-        console.error("❌ Failed to join call:", error);
+        console.error(" Failed to join call:", error);
       }
     };
 
     // Listen for doctor’s invitation
     socket?.on("call-request", async ({ callerId }) => {
-      console.log("📩 Incoming call from doctor:", callerId);
+      console.log(" Incoming call from doctor:", callerId);
       await handleIncommingCall();
     });
 
     socket?.on("end-call", () => {
-      console.log("📴 Doctor ended the call");
+      console.log(" Doctor ended the call");
       handleEndCall(true);
     });
 

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { RefreshResponse } from "./axiosTypes";
 import { isTokenExpired } from "./axiosInstance";
-import { error } from "console";
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:5000";
 

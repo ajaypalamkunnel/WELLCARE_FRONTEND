@@ -39,8 +39,8 @@ const DoctorVideoCallPage = () => {
 
   useEffect(() => {
     const socket = getSocket();
-    console.log("✅ [Doctor] Connected to socket:", socket?.id);
-    console.log("🧑‍⚕️ Receiver (Patient) ID:", receiverId);
+    console.log(" [Doctor] Connected to socket:", socket?.id);
+    console.log("Receiver (Patient) ID:", receiverId);
 
     const uid = `doctor-${doctorId}`;
     const channelName = `doctor-${doctorId}-patient`;
@@ -57,11 +57,11 @@ const DoctorVideoCallPage = () => {
         // Step 2: Wait for patient to accept, then proceed
         socket?.on("call-accepted", async () => {
           if (hasJoined.current) {
-            console.warn("⏳ Doctor already joined — skipping");
+            console.warn(" Doctor already joined — skipping");
             return;
           }
 
-          console.log("✅ Patient accepted call, proceeding with Agora join");
+          console.log("Patient accepted call, proceeding with Agora join");
 
           // Step 3: Get Agora token from backend
           const tokenRes = await fetch(`${API_BASE_URL}/api/agora/token`, {
@@ -105,7 +105,7 @@ const DoctorVideoCallPage = () => {
 
         // Listen for patient hang-up
         socket?.on("end-call", () => {
-          console.log("📴 Patient ended the call");
+          console.log(" Patient ended the call");
           handleEndCall(true);
         });
       } catch (error) {
