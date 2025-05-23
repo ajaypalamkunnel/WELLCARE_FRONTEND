@@ -66,8 +66,8 @@ const DepartmentsContent: React.FC = () => {
   };
 
   const uploadToCloudinary = async (file: File): Promise<string | null> => {
-    const CLOUDINARY_UPLOAD_URL =
-      "https://api.cloudinary.com/v1_1/dy3yrxbmg/upload";
+    const CLOUDINARY_UPLOAD_URL = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_URL!
+      
     const CLOUDINARY_UPLOAD_PRESET = "department-icon";
 
     const formData = new FormData();
