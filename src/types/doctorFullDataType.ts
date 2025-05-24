@@ -40,6 +40,7 @@ interface IDoctorProfileDataType {
     isVerified?:boolean
     experience?: number;
     status?:number
+    rejectReason?:string
     licenseNumber?: string;
     education?:IEducation[]
     certifications?:ICertificate[];

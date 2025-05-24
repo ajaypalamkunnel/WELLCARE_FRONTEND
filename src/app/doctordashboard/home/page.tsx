@@ -43,6 +43,7 @@ export default function DoctorHome() {
               doctorName={fullName}
               isVerified={doctorData?.isVerified?? false}
               status={doctorData?.status ?? 0}
+              rejectReason={doctorData?.rejectReason}
             />
           )}
         </div>

@@ -5,11 +5,13 @@ interface WelcomeDoctorProps {
   doctorName: string;
   isVerified: boolean;
   status: number;
+  rejectReason?: string;
 }
 const WelcomeDoctor: React.FC<WelcomeDoctorProps> = ({
   doctorName,
   isVerified,
   status,
+  rejectReason,
 }) => {
   const router = useRouter();
   const handleNavigate = () => {
@@ -33,7 +35,7 @@ const WelcomeDoctor: React.FC<WelcomeDoctorProps> = ({
 
         {/* Subtitle */}
         <p className="text-gray-600 mb-8 text-sm md:text-base">
-         {`We're excited to have you on board. Complete your registration to
+          {`We're excited to have you on board. Complete your registration to
           start providing quality care.`}
         </p>
 
@@ -48,21 +50,27 @@ const WelcomeDoctor: React.FC<WelcomeDoctorProps> = ({
             Complete Your Registration
           </button>
         )}
-        {
-          status === 2&&(
-            
-           <h3 className="font-semibold text-[#03045e]">You have already completed your registration it will verify by Administrative team</h3>
-          )
-        }
+        {status === 2 && (
+          <h3 className="font-semibold text-[#03045e]">
+            You have already completed your registration it will verify by
+            Administrative team
+          </h3>
+        )}
 
-        {
-          status === -2 &&(
-            <div>
-              <h3 className="font-semibold text-[#03045e]">Your Application rejected contact administarative team</h3>
-              <a href="wellcareservice@gmail.com">wellcareservice@gmail.com</a>
-            </div>
-          )
-        }
+        {status === -2 && (
+          <div>
+            <h3 className="font-semibold text-[#03045e]">
+              Your Application rejected contact administarative team{" "}
+            </h3>
+            {rejectReason && (
+              <h3 className="font-semibold text-[#03045e]">
+                Reason: {rejectReason}
+              </h3>
+            )}
+
+            <a href="wellcareservice@gmail.com">wellcareservice@gmail.com</a>
+          </div>
+        )}
       </div>
     </div>
   );
