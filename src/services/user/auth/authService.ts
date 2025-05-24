@@ -12,13 +12,14 @@ import { ChatUser } from "@/types/chat";
 import { PaginatedTransactionResponseDTO, TransactionQueryParams, WalletSummaryDTO } from "@/types/wallet";
 import { NotificationDTO } from "@/types/notificationDto";
 import { ReviewFormData } from "@/components/commonUIElements/DoctorReviewForm";
+import { API_PREFIX } from "@/constants/apiRoutes";
 
 export const registerBasicDetails = async (data: Partial<IUser>) => {
 
     try {
         console.log("From registerBasicDetails=>>>", data);
 
-        const response = await axiosInstance.post("/signup/basic_details", data)
+        const response = await axiosInstance.post(`${API_PREFIX.PATIENT}signup/basic_details`, data)
         return response.data
     } catch (error: unknown) {
          if (axios.isAxiosError(error)) {
@@ -34,7 +35,7 @@ export const registerBasicDetails = async (data: Partial<IUser>) => {
 
 export const verifyOTP = async (email: string, otp: string) => {
     try {
-        const response = await axiosInstance.post("/signup/verify_otp", { email, otp })
+        const response = await axiosInstance.post(`${API_PREFIX.PATIENT}signup/verify_otp`, { email, otp })
         return response.data
     } catch (error: unknown) {
          if (axios.isAxiosError(error)) {
@@ -49,7 +50,7 @@ export const verifyOTP = async (email: string, otp: string) => {
 
 export const resentOTP = async (email: string) => {
     try {
-        const response = await axiosInstance.post("/signup/resend_otp", { email })
+        const response = await axiosInstance.post(`${API_PREFIX.PATIENT}signup/resend_otp`, { email })
         console.log(response);
 
         return response.data
@@ -68,7 +69,7 @@ export const login = async (email: string, password: string): Promise<{ accessTo
 
 
     try {
-        const response = await axiosInstance.post("/login", { email, password }, { withCredentials: true })
+        const response = await axiosInstance.post(`${API_PREFIX.PATIENT}login`, { email, password }, { withCredentials: true })
 
         const { accessToken, user } = response.data
 
@@ -87,7 +88,7 @@ export const login = async (email: string, password: string): Promise<{ accessTo
 export const forgotPassword = async (email: string) => {
     try {
 
-        const response = await axiosInstance.post("/forgot-password", { email })
+        const response = await axiosInstance.post(`${API_PREFIX.PATIENT}forgot-password`, { email })
         return response.data
     } catch (error: unknown) {
         const errorMessage = getErrorMessage(error)
@@ -101,7 +102,7 @@ export const updatePassword = async (email: string, password: string) => {
     try {
 
 
-        const response = await axiosInstance.post("/update-password", { email, password })
+        const response = await axiosInstance.post(`${API_PREFIX.PATIENT}update-password`, { email, password })
 
         return response.data
 
@@ -133,7 +134,7 @@ export const fetchTokens = async () => {
 
 export const logout = async () => {
     try {
-        await axiosInstance.post("/logout", {}, { withCredentials: true })
+        await axiosInstance.post(`${API_PREFIX.PATIENT}logout`, {}, { withCredentials: true })
 
     } catch (error) {
         console.error("Error during logout:", error);
@@ -144,7 +145,7 @@ export const logout = async () => {
 
 export const fetchPatientProfile = async (): Promise<IUserFullData | null> => {
     try {
-        const response = await axiosInstance.get("/profile");
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}profile`);
         return response.data.user
     } catch (error) {
         console.error("Error fetching patient profile:", error);
@@ -203,7 +204,7 @@ export const getDoctorById = async (doctorId: string) => {
 
 
 
-        const response = await axiosInstance.get(`/doctor-profile/${doctorId}`)
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}doctor-profile/${doctorId}`)
 
 
         return response.data
@@ -217,7 +218,7 @@ export const getDoctorById = async (doctorId: string) => {
 export const changeUserPassword = async (userId: string, oldPassword: string, newPassword: string) => {
     try {
 
-        const response = await axiosInstance.put("/change-password", { userId, oldPassword, newPassword })
+        const response = await axiosInstance.put(`${API_PREFIX.PATIENT}change-password`, { userId, oldPassword, newPassword })
         return response
     } catch (error) {
 
@@ -235,7 +236,7 @@ export const userCompleteRegistration = async (data: IUserDetails) => {
         
 
 
-        const response = await axiosInstance.put("/complete-registration", data)
+        const response = await axiosInstance.put(`${API_PREFIX.PATIENT}complete-registration`, data)
 
         return response
 
@@ -264,7 +265,7 @@ export const userProfileEdit = async (data: Partial<UserProfileData>) => {
 
 
 
-        const response = await axiosInstance.put("/complete-registration", updatedata)
+        const response = await axiosInstance.put(`${API_PREFIX.PATIENT}complete-registration`, updatedata)
 
 
         return response
@@ -284,7 +285,7 @@ export const getDoctorScheduleByDate = async (doctorId: string, date: Date) => {
 
         const formattedDate = formatDate(date)
 
-        const response = await axiosInstance.get(`/schedules`, {
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}schedules`, {
             params: {
                 doctorId,
                 date: formattedDate
@@ -307,7 +308,7 @@ export const initiateConsultationBooking = async (data: InitiateBookingPayload):
 
     try {
 
-        const response = await axiosInstance.post("/consultation-booking/initiate", data)
+        const response = await axiosInstance.post(`${API_PREFIX.PATIENT}consultation-booking/initiate`, data)
 
 
         return response.data.data
@@ -324,7 +325,7 @@ export const verifyConsultationBooking = async (data: VerifyBookingPayload): Pro
 
 
     try {
-        const response = await axiosInstance.post("/consultation-booking/verify", data);
+        const response = await axiosInstance.post(`${API_PREFIX.PATIENT}consultation-booking/verify`, data);
         return response.data.data;
 
     } catch (error) {
@@ -343,7 +344,7 @@ export const getBookingDetails = async (bookingId: string, slotId: string): Prom
 
 
 
-        const response = await axiosInstance.get("/consultation-booking/details", {
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}consultation-booking/details`, {
             params: {
                 bookingId,
                 slotId
@@ -364,7 +365,7 @@ export const getBookingDetails = async (bookingId: string, slotId: string): Prom
 export const getAppoinments = async (filter: string): Promise<AppointmentListItemDTO[]> => {
     try {
 
-        const response = await axiosInstance.get("/my-appoinments", {
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}my-appoinments`, {
             params: {
                 status: filter
             }
@@ -384,7 +385,7 @@ export const getAppoinmentsDetails = async (id: string): Promise<AppointmentDeta
 
 
 
-        const response = await axiosInstance.get(`/my-appoinments-detail/${id}`);
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}my-appoinments-detail/${id}`);
 
 
 
@@ -401,7 +402,7 @@ export const getAppoinmentsDetails = async (id: string): Promise<AppointmentDeta
 export const CancelAppointment = async (appointmentId: string, reason?: string): Promise<CancelAppointmentResponseDTO> => {
     try {
 
-        const response = await axiosInstance.patch(`/appointments/${appointmentId}/cancel`, { reason })
+        const response = await axiosInstance.patch(`${API_PREFIX.PATIENT}appointments/${appointmentId}/cancel`, { reason })
 
         return response.data
 
@@ -424,7 +425,7 @@ export const getChatInboxUser = async (): Promise<ChatUser[]> => {
     try {
 
 
-        const response = await axiosInstance.get("/inbox");
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}inbox`);
 
         return response.data.data
 
@@ -459,7 +460,7 @@ export const getUserBasicInfo = async (userId: string): Promise<ChatUser> => {
 export const getWalletSummary = async (): Promise<WalletSummaryDTO> => {
     try {
 
-        const response = await axiosInstance.get("/wallet");
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}wallet`);
 
         return response.data.data
 
@@ -473,7 +474,7 @@ export const getWalletSummary = async (): Promise<WalletSummaryDTO> => {
 export const getWalletTransactions = async (params: TransactionQueryParams): Promise<PaginatedTransactionResponseDTO> => {
     try {
 
-        const response = await axiosInstance.get("/wallet/transactions", {
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}wallet/transactions`, {
             params: {
                 page: params.page || 1,
                 limit: params.limit || 10,
@@ -494,7 +495,7 @@ export const fetchNotifications = async () => {
 
 
 
-        const response = await axiosInstance.get("/get-notifications",);
+        const response = await axiosInstance.get(`${API_PREFIX.PATIENT}get-notifications`,);
 
 
 
@@ -507,7 +508,7 @@ export const fetchNotifications = async () => {
 
 
 export const fetchPrescriptionFile = async (filename: string): Promise<Blob> => {
-    const response = await axiosInstance.get("/download-prescription", {
+    const response = await axiosInstance.get(`${API_PREFIX.PATIENT}download-prescription`, {
         params: { filename },
         responseType: "blob",
     });
@@ -524,7 +525,7 @@ export const addDoctorReview = async (
     
     try {
 
-        const response = await axiosInstance.post(`/doctors/${data.doctorId}/review`, {
+        const response = await axiosInstance.post(`${API_PREFIX.PATIENT}doctors/${data.doctorId}/review`, {
             rating: data.rating,
             reviewText: data.reviewText
         })

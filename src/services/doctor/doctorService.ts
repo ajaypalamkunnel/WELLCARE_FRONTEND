@@ -4,6 +4,7 @@ import { CertificationFormData, EducationFormData } from "@/components/doctorCom
 import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/ScheduleModal";
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import { RazorpayPaymentResponse } from "@/components/doctorComponents/Subscription";
+import { API_PREFIX } from "@/constants/apiRoutes";
 import { ChatUser } from "@/types/chat";
 import { AppointmentStatusSummary } from "@/types/dashboardDto";
 import  { ICertificate } from "@/types/doctorFullDataType";
@@ -18,7 +19,7 @@ import axios, { AxiosError } from "axios";
 
 export const featchAllDepartments = async () => {
     try {
-        const response = await axiosInstanceDoctor.get("/api/admin/getalldepartments")
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.ADMIN}/getalldepartments`)
 
         return response.data
     } catch (error) {
@@ -26,17 +27,14 @@ export const featchAllDepartments = async () => {
         throw error;
     }
 }
-
 export const doctorRegistration = async (doctorProfileData: DoctorFormValues) => {
 
     try {
 
-
         console.log("==>",doctorProfileData);
         
-        const response = await axiosInstanceDoctor.post("/api/doctor/doctorregistration", doctorProfileData)
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/doctorregistration`, doctorProfileData)
         setTimeout(() => {
-
 
         }, 1000)
 
@@ -55,7 +53,7 @@ export const updateDoctorProfile = async (doctorId: string, data: DoctorProfileU
 
     try {
 
-        const response = await axiosInstanceDoctor.put("/api/doctor/doctor-profile-update", { doctorId, updateData: data })
+        const response = await axiosInstanceDoctor.put(`${API_PREFIX.DOCTOR}/doctor-profile-update`, { doctorId, updateData: data })
         return response
 
     } catch (error) {
@@ -72,7 +70,7 @@ export const changePassword = async (doctorId: string, oldPassword: string, newP
 
     try {
 
-        const response = await axiosInstanceDoctor.put("/api/doctor/change-password", { doctorId, oldPassword, newPassword })
+        const response = await axiosInstanceDoctor.put(`${API_PREFIX.DOCTOR}/change-password`, { doctorId, oldPassword, newPassword })
 
         return response
 
@@ -81,14 +79,12 @@ export const changePassword = async (doctorId: string, oldPassword: string, newP
         throw error;
     }
 
-
-
 }
 
 export const getAllSubscriptionPlans = async () => {
     try {
 
-        const response = await axiosInstanceDoctor.get("/api/doctor/subscription-plans")
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/subscription-plans`)
         return response.data
     } catch (error) {
         console.error("Error fetching subscription plans:", error);
@@ -101,7 +97,7 @@ export const createSubscriptionOrder = async (doctorId: string, planId: string) 
 
     try {
 
-        const response = await axiosInstanceDoctor.post("/api/doctor/create-order", { doctorId, planId })
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/create-order`, { doctorId, planId })
         return response.data
     } catch (error) {
         console.error("Error creating order:", error);
@@ -112,7 +108,7 @@ export const createSubscriptionOrder = async (doctorId: string, planId: string) 
 
 export const verifyPayment = async (paymentData: RazorpayPaymentResponse) => {
     try {
-        const response = await axiosInstanceDoctor.post("/api/doctor/verify-payment", paymentData);
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/verify-payment`, paymentData);
         return response.data;
     } catch (error) {
         console.error("Error verifying payment:", error);
@@ -124,7 +120,7 @@ export const verifyPayment = async (paymentData: RazorpayPaymentResponse) => {
 export const createService = async (data: ServiceData) => {
     try {
 
-        const response = await axiosInstanceDoctor.post("/api/doctor/create-service", data)
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/create-service`, data)
         return response.data
 
     } catch (error) {
@@ -137,13 +133,11 @@ export const createService = async (data: ServiceData) => {
 export const getServices = async (doctorId: string) => {
     try {
 
-        const response = await axiosInstanceDoctor.get("/api/doctor/get-services", {
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/get-services`, {
             params: { doctorId }
         });
 
-
         return response.data
-
 
     } catch (error) {
         console.error("Error while featching services")
@@ -158,7 +152,7 @@ export const updateService = async (updatedData: ServiceData) => {
     try {
         console.log("--->", updatedData);
 
-        const response = await axiosInstanceDoctor.put("/api/doctor/update-service", updatedData)
+        const response = await axiosInstanceDoctor.put(`${API_PREFIX.DOCTOR}/update-service`, updatedData)
         return response.data
 
     } catch (error) {
@@ -172,7 +166,7 @@ export const updateService = async (updatedData: ServiceData) => {
 export const getDoctorSubscription = async (subscriptionId: string) => {
     try {
 
-        const response = await axiosInstanceDoctor.get(`/api/doctor/get-my-subscription/${subscriptionId}`)
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/get-my-subscription/${subscriptionId}`)
 
         return response.data
 
@@ -185,7 +179,7 @@ export const getDoctorSubscription = async (subscriptionId: string) => {
 
 export const validateSchedule = async (data: FormValues) => {
     try {
-        const response = await axiosInstanceDoctor.post("/api/doctor/validate-schedule", data);
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/validate-schedule`, data);
         console.log("validate schedule", response.data)
 
         return response.data;
@@ -204,8 +198,7 @@ export const generateSlote = async (data: FormValues) => {
     try {
         console.log("i am service==> ", data);
 
-
-        const response = await axiosInstanceDoctor.post("/api/doctor/generate-slots", data)
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/generate-slots`, data)
 
         return response.data
 
@@ -224,12 +217,7 @@ export const createSchedule = async (data: ScheduleCreationData) => {
 
         console.log("going data**", data);
 
-
-        const response = await axiosInstanceDoctor.post("/api/doctor/create-schedule", data)
-
-
-
-
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/create-schedule`, data)
 
         return response.data
 
@@ -245,16 +233,10 @@ export const createSchedule = async (data: ScheduleCreationData) => {
 export const fetchSchedules = async (params: FilterParams) => {
     try {
 
-        
-        
         console.log("...",params);
-        
 
         // Convert params object to URLSearchParams
         const queryParams = new URLSearchParams();
-
-
-
 
         Object.entries(params).forEach(([key, value]) => {
             if (value !== null && value !== undefined && value !== '') {
@@ -267,10 +249,9 @@ export const fetchSchedules = async (params: FilterParams) => {
             }
         });
 
-        const response = await axiosInstanceDoctor.get(`/api/doctor/fetch-schedules?${queryParams.toString()}`);
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/fetch-schedules?${queryParams.toString()}`);
 
         console.log("Evade kitttitoo", response.data.data);
-
 
         return response.data.data;
     } catch (error) {
@@ -285,13 +266,9 @@ export const getDoctorAppointments = async (
 ): Promise<ApiResponseDoctorAppointmentListItemDTO> => {
     try {
 
-
-
-        const response = await axiosInstanceDoctor.get("/api/doctor/appointments", {
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/appointments`, {
             params: filters,
         });
-
-
 
         return response.data.data;
     } catch (error) {
@@ -305,7 +282,7 @@ export const getDoctorAppointments = async (
 export const getDoctorAppointmentDetail = async (appointmentId: string): Promise<DoctorAppointmentDetailDTO> => {
     try {
         const response = await axiosInstanceDoctor.get(
-            `/api/doctor/appointments/${appointmentId}/details`
+            `${API_PREFIX.DOCTOR}/appointments/${appointmentId}/details`
         );
 
         // Assuming your backend response follows: { success: true, message: "...", data: {...} }
@@ -326,7 +303,7 @@ export const getDoctorAppointmentDetail = async (appointmentId: string): Promise
 export const getChatInboxDoctor = async (): Promise<ChatUser[]> => {
     try {
 
-        const response = await axiosInstanceDoctor.get("/api/doctor/inbox");
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/inbox`);
 
         return response.data.data
 
@@ -340,7 +317,6 @@ export const getDoctorBasicInfo = async (doctorId: string): Promise<ChatUser> =>
 
     try {
         const response = await axiosInstancePatinet.get(`/api/doctor/doctor-info/${doctorId}`);
-
 
         return response.data.data;
 
@@ -365,18 +341,13 @@ export const markMessagesAsReadDoctor = async (receiverId: string) => {
 
 export const editEducation = async () => {
 
-
-
-
 }
 
 export const addNewEducation = async (data: EducationFormData) => {
 
     try {
 
-        const response = await axiosInstanceDoctor.post("/api/doctor/profile/addeducation", data)
-
-
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/profile/addeducation`, data)
 
         return response.data.data
 
@@ -394,14 +365,9 @@ export const addNewCertification = async (data: ICertificate) => {
 
     try {
 
-        const response = await axiosInstanceDoctor.post("/api/doctor/profile/addCertificate", data)
-
-
-
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/profile/addCertificate`, data)
 
         return response.data.data
-
-
 
     } catch (error) {
 
@@ -418,15 +384,9 @@ export const updateEducation = async (data: EducationFormData) => {
     try {
         console.log(data);
 
-
-        const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateEducation", data)
-
-
-
+        const response = await axiosInstanceDoctor.put(`${API_PREFIX.DOCTOR}/profile/updateEducation`, data)
 
         return response.data
-
-
 
     } catch (error) {
 
@@ -445,15 +405,9 @@ export const updateCertification = async (data: CertificationFormData) => {
     try {
         console.log(data);
 
-
-        const response = await axiosInstanceDoctor.put("/api/doctor/profile/updateCertification", data)
-
-
-
+        const response = await axiosInstanceDoctor.put(`${API_PREFIX.DOCTOR}/profile/updateCertification`, data)
 
         return response.data
-
-
 
     } catch (error) {
 
@@ -472,12 +426,9 @@ export const cancelSchedule = async (reason: string, selectedScheduleId: string)
 
     try {
 
-        const response = await axiosInstanceDoctor.patch(`/api/doctor/schedules/${selectedScheduleId}/cancel`, {
+        const response = await axiosInstanceDoctor.patch(`${API_PREFIX.DOCTOR}/schedules/${selectedScheduleId}/cancel`, {
             reason: reason
         })
-
-
-
 
         return response.data
     } catch (error) {
@@ -485,7 +436,6 @@ export const cancelSchedule = async (reason: string, selectedScheduleId: string)
         // console.error("error while cancelling schedule",error);
 
         throw error
-
 
     }
 
@@ -496,7 +446,7 @@ export const submitPrescription = async (data: SubmitPrescriptionPayload) => {
     try {
         console.log(data);
 
-        const response = await axiosInstanceDoctor.post("/api/doctor/submit-prescription", data)
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/submit-prescription`, data)
         return response.data
     } catch (error) {
         console.error("Prescription submission failed:", error);
@@ -507,14 +457,11 @@ export const submitPrescription = async (data: SubmitPrescriptionPayload) => {
 
 export const getWalletSummary = async (type?: "credit" | "debit", page = 1, limit = 10) => {
     try {
-        const response = await axiosInstanceDoctor.get("/api/doctor/getWalletSummary", {
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/getWalletSummary`, {
             params: { type, page, limit }
         });
 
-
-
         return response.data.data;
-
 
     } catch (error) {
         console.error("Wallet summary fetch failed:", error);
@@ -525,7 +472,7 @@ export const getWalletSummary = async (type?: "credit" | "debit", page = 1, limi
 
 export const withdrawAmountApi = async (amount: number) => {
     try {
-        const response = await axiosInstanceDoctor.post("/api/doctor/withdraw", { amount });
+        const response = await axiosInstanceDoctor.post(`${API_PREFIX.DOCTOR}/withdraw`, { amount });
         return response.data;
     } catch (error) {
         console.error("Withdraw failed:", error);
@@ -542,7 +489,7 @@ export const getAppointmentSummary = async (
 
     try {
 
-        const response = await axiosInstanceDoctor.get("/api/doctor/appointment-summary", {
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/appointment-summary`, {
             params: { startDate, endDate }
         })
 
@@ -562,7 +509,7 @@ export const getAppointmentTrend = async (
 ) => {
     try {
 
-        const response = await axiosInstanceDoctor.get("/api/doctor/appointment-trend", {
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/appointment-trend`, {
             params: { startDate, endDate, interval },
         });
         return response.data.data;
@@ -579,7 +526,7 @@ export const getRevenueTrend = async (
     interval: "day" | "week" | "month"
 ) => {
     try {
-        const response = await axiosInstanceDoctor.get("/api/doctor/revenue-trend", {
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/revenue-trend`, {
             params: { startDate, endDate, interval },
         });
         return response.data.data;
@@ -596,7 +543,7 @@ export const getTopServices = async (
     interval: "day" | "week" | "month"
 ) => {
     try {
-        const response = await axiosInstanceDoctor.get("/api/doctor/top-services", {
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/top-services`, {
             params: { startDate, endDate, interval },
         });
 
@@ -614,10 +561,9 @@ export const generateDoctorReport = async (
     format: "pdf" | "excel"
 ) => {
     try {
-        const response = await axiosInstanceDoctor.get("/api/doctor/generate-report", {
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/generate-report`, {
             params: { startDate, endDate, format },
         });
-
 
         return response.data.data; // includes downloadUrl
     } catch (error) {
@@ -629,7 +575,7 @@ export const generateDoctorReport = async (
 
 export const fetchNotificationsDoctor = async () => {
     try {
-        const response = await axiosInstanceDoctor.get("/api/doctor/get-notifications",);
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/get-notifications`,);
 
         console.log("==>",response.data.data);
         

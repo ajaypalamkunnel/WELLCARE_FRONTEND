@@ -1,26 +1,32 @@
 import { PlanFormData } from "@/components/admin/ui/NewPlanModalForm";
+import { API_PREFIX } from "@/constants/apiRoutes";
 import { DoctorAnalyticsSummaryDTO, RevenueDoctorTrendDTO, ServiceRevenueDTO, TopDoctorDTO } from "@/types/adminDashboardDoctoryAnlyticsDto";
 import { PlanDistributionDTO, RevenueTrendDTO, SubscriptionOverviewDTO } from "@/types/adminReportDto";
 import axiosInstanceAdmin from "@/utils/axiosInstanceAdmin"
+import axios from "axios";
 
 
 export const createDepartment = async (name: string, icon: string) => {
     try {
-
-        const response = await axiosInstanceAdmin.post("/api/admin/adddepartment", { name, icon })
+        const response = await axiosInstanceAdmin.post(`${API_PREFIX.ADMIN}/adddepartment`, { name, icon })
         console.log(response);
         return response.data
-
-    } catch (error) {
-        console.error("Error creating department", error);
-        throw new Error("Error creating department")
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+            const message =
+                error.response?.data?.message ||
+                error.response?.data?.error ||
+                "Failed to create department";
+            throw new Error(message);
+        }
+        throw new Error("An unexpected error occurred");
     }
 }
 
+
 export const featchAllDepartments = async () => {
     try {
-        const response = await axiosInstanceAdmin.get("/api/admin/getalldepartments")
-
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/getalldepartments`)
         return response.data
     } catch (error) {
         console.error("Error fetching departments:", error);
@@ -33,56 +39,38 @@ export const featchAllDepartments = async () => {
 export const updateDoctorStatus = async (_id: string, newStatus: number) => {
     try {
         console.log("updated servicee");
-
-        const response = await axiosInstanceAdmin.put("/api/admin/update-doctor-status", { doctorId: _id, status: newStatus })
-
+        const response = await axiosInstanceAdmin.put(`${API_PREFIX.ADMIN}/update-doctor-status`, { doctorId: _id, status: newStatus })
         return response
-
     } catch (error) {
-
         console.error("Error doctor status update:", error);
         throw error;
     }
 }
 
 export const verifyDoctorApplication = async (_id: string, isVerified: boolean, reason?: string) => {
-
     try {
-
-
-        const response = await axiosInstanceAdmin.put("/api/doctor/verify-doctor", { doctorId: _id, isVerified, reason })
-
+        const response = await axiosInstanceAdmin.put(`${API_PREFIX.DOCTOR}/verify-doctor`, { doctorId: _id, isVerified, reason })
         return response
-
     } catch (error) {
-
         console.error("Error doctor registration:", error);
         throw error
-
     }
-
 }
 
 export const fetchAllPatients = async (currentPage: number, limit: number, searchTerm: string) => {
     try {
-
-        const response = await axiosInstanceAdmin.get(`/api/admin/users?page=${currentPage}&limit=${limit}&search=${searchTerm}`)
-
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/users?page=${currentPage}&limit=${limit}&search=${searchTerm}`)
         return response.data
-
     } catch (error) {
-
         console.error("Error fetching patients:", error);
         throw error;
-
     }
 }
 
 
 export const updateUserStatus = async (userId: string, status: number) => {
     try {
-        
-        const response = await axiosInstanceAdmin.put("/api/admin/updateStatus", { userId, status })
+        const response = await axiosInstanceAdmin.put(`${API_PREFIX.ADMIN}/updateStatus`, { userId, status })
         return response
     } catch (error) {
         console.error("Error user update:", error);
@@ -93,8 +81,7 @@ export const updateUserStatus = async (userId: string, status: number) => {
 
 export const updateDepartmentStatus = async (deptId: string, status: boolean) => {
     try {
-
-        const response = await axiosInstanceAdmin.put("/api/admin//update-department-status", { deptId, status })
+        const response = await axiosInstanceAdmin.put(`${API_PREFIX.ADMIN}/update-department-status`, { deptId, status })
         return response
     } catch (error) {
         console.error("Error updating department status:", error);
@@ -105,35 +92,28 @@ export const updateDepartmentStatus = async (deptId: string, status: boolean) =>
 
 export const createNewPlan = async (data: PlanFormData) => {
     try {
-
-        const response = await axiosInstanceAdmin.post("/api/admin//create-subscription-plan", { subscriptionData: data })
+        const response = await axiosInstanceAdmin.post(`${API_PREFIX.ADMIN}/create-subscription-plan`, { subscriptionData: data })
         return response
-
     } catch (error) {
-
         console.error("Error while creating plan");
         throw error
-
-
     }
 }
 
 export const getAllSubscriptionPlans = async () => {
     try {
-
-        const response = await axiosInstanceAdmin.get("/api/admin/get-subscription-plans")
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/get-subscription-plans`)
         return response
     } catch (error) {
         console.error("Error fetching subscription plans:", error);
         throw error;
-
     }
 }
 
 
 export const updateSubscriptionPlanStatus = async (planId: string) => {
     try {
-        const response = await axiosInstanceAdmin.put("/api/admin/toggle-subscription-status", { planId })
+        const response = await axiosInstanceAdmin.put(`${API_PREFIX.ADMIN}/toggle-subscription-status`, { planId })
         return response
     } catch (error) {
         console.error("Error updating subscription plan status:", error);
@@ -144,7 +124,7 @@ export const updateSubscriptionPlanStatus = async (planId: string) => {
 
 export const updateSubscriptionPlan = async (planId: string, data: PlanFormData) => {
     try {
-        const response = await axiosInstanceAdmin.put(`/api/admin/update-plan`, { planId, updatedData: data });
+        const response = await axiosInstanceAdmin.put(`${API_PREFIX.ADMIN}/update-plan`, { planId, updatedData: data });
         return response;
     } catch (error) {
         console.error("Error updating subscription plan:", error);
@@ -155,7 +135,7 @@ export const updateSubscriptionPlan = async (planId: string, data: PlanFormData)
 
 export const fetchSubscriptionOverview = async () => {
     try {
-        const response = await axiosInstanceAdmin.get("/api/admin/subscription/overview");
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/subscription/overview`);
         return response.data.data as SubscriptionOverviewDTO;
     } catch (error) {
         console.error("Error fetching subscription overview:", error);
@@ -169,46 +149,31 @@ export const fetchRevenueTrend = async (
     endDate: string,
     interval: "day" | "week" | "month"
 ): Promise<RevenueTrendDTO[]> => {
-
     try {
-
-        const response = await axiosInstanceAdmin.get("/api/admin/subscription/revenue-trend",
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/subscription/revenue-trend`,
             { params: { startDate, endDate, interval }, }
         )
-
         console.log("fetchRevenueTrend ==>", response.data.data);
-
-
         return response.data.data
-
     } catch (error) {
         console.error("Error fetching revenue trend:", error);
         throw error;
     }
-
 }
 
 
 
 export const fetchPlanDistribution = async (startDate?: string, endDate?: string) => {
-
     try {
-
-        const response = await axiosInstanceAdmin.get("/api/admin/subscription/plan-distribution", {
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/subscription/plan-distribution`, {
             params: { startDate, endDate }
         })
-
         console.log("data : ", response.data.data);
-
-
         return response.data.data as PlanDistributionDTO[];
-
     } catch (error) {
         console.error("Error fetching plan distribution:", error);
         throw error;
     }
-
-
 }
 
 
@@ -219,14 +184,10 @@ export const downloadSubscriptionReport = async (
     format: "pdf" | "excel"
 ) => {
     try {
-        const response = await axiosInstanceAdmin.get("/api/admin/subscription/report/download", {
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/subscription/report/download`, {
             params: { startDate, endDate, format },
-
         });
-
         console.log("link : ", response.data.data);
-
-
         return response.data.data;
     } catch (error) {
         console.error("Error downloading subscription report:", error);
@@ -238,7 +199,7 @@ export const downloadSubscriptionReport = async (
 
 export const fetchDoctorAnalyticsSummary = async (): Promise<DoctorAnalyticsSummaryDTO[]> => {
     try {
-        const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/summary");
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/doctor-analytics/summary`);
         return response.data.data as DoctorAnalyticsSummaryDTO[];
     } catch (error) {
         console.error("Error fetching doctor analytics summary:", error);
@@ -254,10 +215,9 @@ export const fetchDoctorRevenueTrend = async (
     interval: "day" | "month"
 ) => {
     try {
-        const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/revenue-trend", {
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/doctor-analytics/revenue-trend`, {
             params: { startDate, endDate, interval },
         });
-
         return response.data.data as RevenueDoctorTrendDTO[];
     } catch (error) {
         console.error("Error fetching doctor revenue trend:", error);
@@ -268,7 +228,7 @@ export const fetchDoctorRevenueTrend = async (
 
 export const fetchServiceRevenue = async (): Promise<ServiceRevenueDTO[]> => {
     try {
-        const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/service-revenue");
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/doctor-analytics/service-revenue`);
         return response.data.data as ServiceRevenueDTO[];
     } catch (error) {
         console.error("Error fetching service revenue:", error);
@@ -279,7 +239,7 @@ export const fetchServiceRevenue = async (): Promise<ServiceRevenueDTO[]> => {
 
 export const fetchTopPerformingDoctors = async (): Promise<TopDoctorDTO[]> => {
     try {
-        const response = await axiosInstanceAdmin.get("/api/admin/doctor-analytics/top-performing");
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/doctor-analytics/top-performing`);
         return response.data.data as TopDoctorDTO[];
     } catch (error) {
         console.error("Error fetching top-performing doctors:", error);
@@ -294,9 +254,9 @@ export const fetchDoctorDocument = async (
 ): Promise<void> => {
     try {
         const response = await axiosInstanceAdmin.get(
-            `/api/admin/view-document/${type}/${doctorId}`,
+            `${API_PREFIX.ADMIN}/view-document/${type}/${doctorId}`,
             {
-                responseType: "blob", // 🆕 so we receive binary PDF, not HTML
+                responseType: "blob",
             }
         );
         const blob = new Blob([response.data], { type: "application/pdf" });

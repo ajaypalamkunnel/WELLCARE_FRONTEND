@@ -40,12 +40,10 @@ const DepartmentsContent: React.FC = () => {
     fetchDepartments();
   }, []);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-  } = useForm<{ name: string; icon: File }>({
+  const { register, handleSubmit, setValue, reset } = useForm<{
+    name: string;
+    icon: File;
+  }>({
     defaultValues: {
       name: "",
       icon: undefined,
@@ -66,8 +64,9 @@ const DepartmentsContent: React.FC = () => {
   };
 
   const uploadToCloudinary = async (file: File): Promise<string | null> => {
-    const CLOUDINARY_UPLOAD_URL = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_URL!
-      
+    const CLOUDINARY_UPLOAD_URL =
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_URL!;
+
     const CLOUDINARY_UPLOAD_PRESET = "department-icon";
 
     const formData = new FormData();
@@ -142,9 +141,14 @@ const DepartmentsContent: React.FC = () => {
       ]);
 
       handleCloseModal();
-    } catch (error) {
-      console.log("Failed to add department.:",error);
-      toast.error("Failed to add department.");
+    } catch (error: unknown) {
+      let errorMessage = "Failed to add department";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      // console.error("Failed to add department:", error);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

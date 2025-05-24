@@ -1,10 +1,11 @@
+import { API_PREFIX } from "@/constants/apiRoutes";
 import {ChatUser, Message } from "@/types/chat";
 import axiosInstanceDoctor from "@/utils/axiosInstanceDoctor";
 
 
 export const getChatInboxDoctor = async (): Promise<ChatUser[]> => {
     try {
-        const response = await axiosInstanceDoctor.get("/api/doctor/inbox");
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/inbox`);
         return response.data.data
         
     } catch (error) {
