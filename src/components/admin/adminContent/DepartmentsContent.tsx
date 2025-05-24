@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import {
   createDepartment,
   featchAllDepartments,
+  fetchAllPaginatedDepartments,
   updateDepartmentStatus,
 } from "@/services/admin/adminServices";
 import { capitalizeWords } from "@/utils/Capitalize";
@@ -24,11 +25,12 @@ const DepartmentsContent: React.FC = () => {
   const [iconPreview, setIconPreview] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const respose = await featchAllDepartments();
+        const respose = await fetchAllPaginatedDepartments(page);
 
         setDepartments(respose.data);
       } catch (error) {
@@ -38,7 +40,7 @@ const DepartmentsContent: React.FC = () => {
       }
     };
     fetchDepartments();
-  }, []);
+  }, [page]);
 
   const { register, handleSubmit, setValue, reset } = useForm<{
     name: string;
@@ -157,8 +159,21 @@ const DepartmentsContent: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0e0e10] p-6 text-white">
       <div className="container mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Departments</h1>
-        <p className="text-gray-400 mb-4">Manage your hospital departments</p>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold mb-6">Departments</h1>
+            <p className="text-gray-400 mb-4">
+              Manage your hospital departments
+            </p>
+          </div>
+
+          <button
+            onClick={handleOpenModal}
+            className="px-4 py-2 rounded-full bg-[#232429] hover:bg-gray-700 text-[#3ee6e9] border border-[#3ee6e9] flex items-center gap-2 transition-all"
+          >
+            <Plus className="mr-2" /> Add New Department
+          </button>
+        </div>
 
         {/* Departments Listing */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
@@ -194,14 +209,6 @@ const DepartmentsContent: React.FC = () => {
         </div>
 
         {/* Add New Department Button */}
-        <div className="mt-6">
-          <button
-            onClick={handleOpenModal}
-            className="bg-[#3b83f2] text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-600 transition"
-          >
-            <Plus className="mr-2" /> Add New Department
-          </button>
-        </div>
 
         {/* Add Department Modal */}
         {isModalOpen && (
@@ -273,6 +280,22 @@ const DepartmentsContent: React.FC = () => {
             </div>
           </div>
         )}
+      </div>
+      <div className="flex justify-center mt-6 space-x-4">
+        <button
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          disabled={page === 1}
+          className="px-4 py-2 bg-gray-700 text-white rounded disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="text-white self-center">Page {page}</span>
+        <button
+          onClick={() => setPage((prev) => prev + 1)}
+          className="px-4 py-2 bg-gray-700 text-white rounded"
+        >
+          Next
+        </button>
       </div>
     </div>
   );

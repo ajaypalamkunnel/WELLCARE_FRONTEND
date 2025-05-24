@@ -36,6 +36,20 @@ export const featchAllDepartments = async () => {
 
 
 
+export const fetchAllPaginatedDepartments = async (page:number=1) =>{
+    try {
+
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/getallPaginateddepartments?page=${page}&limit=6`)
+
+        return response.data
+        
+    } catch (error) {
+        console.error("Error fetching departments:", error);
+        throw error;
+    }
+}
+
+
 export const updateDoctorStatus = async (_id: string, newStatus: number) => {
     try {
         console.log("updated servicee");
@@ -100,9 +114,9 @@ export const createNewPlan = async (data: PlanFormData) => {
     }
 }
 
-export const getAllSubscriptionPlans = async () => {
+export const getAllSubscriptionPlans = async (page:number,limit:number) => {
     try {
-        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/get-subscription-plans`)
+        const response = await axiosInstanceAdmin.get(`${API_PREFIX.ADMIN}/get-subscription-plans?page=${page}&limit=${limit}`)
         return response
     } catch (error) {
         console.error("Error fetching subscription plans:", error);
