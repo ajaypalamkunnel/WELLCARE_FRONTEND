@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Edit, PlayCircle, StopCircle, X, Plus } from 'lucide-react';
-import { useForm, Controller } from 'react-hook-form';
-import { createService, getServices, updateService } from '@/services/doctor/doctorService';
-import { useAuthStoreDoctor } from '@/store/doctor/authStore';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import { Edit, PlayCircle, StopCircle, X, Plus } from "lucide-react";
+import { useForm, Controller } from "react-hook-form";
+import {
+  createService,
+  getServices,
+  updateService,
+} from "@/services/doctor/doctorService";
+import { useAuthStoreDoctor } from "@/store/doctor/authStore";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 // Type definitions
 export interface ServiceData {
   _id?: string;
   name: string;
-  mode: 'Online' | 'In-Person' | 'Both';
+  mode: "Online" | "In-Person" | "Both";
   fee: number;
   description: string;
   doctorId?: string;
@@ -21,31 +26,33 @@ const DoctorServiceListing: React.FC = () => {
   // Auth store for doctor ID
   const { user } = useAuthStoreDoctor();
   const doctorId = user?.id;
-  
+
   // States
   const [services, setServices] = useState<ServiceData[]>([]);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [currentService, setCurrentService] = useState<ServiceData | null>(null);
+  const [currentService, setCurrentService] = useState<ServiceData | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
 
   // React Hook Form setup
-  const { 
-    control, 
-    handleSubmit, 
-    reset, 
-    formState: { errors } 
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
   } = useForm<ServiceData>({
     defaultValues: {
-      name: '',
-      mode: 'Online',
+      name: "",
+      mode: "Online",
       fee: 0,
-      description: '',
-      isActive: true
-    }
+      description: "",
+      isActive: true,
+    },
   });
-  
+
   // Fetch services on component mount
   useEffect(() => {
     const fetchServices = async () => {
@@ -55,11 +62,11 @@ const DoctorServiceListing: React.FC = () => {
         if (response.success) {
           setServices(response.data || []);
         } else {
-          toast.error(response.message || 'Failed to fetch services');
+          toast.error(response.message || "Failed to fetch services");
         }
       } catch (error) {
-        toast.error('An error occurred while fetching services');
-        console.error('Error fetching services:', error);
+        toast.error("An error occurred while fetching services");
+        console.error("Error fetching services:", error);
       } finally {
         setFetchLoading(false);
       }
@@ -82,7 +89,7 @@ const DoctorServiceListing: React.FC = () => {
       mode: service.mode,
       fee: service.fee,
       description: service.description,
-      isActive: service.isActive
+      isActive: service.isActive,
     });
     setEditModalOpen(true);
   };
@@ -90,11 +97,11 @@ const DoctorServiceListing: React.FC = () => {
   const handleAddNewService = () => {
     setCurrentService(null);
     reset({
-      name: '',
-      mode: 'Online',
+      name: "",
+      mode: "Online",
       fee: 0,
-      description: '',
-      isActive: true
+      description: "",
+      isActive: true,
     });
     setEditModalOpen(true);
   };
@@ -104,29 +111,35 @@ const DoctorServiceListing: React.FC = () => {
       toast.error("Service ID is missing");
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
       const updatedService = {
         ...service,
-        isActive: !service.isActive
+        isActive: !service.isActive,
       };
-      
+
       const response = await updateService(updatedService);
-      
+
       if (response.success) {
         // Update local state on success
-        setServices(services.map(s => 
-          s._id === service._id ? { ...s, isActive: !s.isActive } : s
-        ));
-        toast.success(`Service ${updatedService.isActive ? 'activated' : 'deactivated'} successfully`);
+        setServices(
+          services.map((s) =>
+            s._id === service._id ? { ...s, isActive: !s.isActive } : s
+          )
+        );
+        toast.success(
+          `Service ${
+            updatedService.isActive ? "activated" : "deactivated"
+          } successfully`
+        );
       } else {
-        toast.error(response.message || 'Failed to update service status');
+        toast.error(response.message || "Failed to update service status");
       }
     } catch (error) {
-      toast.error('An error occurred while updating service status');
-      console.error('Error toggling service status:', error);
+      toast.error("An error occurred while updating service status");
+      console.error("Error toggling service status:", error);
     } finally {
       setIsLoading(false);
     }
@@ -139,54 +152,66 @@ const DoctorServiceListing: React.FC = () => {
     }
 
     setIsLoading(true);
-    
+
     try {
       // Prepare data with doctorId
       const serviceData = {
         ...data,
-        doctorId
+        doctorId,
       };
-      
-      
-      
+
       if (currentService?._id) {
         // Update existing service
-       const response = await updateService({
+        const response = await updateService({
           ...serviceData,
           _id: currentService._id,
-          doctorId
+          doctorId,
         });
-        
+
         if (response.success) {
           // Update local state
-          setServices(services.map(service => 
-            service._id === currentService._id ? { ...response.data } : service
-          ));
-          toast.success('Service updated successfully') ;
+          setServices(
+            services.map((service) =>
+              service._id === currentService._id
+                ? { ...response.data }
+                : service
+            )
+          );
+          toast.success("Service updated successfully");
         } else {
-          toast.error(response.message || 'Failed to update service');
+          toast.error(response.message || "Failed to update service");
         }
       } else {
         // Create new service
-        const newData = {...data,doctorId}
-        console.log("----->",newData);
-        
-       const response = await createService(newData);
-        
+        const newData = { ...data, doctorId };
+        console.log("----->", newData);
+
+        const response = await createService(newData);
+
         if (response.success) {
           // Add new service to state
           setServices([...services, response.data]);
-          toast.success('Service created successfully');
+          toast.success("Service created successfully");
         } else {
-          toast.error(response.message || 'Failed to create service');
+          toast.error(response.message || "Failed to create service");
         }
       }
-      
+
       // Close modal after successful submit
       setEditModalOpen(false);
-    } catch (error) {
-      toast.error('An error occurred while saving the service');
-      console.error('Error submitting service:', error);
+    } catch (error: unknown) {
+      let errorMessage = "An error occurred while saving the service";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
+      toast.error(errorMessage);
+      
     } finally {
       setIsLoading(false);
     }
@@ -197,9 +222,11 @@ const DoctorServiceListing: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header with back button */}
         <div className="flex items-center mb-6">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800">Schedule & Service Management</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+            Schedule & Service Management
+          </h1>
           <div className="flex-grow"></div>
-          <button 
+          <button
             onClick={handleAddNewService}
             className="flex items-center gap-1 bg-[#03045e] text-white px-3 py-2 rounded-md text-sm"
             disabled={isLoading || fetchLoading}
@@ -216,29 +243,41 @@ const DoctorServiceListing: React.FC = () => {
           </div>
         ) : services.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <h3 className="text-lg font-medium text-gray-600">No services available</h3>
-            <p className="text-gray-500 mt-2">{"Click 'Add Service' to create your first service"}</p>
+            <h3 className="text-lg font-medium text-gray-600">
+              No services available
+            </h3>
+            <p className="text-gray-500 mt-2">
+              {"Click 'Add Service' to create your first service"}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {services.map(service => (
-              <div 
-                key={service._id} 
-                className={`bg-white rounded-lg shadow-sm border p-4 transition ${!service.isActive ? 'opacity-70' : ''}`}
+            {services.map((service) => (
+              <div
+                key={service._id}
+                className={`bg-white rounded-lg shadow-sm border p-4 transition ${
+                  !service.isActive ? "opacity-70" : ""
+                }`}
               >
                 <div className="flex justify-between items-start mb-3">
-                  <h2 className="text-lg font-semibold text-[#03045e]">{service.name}</h2>
+                  <h2 className="text-lg font-semibold text-[#03045e]">
+                    {service.name}
+                  </h2>
                   <div className="flex items-center justify-center px-2 py-1 bg-blue-50 rounded-md">
-                    <span className="text-xs text-blue-900">{service.mode}</span>
+                    <span className="text-xs text-blue-900">
+                      {service.mode}
+                    </span>
                   </div>
                 </div>
-                
+
                 <div className="mb-4">
                   <p className="text-gray-600 text-sm">
-                    <span className="font-medium text-gray-800">₹ {service.fee}</span>
+                    <span className="font-medium text-gray-800">
+                      ₹ {service.fee}
+                    </span>
                   </p>
                 </div>
-                
+
                 <div className="flex justify-between items-center">
                   <button
                     onClick={() => handleViewDetails(service)}
@@ -247,7 +286,7 @@ const DoctorServiceListing: React.FC = () => {
                   >
                     View Details
                   </button>
-                  
+
                   <div className="flex items-center">
                     <button
                       onClick={() => handleEditService(service)}
@@ -256,13 +295,21 @@ const DoctorServiceListing: React.FC = () => {
                     >
                       <Edit size={18} />
                     </button>
-                    
+
                     <button
                       onClick={() => handleToggleActive(service)}
-                      className={`p-2 ${service.isActive ? 'text-red-500 hover:text-red-600' : 'text-green-500 hover:text-green-600'}`}
+                      className={`p-2 ${
+                        service.isActive
+                          ? "text-red-500 hover:text-red-600"
+                          : "text-green-500 hover:text-green-600"
+                      }`}
                       disabled={isLoading}
                     >
-                      {service.isActive ? <StopCircle size={18} /> : <PlayCircle size={18} />}
+                      {service.isActive ? (
+                        <StopCircle size={18} />
+                      ) : (
+                        <PlayCircle size={18} />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -276,45 +323,60 @@ const DoctorServiceListing: React.FC = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg w-full max-w-md">
               <div className="flex justify-between items-center p-4 border-b">
-                <h2 className="text-lg font-semibold text-gray-800">Service Details</h2>
-                <button onClick={() => setViewModalOpen(false)} className="text-gray-500">
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Service Details
+                </h2>
+                <button
+                  onClick={() => setViewModalOpen(false)}
+                  className="text-gray-500"
+                >
                   <X size={20} />
                 </button>
               </div>
-              
+
               <div className="p-4">
                 <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-500">Service Name</h3>
+                  <h3 className="text-sm font-medium text-gray-500">
+                    Service Name
+                  </h3>
                   <p className="text-gray-800">{currentService.name}</p>
                 </div>
-                
+
                 <div className="mb-4">
                   <h3 className="text-sm font-medium text-gray-500">Mode</h3>
                   <p className="text-gray-800">{currentService.mode}</p>
                 </div>
-                
+
                 <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-500">Service Fee</h3>
+                  <h3 className="text-sm font-medium text-gray-500">
+                    Service Fee
+                  </h3>
                   <p className="text-gray-800">₹ {currentService.fee}</p>
                 </div>
-                
+
                 <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-500">Description</h3>
-                  <p className="text-gray-800">{currentService.description || 'No description provided'}</p>
+                  <h3 className="text-sm font-medium text-gray-500">
+                    Description
+                  </h3>
+                  <p className="text-gray-800">
+                    {currentService.description || "No description provided"}
+                  </p>
                 </div>
-                
+
                 {currentService.createdAt && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">Created At</h3>
+                    <h3 className="text-sm font-medium text-gray-500">
+                      Created At
+                    </h3>
                     <p className="text-gray-800">
                       {new Date(currentService.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 )}
               </div>
-              
+
               <div className="p-4 border-t flex justify-end">
-                <button 
+                <button
                   onClick={() => setViewModalOpen(false)}
                   className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
                 >
@@ -331,13 +393,16 @@ const DoctorServiceListing: React.FC = () => {
             <div className="bg-white rounded-lg w-full max-w-md">
               <div className="flex justify-between items-center p-4 border-b">
                 <h2 className="text-lg font-semibold text-gray-800">
-                  {currentService ? 'Edit Service' : 'Add New Service'}
+                  {currentService ? "Edit Service" : "Add New Service"}
                 </h2>
-                <button onClick={() => setEditModalOpen(false)} className="text-gray-500">
+                <button
+                  onClick={() => setEditModalOpen(false)}
+                  className="text-gray-500"
+                >
                   <X size={20} />
                 </button>
               </div>
-              
+
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="p-4">
                   <div className="mb-4">
@@ -347,9 +412,12 @@ const DoctorServiceListing: React.FC = () => {
                     <Controller
                       name="name"
                       control={control}
-                      rules={{ 
+                      rules={{
                         required: "Service name is required",
-                        minLength: { value: 3, message: "Name must be at least 3 characters" }
+                        minLength: {
+                          value: 3,
+                          message: "Name must be at least 3 characters",
+                        },
                       }}
                       render={({ field }) => (
                         <div>
@@ -357,16 +425,20 @@ const DoctorServiceListing: React.FC = () => {
                             {...field}
                             type="text"
                             placeholder="Enter service name"
-                            className={`w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                            className={`w-full p-2 border ${
+                              errors.name ? "border-red-500" : "border-gray-300"
+                            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                           />
                           {errors.name && (
-                            <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+                            <p className="mt-1 text-xs text-red-500">
+                              {errors.name.message}
+                            </p>
                           )}
                         </div>
                       )}
                     />
                   </div>
-                  
+
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Service Mode
@@ -382,43 +454,45 @@ const DoctorServiceListing: React.FC = () => {
                               <input
                                 type="radio"
                                 value="Online"
-                                checked={field.value === 'Online'}
-                                onChange={() => field.onChange('Online')}
+                                checked={field.value === "Online"}
+                                onChange={() => field.onChange("Online")}
                                 className="mr-1"
                               />
                               <span>Online Consultation</span>
                             </label>
-                            
+
                             <label className="flex items-center mb-2 sm:mb-0">
                               <input
                                 type="radio"
                                 value="In-Person"
-                                checked={field.value === 'In-Person'}
-                                onChange={() => field.onChange('In-Person')}
+                                checked={field.value === "In-Person"}
+                                onChange={() => field.onChange("In-Person")}
                                 className="mr-1"
                               />
                               <span>In-Person Visit</span>
                             </label>
-                            
+
                             <label className="flex items-center">
                               <input
                                 type="radio"
                                 value="Both"
-                                checked={field.value === 'Both'}
-                                onChange={() => field.onChange('Both')}
+                                checked={field.value === "Both"}
+                                onChange={() => field.onChange("Both")}
                                 className="mr-1"
                               />
                               <span>Both</span>
                             </label>
                           </div>
                           {errors.mode && (
-                            <p className="mt-1 text-xs text-red-500">{errors.mode.message}</p>
+                            <p className="mt-1 text-xs text-red-500">
+                              {errors.mode.message}
+                            </p>
                           )}
                         </div>
                       )}
                     />
                   </div>
-                  
+
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Service Fee (₹)
@@ -426,9 +500,12 @@ const DoctorServiceListing: React.FC = () => {
                     <Controller
                       name="fee"
                       control={control}
-                      rules={{ 
+                      rules={{
                         required: "Fee is required",
-                        min: { value: 10, message: "Fee must be greater than 10" }
+                        min: {
+                          value: 10,
+                          message: "Fee must be greater than 10",
+                        },
                       }}
                       render={({ field }) => (
                         <div>
@@ -436,16 +513,20 @@ const DoctorServiceListing: React.FC = () => {
                             {...field}
                             type="number"
                             placeholder="0"
-                            className={`w-full p-2 border ${errors.fee ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                            className={`w-full p-2 border ${
+                              errors.fee ? "border-red-500" : "border-gray-300"
+                            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                           />
                           {errors.fee && (
-                            <p className="mt-1 text-xs text-red-500">{errors.fee.message}</p>
+                            <p className="mt-1 text-xs text-red-500">
+                              {errors.fee.message}
+                            </p>
                           )}
                         </div>
                       )}
                     />
                   </div>
-                  
+
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Description
@@ -453,9 +534,12 @@ const DoctorServiceListing: React.FC = () => {
                     <Controller
                       name="description"
                       control={control}
-                      rules={{ 
+                      rules={{
                         required: "Description is required",
-                        maxLength: { value: 500, message: "Description cannot exceed 500 characters" }
+                        maxLength: {
+                          value: 500,
+                          message: "Description cannot exceed 500 characters",
+                        },
                       }}
                       render={({ field }) => (
                         <div>
@@ -463,16 +547,22 @@ const DoctorServiceListing: React.FC = () => {
                             {...field}
                             placeholder="Enter service description"
                             rows={3}
-                            className={`w-full p-2 border ${errors.description ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                            className={`w-full p-2 border ${
+                              errors.description
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                           />
                           {errors.description && (
-                            <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>
+                            <p className="mt-1 text-xs text-red-500">
+                              {errors.description.message}
+                            </p>
                           )}
                         </div>
                       )}
                     />
                   </div>
-                  
+
                   <div className="mb-4">
                     <Controller
                       name="isActive"
@@ -485,15 +575,17 @@ const DoctorServiceListing: React.FC = () => {
                             onChange={(e) => field.onChange(e.target.checked)}
                             className="mr-2 h-4 w-4 text-blue-600"
                           />
-                          <span className="text-sm font-medium text-gray-700">Active Service</span>
+                          <span className="text-sm font-medium text-gray-700">
+                            Active Service
+                          </span>
                         </label>
                       )}
                     />
                   </div>
                 </div>
-                
+
                 <div className="p-4 border-t flex justify-end space-x-2">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setEditModalOpen(false)}
                     className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
@@ -501,18 +593,34 @@ const DoctorServiceListing: React.FC = () => {
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     type="submit"
                     className="px-4 py-2 bg-[#03045e] text-white rounded-md hover:bg-blue-800 flex items-center"
                     disabled={isLoading}
                   >
                     {isLoading && (
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                     )}
-                    {currentService ? 'Update Service' : 'Create Service'}
+                    {currentService ? "Update Service" : "Create Service"}
                   </button>
                 </div>
               </form>

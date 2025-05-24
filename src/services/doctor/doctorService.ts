@@ -124,7 +124,7 @@ export const createService = async (data: ServiceData) => {
         return response.data
 
     } catch (error) {
-        console.error("Error creating service:", error);
+        
         throw error;
     }
 }
