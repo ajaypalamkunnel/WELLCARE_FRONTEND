@@ -116,6 +116,21 @@ export interface AppointmentListItemDTO {
   };
 }
 
+export interface GeneratedSlot {
+  slot_id: string;
+  start_time: string | Date;
+  end_time: string | Date;
+  is_break: boolean;
+  status: string;
+}
+
+export interface GeneratedScheduleBlock {
+  date: Date;
+  start_time: Date;
+  end_time: Date;
+  conflict: boolean;
+  slots: GeneratedSlot[];
+}
 
 
 

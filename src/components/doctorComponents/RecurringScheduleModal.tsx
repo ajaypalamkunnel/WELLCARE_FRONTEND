@@ -4,7 +4,6 @@ import { Dialog } from "@headlessui/react";
 import {
   XMarkIcon,
   CalendarIcon,
-  ClockIcon,
   PlusIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
@@ -15,6 +14,8 @@ import { getServices } from "@/services/doctor/doctorService";
 import { generateRecurringSlots } from "@/services/doctor/doctorService";
 import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { createMultiDaySchedule } from "@/services/doctor/doctorService";
+import { ServiceData } from "./ServiceComponent";
+import { GeneratedScheduleBlock, GeneratedSlot } from "@/types/slotBooking";
 
 export interface TimeBlock {
   start_time: string;
@@ -33,16 +34,6 @@ interface RecurringScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const formatTime = (timeString: string) => {
-  const date = new Date(timeString);
-  return date.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: "UTC", // 👈 Force UTC time
-  });
-};
 
 export default function RecurringScheduleModal({
   isOpen,
@@ -73,8 +64,10 @@ export default function RecurringScheduleModal({
     name: "timeBlocks",
   });
 
-  const [services, setServices] = useState<any[]>([]);
-  const [generatedSchedules, setGeneratedSchedules] = useState<any[]>([]);
+  const [services, setServices] = useState<ServiceData[]>([]);
+  const [generatedSchedules, setGeneratedSchedules] = useState<
+    GeneratedScheduleBlock[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -108,8 +101,13 @@ export default function RecurringScheduleModal({
       } else {
         toast.error(response.message || "Failed to generate slots");
       }
-    } catch (err: any) {
-      toast.error("Error generating slots");
+    } catch (err: unknown) {
+      let errorMessage = "An error occurred while submitting schedule";
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      toast.error(errorMessage);
       console.error("Preview error", err);
     } finally {
       setLoading(false);
@@ -156,6 +154,8 @@ export default function RecurringScheduleModal({
     onClose();
   };
 
+  console.log("***Generated slots ", generatedSchedules);
+
   if (!isOpen) return null;
 
   return (
@@ -192,7 +192,7 @@ export default function RecurringScheduleModal({
           {/* Form */}
           <form onSubmit={handleSubmit(onPreview)} className="mt-4 space-y-4">
             {/* Date pickers */}
-            {["startDate", "endDate"].map((fieldName, idx) => (
+            {["startDate", "endDate"].map((fieldName) => (
               <div key={fieldName}>
                 <label
                   htmlFor={fieldName}
@@ -371,7 +371,7 @@ export default function RecurringScheduleModal({
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {schedule.slots.map((slot: any) => {
+                      {schedule.slots.map((slot: GeneratedSlot) => {
                         const start = new Date(
                           slot.start_time
                         ).toLocaleTimeString("en-IN", {

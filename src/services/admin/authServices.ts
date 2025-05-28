@@ -1,6 +1,6 @@
 import { API_PREFIX } from "@/constants/apiRoutes"
 import { DoctorFilterParams } from "@/types/adminDashboardDoctoryAnlyticsDto"
-import axiosInstance, { API_BASE_URL } from "@/utils/axiosInstance"
+import axiosInstance from "@/utils/axiosInstance"
 import axiosInstanceAdmin from "@/utils/axiosInstanceAdmin"
 import axios from "axios"
 
