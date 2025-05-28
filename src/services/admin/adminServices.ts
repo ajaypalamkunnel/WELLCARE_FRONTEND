@@ -104,6 +104,7 @@ export const updateDepartmentStatus = async (deptId: string, status: boolean) =>
 }
 
 
+
 export const createNewPlan = async (data: PlanFormData) => {
     try {
         const response = await axiosInstanceAdmin.post(`${API_PREFIX.ADMIN}/create-subscription-plan`, { subscriptionData: data })
@@ -174,8 +175,6 @@ export const fetchRevenueTrend = async (
         throw error;
     }
 }
-
-
 
 export const fetchPlanDistribution = async (startDate?: string, endDate?: string) => {
     try {
@@ -260,6 +259,9 @@ export const fetchTopPerformingDoctors = async (): Promise<TopDoctorDTO[]> => {
         throw error;
     }
 };
+
+
+
 
 
 export const fetchDoctorDocument = async (

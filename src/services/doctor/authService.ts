@@ -56,6 +56,8 @@ export const login_doctor = async (email: string, password: string): Promise<{ d
     try {
         const response = await axiosInstance.post(`${API_PREFIX.DOCTOR}/login`, { email, password })
         const { doctorAccessToken, doctor } = response.data
+        console.log("data: ",doctor);
+        
         return { doctorAccessToken, doctor }
     } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
@@ -102,5 +104,23 @@ export const fetchDoctorProfile = async (): Promise<IDoctorProfileDataType | nul
     } catch (error) {
         console.error("Error fetching patient profile:", error);
         return null;
+    }
+}
+
+
+
+export const getRegisteredDoctorData = async ()=>{
+    try {
+
+        const response = await axiosInstanceDoctor.get(`${API_PREFIX.DOCTOR}/registration-data`)
+
+        console.log(response.data);
+        
+
+        return response.data
+        
+    } catch (error) {
+         console.error("Error geting registred data:", error);
+        throw error;
     }
 }

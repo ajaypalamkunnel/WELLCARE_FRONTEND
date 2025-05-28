@@ -10,10 +10,11 @@ interface AuthStateDoctor{
     isVerified?:boolean|null;
     isSubscribed: boolean | null;  // New field for subscription status
     subscriptionExpiryDate: string | null;
+    status?:number|null
     setVerification:(isVerified?:boolean)=>void
     setEmailDoctor:(email:string)=>void,
     setSubscription:(isSubscribed:boolean)=>void,
-    setAuthDoctor:(email:string,accessToken:string,user:IUser,isSubscribed: boolean,isVerified:boolean, subscriptionExpiryDate: string)=>void
+    setAuthDoctor:(email:string,accessToken:string,user:IUser,isSubscribed: boolean,isVerified:boolean, subscriptionExpiryDate: string,status?:number)=>void
     logout:()=>void
     adminLogout:()=>void
 }
@@ -29,17 +30,18 @@ export const useAuthStoreDoctor = create<AuthStateDoctor>()(
             isVerified:null,
             isSubscribed: null,  //  Default value is `null`
             subscriptionExpiryDate: null,
+            status:null,
             setVerification:(isVerified)=>set({isVerified}),
             setEmailDoctor:(emailDoctor) => set({emailDoctor}),
             setSubscription(isSubscribed) {
                 set({isSubscribed})
             },
-            setAuthDoctor: (emailDoctor, accessTokenDoctor, user, isSubscribed,isVerified, subscriptionExpiryDate) =>
-              set({ emailDoctor, accessTokenDoctor, user, isSubscribed,isVerified, subscriptionExpiryDate }, false, "setAuth"), 
-            logout: () => set({ emailDoctor: null, accessTokenDoctor: null, user: null,isSubscribed: null, subscriptionExpiryDate: null }, false, "logout"),
+            setAuthDoctor: (emailDoctor, accessTokenDoctor, user, isSubscribed,isVerified, subscriptionExpiryDate,status) =>
+              set({ emailDoctor, accessTokenDoctor, user, isSubscribed,isVerified, subscriptionExpiryDate,status }, false, "setAuth"), 
+            logout: () => set({ emailDoctor: null, accessTokenDoctor: null, user: null,isSubscribed: null, subscriptionExpiryDate: null,status:null }, false, "logout"),
             adminLogout: () => {
               console.warn("Doctor logged out (blocked or manually)");
-              set({ emailDoctor: null, accessTokenDoctor: null, user: null,isSubscribed: null, subscriptionExpiryDate: null }, false, "logout");
+              set({ emailDoctor: null, accessTokenDoctor: null, user: null,isSubscribed: null, subscriptionExpiryDate: null,status:null }, false, "logout");
               toast.error("Your access is restricted by admin",{
                 duration:3000
               })

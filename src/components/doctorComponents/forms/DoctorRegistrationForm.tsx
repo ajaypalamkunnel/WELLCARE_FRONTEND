@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ArrowLeft, ArrowRight, Rocket, Loader } from "lucide-react";
 
@@ -12,10 +12,15 @@ import Step2Education from "../forms/steps/Step2Education";
 import Step3Documents from "../forms/steps/Step3Documents";
 import Step4Review from "../forms/steps/Step4Review";
 import axios from "axios";
+import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import { doctorRegistration } from "@/services/doctor/doctorService";
 import toast from "react-hot-toast";
-import { DoctorFormValues, ICertificate, IEducation } from "@/types/doctorRegistrationFormTypes";
-
+import {
+  DoctorFormValues,
+  ICertificate,
+  IEducation,
+} from "@/types/doctorRegistrationFormTypes";
+import { getRegisteredDoctorData } from "@/services/doctor/authService";
 
 const steps = [
   { id: 1, name: "Profile" },
@@ -28,6 +33,7 @@ const DoctorRegistrationForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [animating, setAnimating] = useState(false);
   const [loading, setLoading] = useState(false);
+  const status = useAuthStoreDoctor().status;
   const {
     register,
     handleSubmit,
@@ -36,6 +42,7 @@ const DoctorRegistrationForm = () => {
     setValue,
     setError,
     getValues,
+    reset,
   } = useForm<DoctorFormValues>({
     mode: "all", // Validate form on change
     defaultValues: {
@@ -43,6 +50,75 @@ const DoctorRegistrationForm = () => {
       certifications: [{ name: "", issuedBy: "", yearOfIssue: "" }],
     },
   });
+
+  useEffect(() => {
+    if (status !== -2) return;
+    const fetchDoctorData = async () => {
+      try {
+        const response = await getRegisteredDoctorData();
+        const doctor = response.data;
+        console.log("data got : ", response.data);
+
+        const prefillData: DoctorFormValues = {
+          fullName: doctor.fullName || "",
+          email: doctor.email || "",
+          mobile: doctor.mobile || "",
+          gender: doctor.gender || "",
+          departmentId: doctor.departmentId || "",
+          experience: doctor.experience || 0,
+          specialization: doctor.specialization || "",
+          profileImage: doctor.profileImage || "",
+          availability: doctor.availability || [],
+          clinicAddress: {
+            clinicName: doctor.clinicAddress?.clinicName || "",
+            street: doctor.clinicAddress?.street || "",
+            city: doctor.clinicAddress?.city || "",
+            state: doctor.clinicAddress?.state || "",
+            postalCode: doctor.clinicAddress?.postalCode || "",
+            country: doctor.clinicAddress?.country || "",
+            // location: doctor.clinicAddress?.location || [],
+          },
+          education: doctor.education?.length
+            ? doctor.education
+            : [{ degree: "", institution: "", yearOfCompletion: "" }],
+          certifications: doctor.certifications?.length
+            ? doctor.certifications
+            : [{ name: "", issuedBy: "", yearOfIssue: "" }],
+          licenseNumber: doctor.licenseNumber || "",
+          licenseDocument: doctor.licenseDocument || "",
+          IDProofDocument: doctor.IDProofDocument || "",
+        };
+
+        reset(prefillData);
+
+        if (typeof doctor.licenseDocument === "string") {
+          setValue("licenseDocument", doctor.licenseDocument);
+        }
+        if (typeof doctor.IDProofDocument === "string") {
+          setValue("IDProofDocument", doctor.IDProofDocument);
+        }
+
+        toast.success("Form restored from previous submission.");
+      } catch (error: unknown) {
+        let errorMessage = "Unexpected error occurred";
+
+        // If it's an Axios error, extract the message
+        if (axios.isAxiosError(error)) {
+          errorMessage =
+            error.response?.data?.message ||
+            error.message ||
+            "Failed to fetch registration data";
+        } else if (error instanceof Error) {
+          errorMessage = error.message || errorMessage;
+        }
+
+        console.error("Doctor data fetch failed:", error);
+        toast.error(errorMessage);
+      }
+    };
+
+    fetchDoctorData();
+  }, [status, reset, setValue]);
 
   //------------------------------ cloudinary uploading-------------------------------------
 
@@ -56,7 +132,6 @@ const DoctorRegistrationForm = () => {
       return null;
     }
 
-    
     const CLOUDINARY_CLOUD_NAME = "dy3yrxbmg";
     const CLOUDINARY_UPLOAD_PRESET = "doctor-documents";
 
@@ -84,40 +159,33 @@ const DoctorRegistrationForm = () => {
   const router = useRouter();
   //--------------------------------- Handle form submission--------------------------------
   const onSubmit = async (data: DoctorFormValues) => {
-    
-    
-
     setLoading(true);
 
     if (!data.licenseDocument) {
-    setError("licenseDocument", {
-      type: "manual",
-      message: "Please upload license document",
-    });
-    setLoading(false);
-    return;
-  }
+      setError("licenseDocument", {
+        type: "manual",
+        message: "Please upload license document",
+      });
+      setLoading(false);
+      return;
+    }
 
-  if (!data.IDProofDocument) {
-    setError("IDProofDocument", {
-      type: "manual",
-      message: "Please upload ID proof document",
-    });
-    setLoading(false);
-    return;
-  }
-
+    if (!data.IDProofDocument) {
+      setError("IDProofDocument", {
+        type: "manual",
+        message: "Please upload ID proof document",
+      });
+      setLoading(false);
+      return;
+    }
 
     // Extract the first file from FileList using type guard
-    const isFileList = (value: unknown): value is FileList => {
-      return (
-        value instanceof FileList ||
-        (typeof value === "object" &&
-          value !== null &&
-          "length" in value &&
-          typeof (value as FileList).item === "function")
-      );
-    };
+    const isFileList = (value: unknown): value is FileList =>
+      value instanceof FileList ||
+      (typeof value === "object" &&
+        value !== null &&
+        "length" in value &&
+        typeof (value as FileList).item === "function");
 
     const licenseDocFile = isFileList(data.licenseDocument)
       ? data.licenseDocument[0]
@@ -127,23 +195,24 @@ const DoctorRegistrationForm = () => {
       : data.IDProofDocument;
 
     // Upload files
-    const avatarUrl = data.profileImage
-      ? await uploadToCloudinary(data.profileImage)
-      : null;
-    const licenseDocUrl = licenseDocFile
-      ? await uploadToCloudinary(licenseDocFile)
-      : null;
-    const idProofUrl = idProofFile
-      ? await uploadToCloudinary(idProofFile)
-      : null;
-    
-
+    const avatarUrl =
+      typeof data.profileImage === "string"
+        ? data.profileImage // 💬 ✅ already uploaded
+        : await uploadToCloudinary(data.profileImage!);
+    const licenseDocUrl =
+      typeof licenseDocFile === "string"
+        ? licenseDocFile
+        : await uploadToCloudinary(licenseDocFile);
+    const idProofUrl =
+      typeof idProofFile === "string"
+        ? idProofFile
+        : await uploadToCloudinary(idProofFile);
     if (!avatarUrl || !licenseDocUrl || !idProofUrl) {
       toast.error("File upload failed. Please try again.");
+      setLoading(false);
       return;
     }
 
-   
     const doctorProfileData = {
       ...data,
       profileImage: avatarUrl,
@@ -153,17 +222,16 @@ const DoctorRegistrationForm = () => {
     console.log("Final Payload Sent to API:", doctorProfileData);
     try {
       const responseData = await doctorRegistration({ ...doctorProfileData });
-      console.log("Form response : ",responseData);
-      
-      if(responseData && responseData.success){
+      console.log("Form response : ", responseData);
 
-        toast.success("Registration Successfull it will verified by Administarative Team");
+      if (responseData && responseData.success) {
+        toast.success(
+          "Registration Successfull it will verified by Administarative Team"
+        );
 
-        setTimeout(()=>{
-          router.push("/doctordashboard/home")
-        },3000)
-
-
+        setTimeout(() => {
+          router.push("/doctordashboard/home");
+        }, 3000);
       }
     } catch (error) {
       toast.error("Failed to submit registration. Please try again.");
@@ -247,7 +315,7 @@ const DoctorRegistrationForm = () => {
       if (field === "education") {
         const education = watch("education");
         return education.some(
-          (edu:IEducation, index: number) =>
+          (edu: IEducation, index: number) =>
             errors.education && errors.education[index]
         );
       }
@@ -285,7 +353,6 @@ const DoctorRegistrationForm = () => {
             watch={watch}
             setValue={setValue}
             getValues={getValues}
-            
           />
         );
       case 3:

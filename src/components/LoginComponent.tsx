@@ -67,14 +67,17 @@ const LoginComponent: React.FC = () => {
         const isSubscribed = doctor.isSubscribed ?? false;
         const subscriptionExpiryDate = doctor.subscriptionExpiryDate ?? "";
         const isVerified = doctor.isVerified;
-
+        const status = doctor.status
+        console.log("===>status: ",status);
+        
         setAuthDoctor(
           doctor.email,
           doctorAccessToken,
           doctor,
           isSubscribed,
           isVerified!,
-          subscriptionExpiryDate
+          subscriptionExpiryDate,
+          status
         );
         // console.log("********>",doctor);
 

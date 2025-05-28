@@ -6,6 +6,7 @@ export interface IUser {
     subscriptionExpiryDate?:string
     isVerified?:boolean // is tther is any issue happend in this field change to lower v to capital V
     profileUrl?:string
+    status?:number
   }
 
 
