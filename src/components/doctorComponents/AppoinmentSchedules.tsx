@@ -23,6 +23,7 @@ import { useAuthStoreDoctor } from "@/store/doctor/authStore";
 import toast from "react-hot-toast";
 import ScheduleModal from "./ScheduleModal";
 import { AxiosError } from "axios";
+import RecurringScheduleModal from "./RecurringScheduleModal";
 
 // Interfaces
 interface Doctor {
@@ -112,6 +113,7 @@ export default function DoctorScheduleManager() {
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [isRecurringScheduleModalOpen,setIsRecurringScheduleModalOpen] = useState(false);
   const [availableServices, setAvailableServices] = useState<ServiceData[]>([]);
 
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
@@ -290,7 +292,7 @@ export default function DoctorScheduleManager() {
     }
   };
 
-  const formatTime = (timeString: string) => {
+   const formatTime = (timeString: string) => {
     const date = new Date(timeString);
     return date.toLocaleTimeString("en-US", {
       hour: "2-digit",
@@ -323,14 +325,22 @@ export default function DoctorScheduleManager() {
               View and manage appointment schedules for your medical practice
             </p>
           </div>
-          <div className="mt-4 flex md:mt-0 md:ml-4">
+          <div className="mt-4 flex space-x-2 md:mt-0 md:ml-4">
             <button
               type="button"
               onClick={() => setIsScheduleModalOpen(true)}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#03045e] hover:bg-[#020344] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
             >
               <CalendarDaysIcon className="h-5 w-5 mr-2" />
-              Add Schedule
+              Add per day Schedule
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsRecurringScheduleModalOpen(true)}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#03045e] hover:bg-[#020344] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+            >
+              <CalendarDaysIcon className="h-5 w-5 mr-2" />
+              Add Multiple day Schedule
             </button>
           </div>
         </div>
@@ -924,6 +934,11 @@ export default function DoctorScheduleManager() {
         isOpen={isScheduleModalOpen}
         onClose={() => setIsScheduleModalOpen(false)}
         onSubmit={handleNewScheduleAdded}
+      />
+
+      <RecurringScheduleModal
+      isOpen={isRecurringScheduleModalOpen}
+      onClose={()=>setIsRecurringScheduleModalOpen(false)}
       />
     </div>
   );

@@ -8,6 +8,7 @@ import {
   updateUserStatus,
 } from "@/services/admin/adminServices";
 import useDebounce from "@/hooks/useDebounce";
+import PatientDetailsModal from "./PatientDetailsModal";
 
 const PatientsContent = () => {
   const [patients, setPatients] = useState<IUser[]>([]);
@@ -15,19 +16,24 @@ const PatientsContent = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-const [searchTerm, setSearchTerm] = useState("");
-const debouncedSearchTerm = useDebounce(searchTerm,500)
-  useEffect(() => {
-   
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPatient, setSelectedPatient] = useState<IUser | null>(null);
+  const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  useEffect(() => {
     const getPatients = async () => {
       try {
         setLoading(true);
-        const response = await fetchAllPatients(currentPage, 6,debouncedSearchTerm);
+        const response = await fetchAllPatients(
+          currentPage,
+          6,
+          debouncedSearchTerm
+        );
         console.log(response);
 
         setPatients(response?.data.users);
-        setTotalPages(response.data.totalPages||0);
+        setTotalPages(response.data.totalPages || 0);
       } catch (error) {
         console.error("Error fetching patients:", error);
         setError("Failed to fetch patients");
@@ -38,7 +44,12 @@ const debouncedSearchTerm = useDebounce(searchTerm,500)
     };
 
     getPatients();
-  }, [currentPage,debouncedSearchTerm]);
+  }, [currentPage, debouncedSearchTerm]);
+
+  const handleViewDetails = (patient: IUser) => {
+    setSelectedPatient(patient);
+    setIsPatientModalOpen(true);
+  };
 
   //--------------------------------pagination Handler functions----------------------------
   const handleNextPage = () => {
@@ -54,9 +65,9 @@ const debouncedSearchTerm = useDebounce(searchTerm,500)
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchTerm(event.target.value);
-      setCurrentPage(1);
-    };
+    setSearchTerm(event.target.value);
+    setCurrentPage(1);
+  };
 
   const handleBlock = async (_id: string, currentStatus: number) => {
     try {
@@ -91,7 +102,7 @@ const debouncedSearchTerm = useDebounce(searchTerm,500)
     >
       <h2 className="text-2xl font-bold text-white mb-6">Patients</h2>
 
-       <div className="relative mb-6">
+      <div className="relative mb-6">
         <input
           type="text"
           placeholder="Search by doctor name..."
@@ -102,9 +113,7 @@ const debouncedSearchTerm = useDebounce(searchTerm,500)
         <Search className="absolute left-3 top-3 text-gray-400" size={18} />
       </div>
 
-
-
-     {!loading && !error && patients.length === 0 && (
+      {!loading && !error && patients.length === 0 && (
         <p className="text-center text-white text-lg mt-4">No results found.</p>
       )}
       {error && <p className="text-red-500">{error}</p>}
@@ -118,6 +127,7 @@ const debouncedSearchTerm = useDebounce(searchTerm,500)
             phone={patient?.mobile || "NA"}
             status={patient?.status}
             onBlock={() => handleBlock(patient._id!, patient.status!)}
+            onViewDetails={() => handleViewDetails(patient)}
           />
         ))}
       </div>
@@ -153,6 +163,14 @@ const debouncedSearchTerm = useDebounce(searchTerm,500)
             <ArrowRight className="w-5 h-5 text-black" />
           </button>
         </div>
+      )}
+
+      {selectedPatient && (
+        <PatientDetailsModal
+          isOpen={isPatientModalOpen}
+          patient={selectedPatient}
+          onClose={() => setIsPatientModalOpen(false)}
+        />
       )}
     </div>
   );

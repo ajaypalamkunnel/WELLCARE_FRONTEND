@@ -54,17 +54,22 @@ const LogoutConfirmationModal: React.FC<LogoutModalProps> = ({
 
   if (!isOpen) return null;
   // Define color classes based on user type
-  const themeColorClasses =
-    userType === "doctor"
-      ? "text-[#02045e] border-[#02045e] bg-[#02045e] ring-[#02045e]/30 bg-[#02045e]/10 focus:ring-[#02045e]/30"
-      : "text-[#04bf3e] border-[#04bf3e] bg-[#04bf3e] ring-[#04bf3e]/30 bg-[#04bf3e]/10 focus:ring-[#04bf3e]/30";
+  const colorClasses = {
+    doctor: {
+      text: "text-[#02045e]",
+      bg: "bg-[#02045e]",
+      bgLight: "bg-[#02045e]/10",
+      focusRing: "focus:ring-[#02045e]/30",
+    },
+    patient: {
+      text: "text-[#04bf3e]",
+      bg: "bg-[#04bf3e]",
+      bgLight: "bg-[#04bf3e]/10",
+      focusRing: "focus:ring-[#04bf3e]/30",
+    },
+  };
 
-  const [
-    colorText,
-    colorBg,
-    colorBgLight,
-    colorFocusRing,
-  ] = themeColorClasses.split(" ");
+  const { text, bg, bgLight, focusRing } = colorClasses[userType];
 
   return (
     // Modal backdrop
@@ -73,11 +78,11 @@ const LogoutConfirmationModal: React.FC<LogoutModalProps> = ({
       <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden animate-fadeIn">
         {/* Modal header */}
         <div
-          className={`px-6 py-4 flex items-center justify-between ${colorBgLight}`}
+          className={`px-6 py-4 flex items-center justify-between ${bgLight}`}
         >
           <div className="flex items-center">
-            <AlertTriangle className={`mr-2 ${colorText}`} size={20} />
-            <h3 className={`font-semibold ${colorText}`}>Confirm Logout</h3>
+            <AlertTriangle className={`mr-2 ${text}`} size={20} />
+            <h3 className={`font-semibold ${text}`}>Confirm Logout</h3>
           </div>
           <button
             onClick={() => {
@@ -113,7 +118,7 @@ const LogoutConfirmationModal: React.FC<LogoutModalProps> = ({
 
           <button
             onClick={handleLogout}
-            className={`px-4 py-2 rounded-md text-white flex items-center transition-colors focus:outline-none focus:ring-2 ${colorBg} ${colorFocusRing} hover:opacity-90`}
+            className={`px-4 py-2 rounded-md text-white flex items-center transition-colors focus:outline-none focus:ring-2 ${bg} ${focusRing} hover:opacity-90`}
           >
             <LogOut size={16} className="mr-2" />
             Logout

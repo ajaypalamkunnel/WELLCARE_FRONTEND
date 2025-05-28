@@ -1,6 +1,7 @@
 import { FilterParams } from "@/components/doctorComponents/AppoinmentSchedules";
 import { DoctorProfileUpdateForm } from "@/components/doctorComponents/forms/modals/EditProfileModal";
 import { CertificationFormData, EducationFormData } from "@/components/doctorComponents/forms/qualification/QualificationManagement";
+import { RecurringScheduleForm } from "@/components/doctorComponents/RecurringScheduleModal";
 import { FormValues, ScheduleCreationData } from "@/components/doctorComponents/ScheduleModal";
 import { ServiceData } from "@/components/doctorComponents/ServiceComponent";
 import { RazorpayPaymentResponse } from "@/components/doctorComponents/Subscription";
@@ -229,6 +230,52 @@ export const createSchedule = async (data: ScheduleCreationData) => {
         };
     }
 }
+
+
+
+
+export const generateRecurringSlots = async (data: RecurringScheduleForm & { doctorId: string }) => {
+  try {
+
+    console.log("generate Recuring slots : ",data);
+    
+
+
+    const response = await axiosInstanceDoctor.post(
+      `${API_PREFIX.DOCTOR}/generate-recurring-slots`,
+      data
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    console.error("Error while generating recurring slots:", error);
+    return {
+      success: false,
+      message: getErrorMessage(error),
+    };
+  }
+};
+
+export const createMultiDaySchedule = async (data: RecurringScheduleForm & { doctorId: string }) => {
+  try {
+    const response = await axiosInstanceDoctor.post(
+      `${API_PREFIX.DOCTOR}/create-multi-day-schedule`,
+      data
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    console.error("Error while creating recurring schedule:", error);
+    return {
+      success: false,
+      message: getErrorMessage(error),
+    };
+  }
+};
+
+
+
+
 
 export const fetchSchedules = async (params: FilterParams) => {
     try {

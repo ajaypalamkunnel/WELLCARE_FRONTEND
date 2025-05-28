@@ -151,7 +151,7 @@ const DoctorAppointmentDetail: React.FC<DoctorAppointmentDetailProps> = ({
           <h1 className="text-2xl font-bold text-indigo-900">
             Appointment Details
           </h1>
-          <div className="text-gray-600 mt-1">ID: {appointment._id}</div>
+          <div className="text-gray-600 mt-1">ID: WC{appointment._id.slice(-4)}</div>
         </div>
         <div className="flex flex-col mt-4 md:mt-0 md:items-end">
           <div

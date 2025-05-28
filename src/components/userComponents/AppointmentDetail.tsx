@@ -235,7 +235,7 @@ const AppointmentDetail: React.FC<Props> = ({ appointmentId, onBack }) => {
             {appointment.status}
           </span>
           <span className="text-gray-500 text-sm ml-2">
-            ID: {appointment._id.substring(0, 8)}
+            ID: WC{appointment._id.slice(-4)}
           </span>
         </div>
         <div
