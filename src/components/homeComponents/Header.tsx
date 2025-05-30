@@ -145,7 +145,7 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
               />
             </>
            <Link
-           href="user/chat"
+           href="user/about"
            className="flex items-center hover:text-gray-900"
            >
             <BadgeInfo size={18} className="mr-1"/>
@@ -249,6 +249,15 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
               <div className="flex items-center">
                 <Video size={18} className="mr-2" />
                 <span>Video Consultation</span>
+              </div>
+            </Link>
+            <Link
+              href="/user/about"
+              className="block py-2 px-1 text-gray-600 hover:text-gray-900"
+            >
+              <div className="flex items-center">
+                <MessageCircle size={18} className="mr-1" />
+                <span>Messages</span>
               </div>
             </Link>
             <Link

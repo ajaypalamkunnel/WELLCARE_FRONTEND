@@ -1,5 +1,5 @@
 "use client";
-import {useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/user/authStore";
 import { IUser } from "@/types/userTypes";
@@ -9,7 +9,6 @@ const AuthSuccess = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setAuth } = useAuthStore();
-  
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -18,35 +17,46 @@ const AuthSuccess = () => {
         const user = searchParams.get("user");
         const accessToken: string | null = searchParams.get("accesstoken");
 
-        if (user) {
-          const userData = JSON.parse(decodeURIComponent(user));
-          console.log("Auth succes===>", userData);
-          const userDataToStore: IUser = {
-            id: userData?._id,
-            email: userData?.email,
-            fullName: userData?.fullName,
-          };
-          console.log("data to store: ==>", userDataToStore);
+        if (!user || !accessToken) {
+          toast.error("Missing authentication data.");
+          router.replace("/login");
+          return;
+        }
 
-          if (role === "doctor") {
-            // setAuthDoctor(userData?.email, accessToken!, userDataToStore);
-            toast.success("Login successfull!");
-            router.replace("/doctordashboard/home");
-          } else {
-            setAuth(userData?.email, accessToken!,userData?.isVerified, userDataToStore);
-            toast.success("Login successfull!");
-            router.replace("/");
-          }
+        const userData = JSON.parse(decodeURIComponent(user));
+        const userDataToStore: IUser = {
+          id: userData?._id,
+          email: userData?.email,
+          fullName: userData?.fullName,
+        };
+
+        console.log("logger :",userDataToStore);
+        
+
+        // Store access token in global state
+        setAuth(
+          userData?.email,
+          accessToken,
+          userData?.isVerified,
+          userDataToStore
+        );
+
+        toast.success("Login successful!");
+
+        if (role === "doctor") {
+          router.replace("/doctordashboard/home");
+        } else {
+          router.replace("/");
         }
       } catch (error) {
-        console.error(error);
-
+        console.error("Auth success error:", error);
+        toast.error("Failed to process login.");
         router.replace("/login?error=FetchTokensFailed");
       }
     };
 
     fetchTokens();
-  }, [router]);
+  }, [router, searchParams]);
 
   return <p>Processing login...</p>;
 };
