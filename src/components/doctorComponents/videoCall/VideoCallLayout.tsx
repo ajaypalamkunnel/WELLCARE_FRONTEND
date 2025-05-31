@@ -62,17 +62,17 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
     }
   };
 
-  console.log("--->", remoteConnected);
+  const showPrescriptionPanel = isDoctor && !!prescriptionForm;
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-900 text-white">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-900 text-white overflow-hidden">
       {/* Video Area */}
       <div
-        className={`relative h-full ${
-          isDoctor ? "md:w-7/10" : "w-full"
+        className={`relative w-full ${
+          showPrescriptionPanel ? "md:w-7/12" : "md:w-full"
         } bg-black`}
       >
-        <div className="h-full w-full relative">
+        <div className="relative w-full h-[65vh] md:h-full">
           {/* Remote video */}
           <video
             ref={remoteStreamRef}
@@ -81,7 +81,7 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
             className="h-full w-full object-cover"
           />
 
-          {/* Show fallback only if no remote stream */}
+          {/* Fallback if remote stream not connected */}
           {!remoteConnected && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-800 opacity-80 z-10">
               <div className="text-center">
@@ -93,8 +93,8 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
             </div>
           )}
 
-          {/* Local Picture-in-Picture */}
-          <div className="absolute bottom-4 right-4 w-32 h-24 md:w-48 md:h-36 bg-gray-800 rounded-lg overflow-hidden shadow-lg z-20">
+          {/* Local PiP */}
+          <div className="absolute bottom-4 right-4 w-24 h-20 sm:w-32 sm:h-24 md:w-48 md:h-36 bg-gray-800 rounded-lg overflow-hidden shadow-lg z-20">
             <video
               ref={localStreamRef}
               autoPlay
@@ -102,22 +102,22 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
               muted
               className="h-full w-full object-cover"
             />
-            <div className="absolute bottom-1 left-1 text-xs text-white">
-              You
-            </div>
+            <div className="absolute bottom-1 left-1 text-xs text-white">You</div>
           </div>
 
-          {/* Remote name overlay */}
+          {/* Remote name */}
           <div className="absolute top-4 left-4 z-20 text-white text-sm">
             {remoteUserName}
           </div>
 
+          {/* Call Duration */}
           {callDuration && (
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 px-4 py-1 rounded-md text-white text-sm z-20">
               ⏱️ {callDuration}
             </div>
           )}
 
+          {/* Network Quality */}
           {networkQuality !== undefined && (
             <div className="absolute top-4 right-4 bg-black bg-opacity-60 px-3 py-1 rounded-md text-white text-sm z-20">
               {getNetworkQualityLabel(networkQuality)}
@@ -158,8 +158,8 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
       </div>
 
       {/* Prescription Panel */}
-      {isDoctor && (
-        <div className="w-full md:w-3/10 bg-gray-800 p-4 hidden md:block">
+      {showPrescriptionPanel && (
+        <div className="w-full md:w-5/12 bg-gray-800 p-4 h-full overflow-y-auto">
           {prescriptionForm || <PrescriptionForm />}
         </div>
       )}
@@ -168,5 +168,3 @@ const VideoCallLayout: React.FC<VideoCallLayoutProps> = ({
 };
 
 export default VideoCallLayout;
-
-// -------------------------------------------

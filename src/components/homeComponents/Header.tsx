@@ -144,13 +144,13 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
                 isDoctor={false}
               />
             </>
-           <Link
-           href="user/about"
-           className="flex items-center hover:text-gray-900"
-           >
-            <BadgeInfo size={18} className="mr-1"/>
-            <span>About us</span>
-           </Link>
+            <Link
+              href="user/about"
+              className="flex items-center hover:text-gray-900"
+            >
+              <BadgeInfo size={18} className="mr-1" />
+              <span>About us</span>
+            </Link>
           </div>
 
           {/* Profile Section */}
@@ -252,7 +252,7 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
               </div>
             </Link>
             <Link
-              href="/user/about"
+              href="/user/chat"
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
             >
               <div className="flex items-center">
@@ -260,6 +260,11 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
                 <span>Messages</span>
               </div>
             </Link>
+            <button onClick={() => setOpen(true)} className="flex items-center">
+              <BellIcon size={18} className="mr-1" />
+              <span className="ml-2">Notifications</span>
+            </button>
+
             <Link
               href="#"
               className="block py-2 px-1 text-gray-600 hover:text-gray-900"
