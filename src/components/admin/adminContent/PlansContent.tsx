@@ -38,6 +38,7 @@ const PlansContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [page, setPage] = useState(1);
+  const [totalPages,setTotalPages] = useState<number>(1)
 
   const openModal = (plan?: Plan) => {
     console.log("hi opene modal ");
@@ -60,7 +61,9 @@ const PlansContent: React.FC = () => {
 
       if (response?.status === 200) {
         console.log(response.data);
-        setPlans(response.data.data);
+        const {data,totalPages} = response.data.data
+        setPlans(data);
+        setTotalPages(totalPages)
       } else {
         throw new Error("Failed to fetch subscription plans");
       }
@@ -133,10 +136,11 @@ const PlansContent: React.FC = () => {
         >
           Previous
         </button>
-        <span className="text-white self-center">Page {page}</span>
+        <span className="text-white self-center">Page {page} of {totalPages}</span>
         <button
           onClick={() => setPage((prev) => prev + 1)}
-          className="px-4 py-2 bg-gray-700 text-white rounded"
+          disabled={page === totalPages}
+          className="px-4 py-2 bg-gray-700 text-white rounded disabled:opacity-50"
         >
           Next
         </button>

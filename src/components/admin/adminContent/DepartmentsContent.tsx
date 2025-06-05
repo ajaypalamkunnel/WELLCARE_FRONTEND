@@ -25,13 +25,18 @@ const DepartmentsContent: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
         const respose = await fetchAllPaginatedDepartments(page);
+        console.log("==>", respose);
 
-        setDepartments(respose.data);
+        const data = respose.data;
+
+        setDepartments(data.data);
+        setTotalPages(data.totalPages);
       } catch (error) {
         console.log(error);
 
@@ -288,10 +293,13 @@ const DepartmentsContent: React.FC = () => {
         >
           Previous
         </button>
-        <span className="text-white self-center">Page {page}</span>
+        <span className="text-white self-center">
+          Page {page} of {totalPages}
+        </span>
         <button
           onClick={() => setPage((prev) => prev + 1)}
-          className="px-4 py-2 bg-gray-700 text-white rounded"
+          disabled={page === totalPages}
+          className="px-4 py-2 bg-gray-700 text-white rounded disabled:opacity-50"
         >
           Next
         </button>
