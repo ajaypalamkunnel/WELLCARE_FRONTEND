@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Search, Loader2 } from "lucide-react";
 import { getAllActiveDepartments } from "@/services/user/auth/authService";
-import { IDepartment } from "@/components/homeComponents/MainBanner2";
+import { IDepartment } from "@/components/homeComponents/DepartmentSection";
 import Header from "@/components/homeComponents/Header";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

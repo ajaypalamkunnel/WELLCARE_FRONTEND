@@ -31,7 +31,8 @@ const DoctorListing = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
+  console.log(doctors);
+  
   // State for Filters & Pagination
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filters, setFilters] = useState({
@@ -135,25 +136,28 @@ const DoctorListing = () => {
   const toggleFilterModal = () => setShowFilterModal(!showFilterModal);
 
   // Render rating stars
-  const renderStars = (rating = 4) => {
-    return (
-      <div className="flex">
-        {Array(5)
-          .fill(0)
-          .map((_, index) => (
-            <Star
-              key={index}
-              size={16}
-              className={
-                index < rating
-                  ? "text-yellow-400 fill-yellow-400"
-                  : "text-gray-300"
-              }
-            />
-          ))}
-      </div>
-    );
-  };
+  const renderStars = (rating = 0) => {
+  return (
+    <div className="flex">
+      {Array(5)
+        .fill(0)
+        .map((_, index) => (
+          <Star
+            key={index}
+            size={16}
+            className={
+              index < Math.round(rating)
+                ? "text-yellow-400 fill-yellow-400"
+                : "text-gray-300"
+            }
+          />
+        ))}
+    </div>
+  );
+};
+
+
+
 
   //  UI: Loading & Error Handling
   if (loading) {
@@ -459,6 +463,7 @@ const DoctorListing = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {doctors.map((doctor) => (
+                  
                   <div
                     key={doctor._id}
                     className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col"
@@ -519,9 +524,9 @@ const DoctorListing = () => {
 
                       {/* Ratings */}
                       <div className="flex items-center mb-4">
-                        {renderStars(4)}
+                        {renderStars(doctor.rating?.[0]?.averageRating || 0)}
                         <span className="text-sm text-gray-600 ml-2">
-                          (4.0)
+                          ({doctor.rating?.[0]?.averageRating ? doctor.rating[0].averageRating.toFixed(1) : '0.0'})
                         </span>
                       </div>
 

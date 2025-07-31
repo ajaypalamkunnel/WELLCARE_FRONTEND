@@ -3,8 +3,6 @@ import React, { useEffect, useState } from "react";
 import {
   Menu,
   Search,
-  Video,
-  Info,
   User,
   Home,
   X,
@@ -22,6 +20,7 @@ import Link from "next/link";
 import { connectSocket, getSocket } from "@/utils/socket";
 import NotificationModal from "../commonUIElements/NotificationModal";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
   profileImageUrl?: string;
@@ -30,15 +29,13 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
   const logoutstore = useAuthStore((state) => state.logout);
   const accessToken = useAuthStore((state) => state.accessToken);
   const user = useAuthStore();
   const isLoggedIn = !!accessToken;
   const userId = user.user?.id;
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -46,6 +43,18 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
       connectSocket(userId);
     }
   }, [userId]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
@@ -59,7 +68,6 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
       }
       await logout();
       logoutstore();
-      // useAuthStore.getState().logout()
       toast.success("Logging out...");
       router.push("/login");
     } catch (error) {
@@ -68,216 +76,223 @@ const Header: React.FC<HeaderProps> = ({ profileImageUrl }) => {
     }
   };
 
+  const navItems = [
+    { href: "/", icon: Home, label: "Home" },
+    { href: "/user/doctors", icon: Search, label: "Find Doctor" },
+    { href: "/user/departments", icon: Hospital, label: "Departments" },
+    { href: "/user/chat", icon: MessageCircle, label: "Messages" },
+    { href: "user/about", icon: BadgeInfo, label: "About us" },
+  ];
+
   return (
-    <header
-      className="w-full py-5 px-4 md:px-6 shadow-sm"
-      style={{ background: "linear-gradient(to right, #e9daf3, #d8f4ea)" }}
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className={`w-full py-4 px-4 md:px-8 transition-all duration-300 fixed top-0 z-50 ${
+        scrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-blue-100' 
+          : 'bg-gradient-to-r from-blue-50 via-teal-50 to-indigo-50'
+      }`}
     >
       <div className="container mx-auto">
         <nav className="flex items-center justify-between">
           {/* Logo and Name */}
-          <div className="flex items-center">
-            <Link href="/">
-              <Image
-                src="/images/cropedLogo.png"
-                alt="willcarelogo"
-                width={40}
-                height={40}
-                className="object-contain"
-              />
+          <motion.div 
+            className="flex items-center space-x-3"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="relative">
+                <Image
+                  src="/images/cropedLogo.png"
+                  alt="WellCare Logo"
+                  width={45}
+                  height={45}
+                  className="object-contain drop-shadow-sm"
+                />
+                <motion.div
+                  className="absolute inset-0 bg-blue-400 rounded-full opacity-20"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-teal-600 to-indigo-600 bg-clip-text text-transparent">
+                WellCare
+              </h1>
             </Link>
-
-            <h1
-              className="text-2xl font-bold"
-              style={{
-                background: "linear-gradient(to right, #18A2C6, #02C03B)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              WellCare
-            </h1>
-          </div>
+          </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6 text-gray-600">
-            <Link href="/" className="flex items-center hover:text-gray-900">
-              <Home size={18} className="mr-1" />
-              <span>Home</span>
-            </Link>
-
-            <Link
-              href="/user/doctors"
-              className="flex items-center hover:text-gray-900"
-            >
-              <Search size={18} className="mr-1" />
-              <span>Find Doctor</span>
-            </Link>
-
-            <Link
-              href="/user/departments"
-              className="flex items-center hover:text-gray-900"
-            >
-              <Hospital size={18} className="mr-1" />
-              <span>Departments</span>
-            </Link>
-
-            <Link
-              href="/user/chat"
-              className="flex items-center hover:text-gray-900"
-            >
-              <MessageCircle size={18} className="mr-1" />
-              <span>Messages</span>
-            </Link>
-            <>
-              <button
-                onClick={() => setOpen(true)}
-                className="flex items-center"
+          <div className="hidden lg:flex items-center space-x-8">
+            {navItems.map((item, index) => (
+              <motion.div
+                key={item.href}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <BellIcon size={18} className="mr-1" />
-                <span className="ml-2">Notifications</span>
-              </button>
-
-              <NotificationModal
-                isOpen={open}
-                onClose={() => setOpen(false)}
-                isDoctor={false}
-              />
-            </>
-            <Link
-              href="user/about"
-              className="flex items-center hover:text-gray-900"
+                <Link
+                  href={item.href}
+                  className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 group"
+                >
+                  <item.icon size={18} className="group-hover:scale-110 transition-transform duration-200" />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              </motion.div>
+            ))}
+            
+            <motion.button
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+              onClick={() => setOpen(true)}
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 group relative"
             >
-              <BadgeInfo size={18} className="mr-1" />
-              <span>About us</span>
-            </Link>
+              <BellIcon size={18} className="group-hover:scale-110 transition-transform duration-200" />
+              <span className="font-medium">Notifications</span>
+              <motion.div
+                className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              />
+            </motion.button>
+
+            <NotificationModal
+              isOpen={open}
+              onClose={() => setOpen(false)}
+              isDoctor={false}
+            />
           </div>
 
           {/* Profile Section */}
-
-          {isLoggedIn ? (
-            <div className="relative">
-              <button
-                className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-100 hover:bg-gray-200"
-                onClick={toggleProfileDropdown}
+          <div className="flex items-center space-x-4">
+            {isLoggedIn ? (
+              <motion.div 
+                className="relative"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
               >
-                {profileImageUrl ? (
-                  <Image
-                    width={45}
-                    height={45}
-                    src={profileImageUrl}
-                    alt="Profile"
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <User size={20} className="text-gray-600" />
-                )}
-              </button>
+                <button
+                  className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 shadow-lg transition-all duration-300"
+                  onClick={toggleProfileDropdown}
+                >
+                  {profileImageUrl ? (
+                    <Image
+                      width={48}
+                      height={48}
+                      src={profileImageUrl}
+                      alt="Profile"
+                      className="h-10 w-10 rounded-full object-cover border-2 border-white"
+                    />
+                  ) : (
+                    <User size={20} className="text-white" />
+                  )}
+                </button>
 
-              {/* Profile Dropdown */}
-              {isProfileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                  <Link
-                    href="/user/profile"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Profile
-                  </Link>
+                <AnimatePresence>
+                  {isProfileDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl py-2 z-50 border border-gray-100"
+                    >
+                      <Link
+                        href="/user/profile"
+                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 transition-colors duration-200"
+                      >
+                        <User size={16} className="mr-3" />
+                        Profile
+                      </Link>
+                      <div className="border-t border-gray-100 my-1" />
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
+                      >
+                        <LogIn size={16} className="mr-3" />
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.6 }}
+              >
+                <Link
+                  href="/login"
+                  className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-600 text-white rounded-lg hover:from-blue-700 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                >
+                  <LogIn size={20} />
+                  <span className="font-medium">Login</span>
+                </Link>
+              </motion.div>
+            )}
 
-                  <button
-                    onClick={handleLogout}
-                    className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="flex items-center gap-2 px-4 py-2 bg-medical-green text-white rounded-lg hover:bg-blue-700 transition duration-300"
+            {/* Mobile Menu Button */}
+            <motion.button
+              className="lg:hidden text-gray-600 hover:text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-all duration-200"
+              onClick={toggleMenu}
+              whileTap={{ scale: 0.95 }}
             >
-              <LogIn size={20} />
-              <span>Login</span>
-            </Link>
-          )}
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-gray-600 hover:text-gray-900"
-            onClick={toggleMenu}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </motion.button>
+          </div>
         </nav>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 py-2 border-t border-gray-200">
-            <Link
-              href="/"
-              className="block py-2 px-1 text-gray-600 hover:text-gray-900"
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="lg:hidden mt-4 py-4 border-t border-gray-200 bg-white/95 backdrop-blur-sm rounded-lg"
             >
-              <div className="flex items-center">
-                <Home size={18} className="mr-2" />
-                <span>Home</span>
+              <div className="space-y-2">
+                {navItems.map((item, index) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <Link
+                      href={item.href}
+                      className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <item.icon size={18} />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  </motion.div>
+                ))}
+                <motion.button
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                  onClick={() => {
+                    setOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 w-full"
+                >
+                  <BellIcon size={18} />
+                  <span className="font-medium">Notifications</span>
+                </motion.button>
               </div>
-            </Link>
-            <Link
-              href="/user/doctors"
-              className="block py-2 px-1 text-gray-600 hover:text-gray-900"
-            >
-              <div className="flex items-center">
-                <Search size={18} className="mr-2" />
-                <span>Find Doctor</span>
-              </div>
-            </Link>
-            <Link
-              href="/user/departments"
-              className="block py-2 px-1 text-gray-600 hover:text-gray-900"
-            >
-              <div className="flex items-center">
-                <Hospital size={18} className="mr-1" />
-                <span>Departments</span>
-              </div>
-            </Link>
-            <Link
-              href="#"
-              className="block py-2 px-1 text-gray-600 hover:text-gray-900"
-            >
-              <div className="flex items-center">
-                <Video size={18} className="mr-2" />
-                <span>Video Consultation</span>
-              </div>
-            </Link>
-            <Link
-              href="/user/chat"
-              className="block py-2 px-1 text-gray-600 hover:text-gray-900"
-            >
-              <div className="flex items-center">
-                <MessageCircle size={18} className="mr-1" />
-                <span>Messages</span>
-              </div>
-            </Link>
-            <button onClick={() => setOpen(true)} className="flex items-center">
-              <BellIcon size={18} className="mr-1" />
-              <span className="ml-2">Notifications</span>
-            </button>
-
-            <Link
-              href="#"
-              className="block py-2 px-1 text-gray-600 hover:text-gray-900"
-            >
-              <div className="flex items-center">
-                <Info size={18} className="mr-2" />
-                <span>About Us</span>
-              </div>
-            </Link>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </header>
+    </motion.header>
   );
 };
 

@@ -19,6 +19,7 @@ const DoctorProfile = () => {
   const [error, setError] = useState<string | null>(null);
   const [visibleReviews, setVisibleReviews] = useState<number>(3);
   const user = useAuthStore((state)=>state.user)
+  const isVerified = useAuthStore((state)=>state.isVerified)
   const router = useRouter()
   
 
@@ -50,13 +51,19 @@ const DoctorProfile = () => {
     
     console.log(user?.isVerified);
     
+    console.log("-->",user);
     
-    if(user?.isVerified){
+    if(isVerified){
       console.log("hi booking");
       
       router.push(`/user/booking?doctorId=${doctorId}`)
     }else{
-      router.push(`/user/completeregistration?doctorId=${doctorId}`)
+
+      if(user){
+        router.push(`/user/completeregistration?doctorId=${doctorId}`)
+      }else{
+        router.push('/login')
+      }
     }
 
   }

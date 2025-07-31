@@ -1,75 +1,234 @@
 "use client"
 import React from 'react';
-import MotionImage from './HomeBanner';
+import MotionImage from './MotionImage';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Calendar, ArrowRight, Shield, Heart, Users } from 'lucide-react';
 
 const MainBanner1 = () => {
+  const router = useRouter();
 
-  const router =  useRouter()
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const buttonVariants = {
+    hover: {
+      scale: 1.05,
+      boxShadow: "0 10px 25px rgba(79, 209, 197, 0.3)",
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    },
+    tap: {
+      scale: 0.95
+    }
+  };
+
   return (
-    <div className="w-full h-full min-h-screen flex flex-col" style={{
-      background: "linear-gradient(to right, #b7f4e8, #b895f4)"
+    <div className="w-full min-h-screen relative overflow-hidden" style={{
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%)"
     }}>
-      <div className="container mx-auto mt-8 px-4 py-12 flex flex-col md:flex-row items-center justify-between">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.6, 0.3, 0.6],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/3 w-24 h-24 bg-white/10 rounded-full blur-lg"
+          animate={{
+            y: [0, -20, 0],
+            opacity: [0.4, 0.8, 0.4],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 py-12 flex flex-col md:flex-row items-center justify-between min-h-screen">
         {/* Left side content */}
-        <div className="ml-20 md:w-1/2 text-left mb-8 md:mb-0">
-          <h1 className="text-4xl md:text-5xl font-bold text-purple-900 mb-4 font-inter">
-            Your Health, Our Priority
-          </h1>
-          <p className="text-gray-700 mb-8 text-lg">
-            Book an Appointment with Trusted Doctors Instantly!
-          </p>
-          <button 
-            className="flex items-center space-x-2 px-6 py-3 rounded text-white font-medium"
-            style={{ backgroundColor: "#4dd1c6" }}
-            onClick={()=>router.push("/user/doctors")}
+        <motion.div 
+          className="md:w-1/2 text-left mb-8 md:mb-0"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={itemVariants} className="mb-6">
+            <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4">
+              <Shield size={16} />
+              <span>Trusted Healthcare Platform</span>
+            </div>
+          </motion.div>
+
+          <motion.h1 
+            variants={itemVariants}
+            className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>Book Appointment</span>
-          </button>
-        </div>
+            Your Health,
+            <span className="block bg-gradient-to-r from-blue-200 to-teal-200 bg-clip-text text-transparent">
+              Our Priority
+            </span>
+          </motion.h1>
+
+          <motion.p 
+            variants={itemVariants}
+            className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed"
+          >
+            Connect with trusted healthcare professionals instantly. 
+            Experience seamless care from the comfort of your home.
+          </motion.p>
+
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-8">
+            <motion.button 
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              className="flex items-center justify-center space-x-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-teal-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              onClick={() => router.push("/user/doctors")}
+            >
+              <Calendar size={24} />
+              <span>Book Appointment</span>
+              <ArrowRight size={20} />
+            </motion.button>
+            
+            <motion.button 
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              className="flex items-center justify-center space-x-3 px-8 py-4 bg-white/20 backdrop-blur-sm text-white rounded-xl font-semibold text-lg border-2 border-white/30 hover:bg-white/30 transition-all duration-300"
+            >
+              <Heart size={24} />
+              <span>Learn More</span>
+            </motion.button>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div 
+            variants={itemVariants}
+            className="grid grid-cols-3 gap-6"
+          >
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-white mb-1">500+</div>
+              <div className="text-white/80 text-sm">Expert Doctors</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-white mb-1">10k+</div>
+              <div className="text-white/80 text-sm">Happy Patients</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-white mb-1">24/7</div>
+              <div className="text-white/80 text-sm">Support Available</div>
+            </div>
+          </motion.div>
+        </motion.div>
         
         {/* Right side image */}
-        {/* <motion.div
-          initial={{ opacity: 0, x: 100 }} // Start from right and fade in
-          animate={{ opacity: 1, x: 0 }}   // Move to original position
-          transition={{ duration: 1, ease: "easeOut" }} // Animation timing
-          className="md:w-1/2 flex justify-start"
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+          className="md:w-1/2 flex justify-center md:justify-end"
         >
-          <img 
-            src="/images/banner1.png" 
-            alt="Healthcare professionals"
-            className="object-contain h-72 md:h-96 lg:h-112" 
-          />
-        </motion.div> */}
-        <MotionImage/>
-      </div>
-      
-      {/* Search bar section */}
-      <div className="container mx-auto px-4 mb-12">
-        {/* <div className="bg-white rounded-lg shadow-lg p-4 max-w-4xl mx-auto">
-          <div className="flex flex-col md:flex-row">
-            <div className="flex items-center border-b md:border-b-0 md:border-r border-gray-300 p-2 md:w-1/2">
-              <MapPin className="text-gray-400 mr-2" size={20} />
-              <input 
-                type="text" 
-                placeholder="Enter your city or area" 
-                className="w-full outline-none text-gray-700"
-              />
-            </div>
-            <div className="flex items-center p-2 md:w-1/2">
-              <Search className="text-gray-400 mr-2" size={20} />
-              <input 
-                type="text" 
-                placeholder="Search for a doctor or specialty" 
-                className="w-full outline-none text-gray-700"
-              />
-            </div>
+          <div className="relative">
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-teal-400/20 rounded-full blur-3xl"
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            <MotionImage />
           </div>
-        </div> */}
+        </motion.div>
       </div>
+
+      {/* Floating elements */}
+      <motion.div
+        className="absolute bottom-10 left-10 hidden lg:block"
+        animate={{
+          y: [0, -10, 0],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+          <div className="flex items-center space-x-3">
+            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-white text-sm">Live Support Available</span>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="absolute top-20 right-10 hidden lg:block"
+        animate={{
+          y: [0, 10, 0],
+        }}
+        transition={{
+          duration: 2.5,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+          <div className="flex items-center space-x-3">
+            <Users size={16} className="text-white" />
+            <span className="text-white text-sm">500+ Doctors Online</span>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };
